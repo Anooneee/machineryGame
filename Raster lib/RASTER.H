@@ -32,7 +32,7 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
 
  PURPOSE: Plots a single pixel on the screen.
 
- INPUT: Address(UINT32*): to the start of the screen
+ INPUT: Address(UINT8*): to the start of the screen
         Position(row,col): the location of the pixel to plot
 
  OUTPUT: None
@@ -45,7 +45,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col);
 
  PURPOSE: Plot a hoizontal line on the screen. The horizontal line is specified by the leftmost pixel of the line and the length of the line.
 
- INPUT: Address(UINT8*): to the start of the screen
+ INPUT: Address(UINT32*): to the start of the screen
         Position(row,col): the coordinates of the leftmost pixel of the horizontal line
         Length: the lenth in pixels of the line
 

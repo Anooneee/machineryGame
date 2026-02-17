@@ -14,18 +14,22 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
     
 }
 
-void plot_pixel(char *base, int x, int y){
-if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT)
-*(base + col * 80 + (row >> 3)) |= 1 << 7 - (row & 7);
+void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
+	if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT)
+	*(base + (col >> 6) + (col >> 4) + (row >> 3)) |= 1 << 7 - (row & 7);
 }
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
-	if (col >= 0 && col < SCREEN_WIDTH && row >= 0 && row < SCREEN_HEIGHT)
-		
+	int i;
+	base += (col << 6) + (col << 4);
+	base += (row >> 3);
+	while(i < length){
+		*(base) |= 1 << 7 - (row & 7);
+	}
 }
 
 void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
-
+	
 }
 
 void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col){
