@@ -45,13 +45,21 @@ int main()
 	plot_pixel(base, 0, 200);
 	Cnecin();
 	plot_pixel(base, 639, 200);
+	*/
 	
 	Cnecin();
-	plot_horizontal_line(base, 10, 0, 200);
-	
+	plot_horizontal_line(base, 20, 30, 5);
+
 	Cnecin();
-	clear_screen(base);
-	
+	plot_horizontal_line(base, 0, 20, 9);
+
+	Cnecin();
+	plot_horizontal_line(base, 0, 200, 200);
+
+	Cnecin();
+	plot_horizontal_line(base, 10, 150, 400);
+
+	/*
 	Cnecin();
 	plot_vertical_line(base, 10, 10, 200);
 
@@ -62,7 +70,7 @@ int main()
 	plot_line(base, 10, 10, 200, 200);
 	
 	Cnecin();
-	clear_screen();*/
+	clear_screen();
 	
 	/*	
 	Cnecin();
@@ -74,9 +82,9 @@ int main()
 	plot_string(base, 0, 0, "Hello world!\n");
 	clear_screen(base);
 	*/
-	Cnecin();
+	/*Cnecin();
 	plot_string(base, 0, 0, "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!\n");
-
+	*/
 	return 0;
 }
 

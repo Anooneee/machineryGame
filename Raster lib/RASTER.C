@@ -7,6 +7,7 @@
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
+
 /*for all functions assume the co-ordinates follow x first y second sturcture regardless of weather it is row or col first*/
 
 
@@ -15,7 +16,6 @@
 }*/
 
 void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
-    
 }
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
@@ -24,14 +24,31 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
 }
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+	UINT32 start_mask, end_mask;
+	UINT16 start_x, end_x;
+	int i, blocks;
 	
-	int i;
-	base += (col << 6) + (col << 4) + (row >> 3);
-	while(15 > length){
-		*(base) |= 15;
-		base += 1;
-		length -+ 8;
+	start_x = row;
+	end_x = row + length;
+	if(end_x > SCREEN_WIDTH) end_x = SCREEN_WIDTH;
+	blocks = (end_x - start_x) >> 5;
+
+	start_mask = 0xFFFFFFFF >> (start_x & 31);
+	end_mask = 0xFFFFFFFF << (31 - (end_x & 31));
+	
+	base += ((col << 4)) + (row >> 5);
+	if(length > 32){
+		*base |= start_mask;
+		base++;
+	for(i = 0; i < blocks; i++){
+		*base |= 0xFFFFFFFF;
+		base++;
 	}
+	}else if(length > 16){ 
+		*base |= start_mask;
+		base++;
+	}
+	*base |= end_mask;
 
 }
 
