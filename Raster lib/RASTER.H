@@ -1,16 +1,18 @@
-#ifndef RASTER_H
-#define RASTER_H
+#ifndef RASTER.H
+#define RASTER.H
+
+#include "types.h"
 
 /*----- Function: clear_screen -----
-v
- PURPOSE: Clears the entire screen.
 
- INPUT: Address(UINT32*): to the start of the screen
+ ;PURPOSE: Clears the entire screen.
 
- OUTPUT: None
+ ;INPUT: Address(UINT32*): to the start of the screen
+
+ ;OUTPUT: None
 
 */
-void clear_screen(UINT32 *base);
+/*void clear_screen(UINT32 *base);*/
 
 
 /*----- Function: clear_region -----
@@ -123,7 +125,7 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side);
 
  OUTPUT: None
 */
-void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction);
+void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 t_base, UINT16 height, UINT8 direction);
 
 
 /*----- Function: plot_bitmap_8 -----
