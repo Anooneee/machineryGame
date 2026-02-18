@@ -1,22 +1,26 @@
 #ifndef ENEMY_H
 #define ENEMY_H
-#include <stdbool.h>    /* for boolean values */
+#include "TYPES.H"    /* for boolean values and UINT and LEFT/RIGHT*/
 
 
-typedef struct Enemy{
-    unsigned int x, y;
+typedef struct {
+    UINT16 x, y;
     int horizontal_velocity;            /* horiz . displacement per clock tick */
-    int vertical_velocity;              /* vert . displacement per clock tick*/
+    /* Maybe delete */
+    int vertical_velocity; 
     bool grounded;
-    int HEIGHT, WIDTH;            /* 16, 16 */
     bool dead;
-    int bound_left;
-    int bound_right;
-    unsigned int *bitmap;
+    /* Maybe delete */
+    int HEIGHT, WIDTH;            /* 32, 16 */
+    UINT16 bound_left, bound_right;
+    UINT16 *bitmap;
 
 } Enemy;
 
-/* To move enemy within bounds. One step forward. */
+/* Move enemy within bounds. One step forward. */
 void move_enemy(Enemy *e, int speed);
+
+/* Create enemy at x,y with bound positions at x = bound left and x = bound right */
+Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UINT16 *bitmap);
 
 #endif
