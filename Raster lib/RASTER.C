@@ -4,9 +4,24 @@
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
+/*for all stuctures Assume the co-ordinates follow x first y second sturcture regardless of weather it is row or col first*/
 
 
 void clear_screen(UINT32 *base){
+			xdef		_clear_screen
+
+base		equ		8
+
+_clear_screen:	link		a6,#0
+		movem.l		d0-1/a0,-(sp)
+		movea.l		base(a6),a0
+		move.w		#7999,d0
+		clr.l		d1
+fill_loop:	move.l		d1,(a0)+        ; strangely, faster than clr
+		dbra		d0,fill_loop
+		movem.l		(sp)+,d0-1/a0
+		unlk		a6
+		rts
 
 }
 
@@ -16,7 +31,7 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
 	if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT)
-	*(base + (col >> 6) + (col >> 4) + (row >> 3)) |= 1 << 7 - (row & 7);
+	*(base + (col << 6) + (col << 4) + (row >> 3)) |= 1 << 7 - (row & 7);
 }
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
@@ -25,31 +40,63 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 	base += (row >> 3);
 	while(i < length){
 		*(base) |= 1 << 7 - (row & 7);
+		base += 1;
+		i += 1;
 	}
 }
 
 void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
-	
+	int i;
+	base += (col << 6) + (col << 4);
+	base += (row >> 3);
+	while(i < length){
+		*(base) |= 1 << 7 - (row & 7);
+		base += 256;
+		i += 1;
+	}
 }
 
 void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col){
+	/*Bresenham's line algorithm as per wikipedia "https://en.wikipedia.org/wiki/Bresenham's_line_algorithm"*/
+	int x_length,y_length,slope,x,y;
+	x_length = end_row - start_row;
+	y_length = end_col - start_col;
+	slope = (y_length << 1) - x_length;
+	y = start_col;
+	base += (start_col << 6) + (start_col << 4) + (start_row >> 3);
+	for(x=start_row; x < end_row; x++){
+		*(base) |= 1 << 7 - (*base & 7);
+		if(slope > 0){
+			y = y + 1;
+			slope = slope + ((y_length - x_length) << 1);
+		}else{
+			slope = slope + (y_length << 1)
+		}
+	}
+
 
 }
 
 void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
-
+	plot_horizontal_line(&base, row, col, width);
+	plot_vertical_line(&base, row, col, length);
+	plot_vertical_line(&base, row, col, length);
+	plot_horizontal_line(&base, row, col, length);
 }
 
 void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side){
-
+	plot_horizontal_line(&base, row, col, side);
+	plot_vertical_line(&base, row, col, side);
+	plot_vertical_line(&base, row, col, side);
+	plot_horizontal_line(&base, row, col, side);
 }
 
 void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction){
-
+	
 }
 
 void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
-
+	
 }
 
 void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height){
@@ -69,7 +116,7 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
 	font = (char *)V_FNT_AD;     /* get start address of font table */
 	font += ch;
 	for(i = 0; i < 16; i++){ 
-		*(base + i * 80) |= *(font + i * 256);
+		*(base + (i << 6) + (i << 4)) |= *(font + (i << 8));
 	}
 	return 0;
 }
