@@ -1,10 +1,13 @@
 #ifndef TRAP_H
 #define TRAP_H
+#include "TYPES.H" /* for bool, UINT and LEFT/RIGHT */
 
 typedef struct environmental_hazard{
-    int x, y;
+    UINT16 x, y;
     int height, width;
-    unsigned int bitmap[];
+    UINT16 *bitmap;
 } Trap;
+
+Trap create_trap(UINT16 x, UINT16 y, UINT16 *bitmap);
 
 #endif 

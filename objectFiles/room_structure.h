@@ -1,10 +1,10 @@
-#ifndef ROOM_H
-#define ROOM_H
-#include "room.h"
+#ifndef ROOM_STRUCTURE_H
+#define ROOM_STRUCTURE_H
+#include "room_structure.h"
 #include "trap.h"
 #include "enemy.h"
-#include "h_environment.h"
-#include "v_environment.h"
+#include "vertical_environment.h"
+#include "horizontal_environment.h"
 
 typedef struct room_structure{
     Trap *traps;
@@ -18,7 +18,7 @@ typedef struct room_structure{
 
 }Room;
 
-/* NOT DONE AND WILL NOT USE. ONLY FOR TESTING. Example room */
-Room create_room1();
+/* NOT DONE AND PROBABLY WILL NOT USE. ONLY FOR TESTING. Example room */
+Room create_room_1();
 
 #endif
