@@ -1,6 +1,8 @@
+#include <osbind.h>
+#include <stdio.h>
 #include "raster.h"
 #include "types.h"
-#include "font.h"
+#include "font.c"
 
 
 #define SCREEN_WIDTH 640
@@ -22,6 +24,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
 }
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+	
 	int i;
 	base += (col << 6) + (col << 4) + (row >> 3);
 	while(15 > length){
@@ -91,14 +94,25 @@ void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){
 }
 
 void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
-/*	int i;
-	font = (char *)V_FNT_AD;     /* get start address of font table */
-/*	font += ch;
-	for(i = 0; i < 16; i++){ 
-		*(base + (i << 6) + (i << 4)) |= *(font + (i << 3));
-	}*/
+	int i;
+	UINT8 *bit_map = GLYPH_START(ch);
+	base += (col << 6) + (col << 4) + (row >> 3); /*start position of char on screen*/
+	
+	for(i = 0; i < 8; i++){
+		*base |= *(bit_map);
+		base += 80;
+		bit_map++;
+	}
 }
 
 void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch){
-
+	while(*ch != '\n'){
+		plot_character(base, row, col, *ch);	/*plot char to screen*/
+		row += 8;								/*move start point to next row*/
+		if(row >= SCREEN_WIDTH){
+			col += 8;
+			row = 0;
+		}
+		ch++;
+	}
 }
