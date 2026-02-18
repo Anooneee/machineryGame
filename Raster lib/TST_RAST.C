@@ -1,7 +1,9 @@
 #include <osbind.h>
 #include <stdio.h>
-#include "RASTER.H"
+#include "raster.h"
+#include "types.h"
 /*Cnecin(); to pause between tests*/
+#define BYTES_PER_SCREEN 32000
 
 void disable_cursor();
 void fill_screen(char *base, char pattern);
@@ -13,10 +15,30 @@ int main()
 	disable_cursor();
 	fill_screen(base, -1);
 	Cnecin();
-
-	clear_screen(base)
+	clear_screen(base);
 
 	Cnecin();
+	plot_pixel(base, 0, 0);
+	Cnecin();
+	plot_pixel(base, 639, 0);
+	Cnecin();
+	plot_pixel(base, 639, 399);
+	Cnecin();
+	plot_pixel(base, 0, 399);
+	Cnecin();
+	plot_pixel(base, 320, 200);
+	Cnecin();
+	plot_pixel(base, 320, 0);
+	Cnecin();
+	plot_pixel(base, 320, 399);
+	Cnecin();
+	plot_pixel(base, 0, 200);
+	Cnecin();
+	plot_pixel(base, 639, 200);
+
+	clear_screen(base);
+
+	plot_horizontal_line(base, 10, 0, 200);
 
 	return 0;
 }
