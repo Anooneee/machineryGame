@@ -54,11 +54,11 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 
 void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 	int i;
+	UINT32 mask = 1 << (31 - (row & 31));
 	base += (col << 6) + (col << 4);
-	base += (row >> 3);
-	while(i < length){
-		*(base) |= 1 << 7 - (row & 7);
-		base += 256;
+	while(i <= length){
+		*(base) |= mask;
+		base += 20;
 		i += 1;
 	}
 }

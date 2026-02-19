@@ -46,7 +46,7 @@ int main()
 	Cnecin();
 	plot_pixel(base, 639, 200);
 	*/
-	
+	/*
 	Cnecin();
 	plot_horizontal_line(base, 20, 30, 5);
 
@@ -58,6 +58,15 @@ int main()
 
 	Cnecin();
 	plot_horizontal_line(base, 10, 150, 400);
+	*/
+
+	Cnecin();
+	plot_vertical_line(base, 50, 0, 50);
+	Cnecin();
+	plot_vertical_line(base, 51, 0, 50);
+	Cnecin();
+
+
 
 	/*
 	Cnecin();
