@@ -1,4 +1,4 @@
-#include "timer_display.h"
+#include "timer.h"
 
 typedef struct timer_display{
     UINT16 x, y;

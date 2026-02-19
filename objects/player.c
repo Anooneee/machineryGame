@@ -1,4 +1,4 @@
-#include "player_character.h"
+#include "player.h"
 #include "TYPES.H"    /* for boolean values and UINT */
 #include "attack.h"
 

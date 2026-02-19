@@ -1,0 +1,13 @@
+CC = cc68x
+LD = ln68
+CFLAGS = -g
+SRCS + $(wildcard *.c)
+OBJS + $(SRCS:.c=.o)
+
+programs: $(OBJS)
+	$(LD) -o program $(OBJS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
+
+clean: rm -f *.o program

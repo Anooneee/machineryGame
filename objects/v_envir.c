@@ -1,4 +1,4 @@
-#include "vertical_environment.h"
+#include "v_envir.h"
 
 typedef struct vertical_environment{
     UINT16 x, y;
