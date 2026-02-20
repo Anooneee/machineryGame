@@ -1,20 +1,17 @@
 #include "attack.h"
 #include "TYPES.H"    /* for boolean values and UINT and LEFT and RIGHT */
+#include <stdio.h>
 
-typedef struct {
-    UINT16 x, y;
-    int HEIGHT, WIDTH;
-    int direction;
-    UINT16 *bitmap;
-} Weapon;
+void print_weapon_status(Weapon w){
+    printf("X:%d, Y:%d, Direction:%d, Height:%d, Width:%d.\n", w.x,w.y,w.direction,w.HEIGHT,w.WIDTH);
+};
 
 Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
-    Weapon w = {
-        .x = x,
-        .y = y,
-        .HEIGHT = 32,
-        .WIDTH = 64,
-        .direction = direction,
-        .bitmap = bitmap,
-    };
+    Weapon w;
+    w.x = x;
+    w.y = y;
+    w.HEIGHT = 32;
+    w.WIDTH = 64;
+    w.direction = direction;
+    w.bitmap = bitmap;
 };

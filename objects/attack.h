@@ -12,4 +12,6 @@ typedef struct {
 /* Called by player when you want to attack */
 Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap);
 
+void print_weapon_status(Weapon w);
+
 #endif

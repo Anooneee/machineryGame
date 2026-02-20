@@ -1,17 +1,10 @@
 #include "timer.h"
+#include <stdio.h>
 
-typedef struct timer_display{
-    UINT16 x, y;
-    int height, width;
-    int time_passed;
-    Display display_value;
-} Timer;
+void print_timer_status(Timer t){
+    printf("X:%d, Y:%d, Size:%dx%d, Time_passed:%d.\n", t.x,t.y,t.HEIGHT,t.WIDTH,t.time_passed);
+};
 
-typedef struct display_string{
-    int min;
-    char colon;
-    int sec;
-} Display;
 
 /* Call every second that passes */
 void update_timer(Timer *t){
@@ -20,7 +13,7 @@ void update_timer(Timer *t){
     (*t).display_value.sec = (*t).time_passed % 60;
 
     update_display(t);
-}
+};
 
 /* NOT DONE. Draw with font the display value */
 void update_display(Timer *t){
@@ -29,17 +22,14 @@ void update_display(Timer *t){
 
 /* Create timer duh */
 Timer create_timer(){
-    Timer t = {
-        .height = 32,
-        .width = 64,
-        .time_passed = 0,
-        .x = 0,
-        .y = 0,
-        .display_value = {
-            .colon = ':',
-            .min = 0,
-            .sec = 0,
-        }
-    };
+    Timer t;
+    t.HEIGHT = 32;
+    t.WIDTH = 64;
+    t.time_passed = 0;
+    t.x = 0;
+    t.y = 0;
+    t.display_value.colon = ':';
+    t.display_value.min = 0;
+    t.display_value.sec = 0;
     return t;
 };

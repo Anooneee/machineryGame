@@ -24,6 +24,6 @@ typedef struct room_structure{
 Room create_room_1();
 
 /* printf position of every object in the room */
-void print_status(Room r);
+void print_room_status(Room r);
 
 #endif

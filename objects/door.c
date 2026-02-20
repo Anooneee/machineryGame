@@ -1,22 +1,22 @@
 #include "door.h"
+#include <stdio.h>
 
-typedef enum {
-    VERTICAL,
-    HORIZONTAL,
-}type;
+void print_exit_status(Exit e){
+    printf("X:%d, Y:%d, Size:%d, Type:%d.\n", e.x,e.y,e.size,e.type);
+};
 
-typedef struct room_door{
-    UINT16 x, y;
-    int size;           /* if type VERTICAL: grow from top most side. Example at position (5,10) and size 10, end point will be (5,20)*/
-    type type;          /* if type HORIZONTAL: grow from left most side. Example at position (5,10) and size 10, end point will be (15,10)*/
-}Exit;
-
-Exit create_vertial_exit(UINT16 x, UINT16 y, int size, type type){
-    Exit e = {
-        .x = x,
-        .y = y,
-        .size = size,
-        .type = type,
-    };
+Exit create_exit(UINT16 x, UINT16 y, int size, int type){
+    Exit e;
+    e.x = x;
+    e.y =y;
+    e.size = size;
+    e.type = type;
     return e;
-}
+};
+
+/*
+int main(){
+    Exit e = create_exit(150,300,100,VERTICAL);
+    print_status(e);
+    return 0;
+};*/

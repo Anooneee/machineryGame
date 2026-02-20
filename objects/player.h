@@ -3,27 +3,27 @@
 #include "TYPES.H"    /* for boolean values and UINT and LEFT and RIGHT */
 #include "attack.h"
 
-
 /* -------------- struct ---------------
 
     Example use:
     Player p1 = create_player(100,250,bitmap)
-    for p1 at position (100,250) and pointer to bitmap.
+    for p1 at position (100,250), with other values at default, and pointer to bitmap.
 
 */
 
 typedef struct Player_character{     /* type definition for player object */
-    UINT16 x, y;                  /* position coordinates */
+    UINT16 x, y;                     /* position coordinates */
     int horizontal_velocity;            /* horiz . displacement per clock tick */
     int vertical_velocity;              /* vert . displacement per clock tick*/
     int jump_strength;
     int speed;
+    int direction;
     bool grounded;
-    int attack_cooldown;            /* update attack cooldown when > 0 every frame until it is <= 0 to be able to attack again */
+    int attack_cooldown;
     int HEIGHT, WIDTH;            /* 32, 16 */
-    UINT16 *bitmap;
-} Player ;
+    UINT32 *bitmap;
 
+} Player ;
 
 /* Move player to position = x + (+/-)speed. (Speed is currently set at 1 by default in create_player()). 
     Has no wall or end of screen checks. */
@@ -53,5 +53,7 @@ Weapon attack(Player *pc, UINT16 *bitmap);
 
 /* Create player with all default values at position x,y and pointer to bitmap */
 Player create_player(int x, int y, UINT32 *bitmap);
+
+void print_player_status(Player p);
 
 #endif

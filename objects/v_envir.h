@@ -9,4 +9,6 @@ typedef struct vertical_environment{
 
 Wall create_wall(UINT16 x, UINT16 y, int size);
 
+void print_wall_status(Wall w);
+
 #endif

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "room.h"
 #include "trap.h"
 #include "enemy.h"
 #include "v_envir.h"
@@ -59,20 +61,6 @@ unsigned int test_bitmap_16[16] = {
     0xFFFF,
 };
 
-typedef struct room_structure{
-    Wall *walls;
-    int wall_count;
-    Floor *floors;   /* Floor is typedef for h_environment which can also be roofs */
-    int floor_count;
-    Exit *exits;
-    int exit_count;
-    Enemy *enemies;
-    int enemy_count;
-    Trap *traps;
-    int trap_count;
-
-}Room;
-
 /* Example room */
 Room create_room_1(){
     Room r1;
@@ -110,7 +98,21 @@ Room create_room_1(){
     return r1;
 };
 
-void print_status(Room r){
-    printf("Enemy count %d", r.enemy_count);
-
+void print_room_status(Room r){
+    printf("Room:\n");
+    if(r.wall_count > 0){
+        print_wall_status(r.walls[0]);
+    }
+    if(r.floor_count > 0){
+        print_floor_status(r.floors[0]);
+    }
+    if(r.exit_count > 0){
+        print_exit_status(r.exits[0]);
+    }
+    if(r.enemy_count > 0){
+        print_enemy_status(r.enemies[0]);
+    }
+    if(r.trap_count > 0){
+        print_trap_status(r.traps[0]);
+    }
 };

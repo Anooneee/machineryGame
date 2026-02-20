@@ -1,13 +1,35 @@
-CC = cc68x
-LD = ln68
-CFLAGS = -g
-SRCS + $(wildcard *.c)
-OBJS + $(SRCS:.c=.o)
+tst_obj: tst_obj.o room.o player.o attack.o door.o enemy.o h_envir.o v_envir.o timer.o trap.o
+	cc68x -g tst_obj.o room.o player.o attack.o door.o enemy.o h_envir.o v_envir.o timer.o trap.o -o tst_obj
 
-programs: $(OBJS)
-	$(LD) -o program $(OBJS)
+tst_obj.o: tst_obj.c room.h player.h enemy.h attack.h door.h h_envir.h v_envir.h timer.h trap.h
+	cc68x -g -c tst_obj.c
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $<
+room.o: room.c room.h
+	cc68x -g -c room.c
 
-clean: rm -f *.o program
+player.o: player.c player.h 
+	cc68x -g -c player.c 
+
+attack.o: attack.c attack.h 
+	cc68x -g -c attack.c 
+	
+door.o: door.c door.h 
+	cc68x -g -c door.c 
+
+enemy.o: enemy.c enemy.h 
+	cc68x -g -c enemy.c 
+	
+h_envir.o: h_envir.c h_envir.h 
+	cc68x -g -c h_envir.c 
+	
+v_envir.o: v_envir.c v_envir.h 
+	cc68x -g -c v_envir.c 
+	
+timer.o: timer.c timer.h 
+	cc68x -g -c timer.c 
+	
+trap.o: trap.c trap.h 
+	cc68x -g -c trap.c 
+	
+clean: 
+	rm -f *.o tst_obj
