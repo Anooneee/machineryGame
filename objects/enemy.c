@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 void print_enemy_status(Enemy e){
-    printf("X:%d, Y:%d, Bound_left:%d, Bound_right:%d, HEIGHT:%d, WIDTH:%d, Horizontal_velocity:%d, Vertical_velocity:%d, Grounded:%d, Dead:%d.\n", e.x,e.y,e.bound_left,e.bound_right,e.HEIGHT,e.WIDTH,e.horizontal_velocity,e.vertical_velocity,e.grounded,e.dead);
+    printf("Enemy: X:%d, Y:%d, Bound_left:%d, Bound_right:%d, HEIGHT:%d, WIDTH:%d, Horizontal_velocity:%d, Vertical_velocity:%d, Grounded:%d, Dead:%d.\n", e.x,e.y,e.bound_left,e.bound_right,e.HEIGHT,e.WIDTH,e.horizontal_velocity,e.vertical_velocity,e.grounded,e.dead);
 };
 
 /* Move enemy within bounds. One step forward. */

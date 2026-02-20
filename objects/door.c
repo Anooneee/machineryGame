@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 void print_exit_status(Exit e){
-    printf("X:%d, Y:%d, Size:%d, Type:%d.\n", e.x,e.y,e.size,e.type);
+    printf("Exit door: X:%d, Y:%d, Size:%d, Type:%d.\n", e.x,e.y,e.size,e.type);
 };
 
 Exit create_exit(UINT16 x, UINT16 y, int size, int type){
