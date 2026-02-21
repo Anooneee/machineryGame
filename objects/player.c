@@ -41,6 +41,8 @@ Weapon attack(Player *pc, UINT16 *bitmap){
         (*pc).attack_cooldown = 32;
         return create_weapon((*pc).x + (16 * (*pc).direction), (*pc).y, (*pc).direction, bitmap);
     }
+    /* If the attack cooldown is still happening, summon a weapon outside the screen. */
+    return create_weapon(640,400,LEFT,bitmap);
 };
 
 /* Create player */

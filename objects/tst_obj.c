@@ -14,6 +14,30 @@ int main(){
     p = create_player(100,100, test_bitmap_32);
     t = create_timer();
 
+    printf("\n-------- Room routines:\n");
+    print_room_status(r);
+    printf("\n-------- Enemy movement:\n");
+    if(r.enemy_count>0){
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+        move_enemy(&r.enemies[0],15);
+        print_enemy_status(r.enemies[0]);
+    }
+
     printf("\n-------- Player routines:\n");
     print_player_status(p);
     move_player_h(&p, LEFT);
@@ -35,29 +59,6 @@ int main(){
     update_timer(&t);
     print_timer_status(t);
     
-    printf("\n-------- Room routines:\n");
-    print_room_status(r);
-    printf("\n-------- Enemy movement:\n");
-    if(r.enemy_count>0){
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],1);
-        print_enemy_status(r.enemies[0]);
-    }
     printf("Hello World!\n");
     return 0;
 };

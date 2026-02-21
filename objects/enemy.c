@@ -8,10 +8,10 @@ void print_enemy_status(Enemy e){
 
 /* Move enemy within bounds. One step forward. */
 void move_enemy(Enemy *e, int speed){
-    (*e).horizontal_velocity = speed;
-    if((*e).x + (*e).horizontal_velocity > (*e).bound_right & (*e).x + (*e).horizontal_velocity < (*e).bound_left){
+    if((*e).x + (*e).horizontal_velocity > (*e).bound_right || (*e).x + (*e).horizontal_velocity < (*e).bound_left){
         speed = speed * (-1);
     }
+    (*e).horizontal_velocity = speed;
     (*e).x = (*e).x + (*e).horizontal_velocity;
 }
 
@@ -31,28 +31,3 @@ Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UI
     e.bitmap = bitmap;
     return e;
 };
-
-/*
-unsigned int test_bitmap_16[16] = {
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-};
-int main(){
-    Enemy e = create_enemy(150,300,100,200,test_bitmap_16);
-    print_status(e);
-    return 0;
-};*/
