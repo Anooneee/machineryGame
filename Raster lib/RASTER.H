@@ -21,7 +21,7 @@
 
  INPUT: Address(UINT32*): to the start of the screen
         Position(row,col): the coordinates of the top left pixel of the region
-        Length: the lenth (number of rows) in pixels of the region
+        Length: the length (number of rows) in pixels of the region
         Width: the width (number of columns) in pixels of the region
 
  OUTPUT: None
@@ -80,6 +80,9 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
  OUTPUT: None
 */
 void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col);
+
+void plot_line_low(UINT32 *base, UINT16 x0, UINT16 y0, UINT16 x1, UINT16 y1);
+void plot_line_high(UINT32 *base, UINT16 x0, UINT16 y0, UINT16 x1, UINT16 y1);
 
 
 /*----- Function: plot_rectangle -----
