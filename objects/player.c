@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 void print_player_status(Player p){
-    printf("Player: X:%d, Y:%d, Size:%dx%d, Attack_cooldown:%d, Direction Facing:%d, On Ground:%d, Speed:%d, Jump_strength:%d, Horizontal_velocity:%d, Vertical_velocity:%d.\n", p.x,p.y,p.HEIGHT,p.WIDTH,p.attack_cooldown,p.direction,p.grounded,p.speed,p.jump_strength,p.horizontal_velocity,p.vertical_velocity);
+    printf("Player: X:%d, Y:%d, Size:%dx%d, Attack_cooldown:%d, Direction Facing:%d, On Ground:%d, Speed:%d, Jump_strength:%d, Horizontal_velocity:%d, Vertical_velocity:%d.\n", 
+                    p.x,p.y,p.HEIGHT,p.WIDTH,p.attack_cooldown,p.direction,p.grounded,p.speed,p.jump_strength,p.horizontal_velocity,p.vertical_velocity);
 };
-
 
 /* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
 void move_player_h(Player *pc, int direction){              /* direction should be the enum for LEFT and RIGHT for readibility but it can also work with just -1 and 1 */

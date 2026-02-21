@@ -1,65 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "room.h"
-#include "trap.h"
-#include "enemy.h"
-#include "v_envir.h"
-#include "h_envir.h"
-#include "door.h"
-
-unsigned int test_bitmap_32[32] = {
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-
-};
-unsigned int test_bitmap_16[16] = {
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-    0xFFFF,
-};
 
 /* Example room */
 Room create_room_1(){
@@ -98,21 +39,52 @@ Room create_room_1(){
     return r1;
 };
 
+/* Use print_object_status routines for each object in the room, up to 3 of each kind. */
 void print_room_status(Room r){
     printf("Room:\n");
     if(r.wall_count > 0){
         print_wall_status(r.walls[0]);
     }
+    if(r.wall_count > 1){
+        print_wall_status(r.walls[1]);
+    }
+    if(r.wall_count > 2){
+        print_wall_status(r.walls[2]);
+    }
     if(r.floor_count > 0){
         print_floor_status(r.floors[0]);
+    }
+    if(r.floor_count > 1){
+        print_floor_status(r.floors[1]);
+    }
+    if(r.floor_count > 2){
+        print_floor_status(r.floors[2]);
     }
     if(r.exit_count > 0){
         print_exit_status(r.exits[0]);
     }
+    if(r.exit_count > 1){
+        print_exit_status(r.exits[1]);
+    }
+    if(r.exit_count > 2){
+        print_exit_status(r.exits[2]);
+    }
     if(r.enemy_count > 0){
         print_enemy_status(r.enemies[0]);
     }
+    if(r.enemy_count > 1){
+        print_enemy_status(r.enemies[1]);
+    }
+    if(r.enemy_count > 2){
+        print_enemy_status(r.enemies[2]);
+    }
     if(r.trap_count > 0){
         print_trap_status(r.traps[0]);
+    }
+    if(r.trap_count > 1){
+        print_trap_status(r.traps[1]);
+    }
+    if(r.trap_count > 2){
+        print_trap_status(r.traps[2]);
     }
 };

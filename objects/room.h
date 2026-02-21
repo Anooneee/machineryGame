@@ -20,7 +20,7 @@ typedef struct room_structure{
     
 }Room;
 
-/* NOT DONE AND PROBABLY WILL NOT USE. ONLY FOR TESTING. Example room */
+/* WILL NOT USE. ONLY FOR TESTING. Example room */
 Room create_room_1();
 
 /* printf position of every object in the room */
