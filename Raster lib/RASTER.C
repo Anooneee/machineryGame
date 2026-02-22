@@ -1,6 +1,7 @@
 #include "raster.h"
 #include "types.h"
 #include "font.c"
+#include "bitmap.c"
 
 #define SCREEN_WIDTH 639
 #define SCREEN_HEIGHT 399
@@ -259,34 +260,74 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 t_base, UINT16 h
 }
 
 void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
-	/*int i,x,y;
-	for(i = 0; i <= height; i++)
-	*(base + (col << 6) + (col << 4) + (row >> 3)) |= bitmap[i];*/
+	int i;
+	
+	UINT8 x_shift = (row & 7);
+	
+	base += (col << 6) + (col << 4) + (row >> 3);
+
+	for(i = 0; i <= height; i++){
+		if(x_shift == 0){
+			*base |= bitmap[i];
+		}else{
+			*base |= (bitmap[i] >> x_shift);
+			*(base + 1) |= (bitmap[i] << (8 - x_shift));
+		}
+		base += 80; 
+	}
 }
 
 void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height){
-	/* int i;
-	for(i = 0; i <= height; i++)
-	*(base + (col << 5) + (col << 3) + (row >> 4)) |= bitmap[i]; */
+	int i;
+	
+	UINT16 x_shift = (row & 15);
+	
+	base += (col << 5) + (col << 3) + (row >> 4);
+
+	for(i = 0; i <= height; i++){
+		if(x_shift == 0){
+			*base |= bitmap[i];
+		}else{
+			*base |= (bitmap[i] >> x_shift);
+			*(base + 1) |= (bitmap[i] << (16 - x_shift));
+		}
+		base += 40; 
+	}
 }
 
 void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){
-	/* int i;
-	UINT32 offset;
-	for(i = 0; i <= height; i++)
-	base[offset] |= bitmap[i] << (31 - (x & 31)) */;
+	int i;
 	
+	UINT32 x_shift = (row & 31);
+	
+	base += (col << 4) + (col << 2) + (row >> 5);
+
+	for(i = 0; i <= height; i++){
+		if(x_shift == 0){
+			*base |= bitmap[i];
+		}else{
+			*base |= (bitmap[i] >> x_shift);
+			*(base + 1) |= (bitmap[i] << (32 - x_shift));
+		}
+		base += 20; 
+	}
 }
 
 void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
 	int i;
-	UINT8 *bit_map = GLYPH_START(ch);
+	UINT8 x_shift = (row & 7);
+	UINT8 *font_map = GLYPH_START(ch);
 	base += (col << 6) + (col << 4) + (row >> 3);
 	
-	for(i = 0; i < 8; i++){
-		*base |= *(bit_map);
+	for(i = 0; i <= 8; i++){
+		if(x_shift == 0){
+			*base |= *font_map;
+		}else{
+			*base |= (*font_map >> x_shift);
+			*(base + 1) |= (*font_map << (8 - x_shift));
+		}
 		base += 80;
-		bit_map++;
+		font_map++;
 	}
 }
 

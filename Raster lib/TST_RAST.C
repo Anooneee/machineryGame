@@ -14,6 +14,7 @@ void fill_screen(char *base, char pattern);
 int main()
 {
 	char ch;
+	int i, x, y;
 	
 	
 	void *base = Physbase();
@@ -21,11 +22,11 @@ int main()
 	disable_cursor();
 	clear_screen(base);
 	
-	fill_screen(base, -1);
+	/* fill_screen(base, -1); */
 
 
 
-	Cnecin();
+	/* Cnecin();
 	clear_region(base, 0, 0, 100, 100);
 	plot_pixel(base, 0, 0);
 	plot_pixel(base, 99, 99);
@@ -38,7 +39,7 @@ int main()
 	Cnecin();
 
 	Cnecin();
-	clear_screen(base);
+	clear_screen(base); */
 	/* Cnecin();
 	clear_screen(base);
 	
@@ -133,13 +134,15 @@ int main()
 	plot_triangle(base, 500, 40, 150, 300, 3);
 	Cnecin();
 	clear_screen(base); */
-
-	
-	/*Cnecin();
-	plot_character(base, 0, 0, 'c');
+	x = 0;
 	Cnecin();
-	clear_screen(base);*/
-
+	for(i = 0; i < 10; i++){
+	plot_character(base, x, 0, 'H');
+	plot_bitmap_8(base, x, 10, 8);
+	Cnecin();
+	x++;
+	clear_screen(base);
+	}
 	/*Cnecin();
 	plot_string(base, 0, 0, "Hello world!\n");
 	clear_screen(base);
