@@ -319,7 +319,7 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
 	UINT8 *font_map = GLYPH_START(ch);
 	base += (col << 6) + (col << 4) + (row >> 3);
 	
-	for(i = 0; i <= 8; i++){
+	for(i = 0; i < 8; i++){
 		if(x_shift == 0){
 			*base |= *font_map;
 		}else{
