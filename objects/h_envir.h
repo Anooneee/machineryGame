@@ -9,4 +9,5 @@ typedef struct horizontal_environment{
 
 Floor create_floor(UINT16 x,UINT16 y,int size);
 
+void print_floor_status(Floor f);
 #endif

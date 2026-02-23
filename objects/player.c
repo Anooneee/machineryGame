@@ -1,20 +1,11 @@
-#include "player_character.h"
+#include "player.h"
 #include "TYPES.H"    /* for boolean values and UINT */
-#include "attack.h"
+#include <stdio.h>
 
-typedef struct Player_character{     /* type definition for player object */
-    UINT16 x, y;                     /* position coordinates */
-    int horizontal_velocity;            /* horiz . displacement per clock tick */
-    int vertical_velocity;              /* vert . displacement per clock tick*/
-    int jump_strength;
-    int speed;
-    int direction;
-    bool grounded;
-    int attack_cooldown;
-    int HEIGHT, WIDTH;            /* 32, 16 */
-    UINT32 *bitmap;
-
-} Player ;
+void print_player_status(Player p){
+    printf("Player: X:%d, Y:%d, Size:%dx%d, Attack_cooldown:%d, Direction Facing:%d, On Ground:%d, Speed:%d, Jump_strength:%d, Horizontal_velocity:%d, Vertical_velocity:%d.\n", 
+                    p.x,p.y,p.HEIGHT,p.WIDTH,p.attack_cooldown,p.direction,p.grounded,p.speed,p.jump_strength,p.horizontal_velocity,p.vertical_velocity);
+};
 
 /* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
 void move_player_h(Player *pc, int direction){              /* direction should be the enum for LEFT and RIGHT for readibility but it can also work with just -1 and 1 */
@@ -50,22 +41,23 @@ Weapon attack(Player *pc, UINT16 *bitmap){
         (*pc).attack_cooldown = 32;
         return create_weapon((*pc).x + (16 * (*pc).direction), (*pc).y, (*pc).direction, bitmap);
     }
+    /* If the attack cooldown is still happening, summon a weapon outside the screen. */
+    return create_weapon(640,400,LEFT,bitmap);
 };
 
 /* Create player */
 Player create_player(int x, int y, UINT32 *bitmap){
-    Player p = {
-        .x = x,
-        .y = y,
-        .grounded = FALSE,
-        .attack_cooldown = 0,
-        .jump_strength = 64,
-        .horizontal_velocity = 0,
-        .vertical_velocity = 0,
-        .speed = 1,
-        .direction = RIGHT,
-        .HEIGHT = 32,
-        .WIDTH = 16,
-        .bitmap = bitmap,
-    };
+    Player p;
+    p.x = x;
+    p.y = y;
+    p.grounded = FALSE;
+    p.attack_cooldown = 0;
+    p.jump_strength = 64;
+    p.horizontal_velocity = 0;
+    p.vertical_velocity = 0;
+    p.speed = 1;
+    p.direction = RIGHT;
+    p.HEIGHT = 32;
+    p.WIDTH = 16;
+    p.bitmap = bitmap;
 };

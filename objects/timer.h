@@ -10,7 +10,7 @@ typedef struct display_string{
 
 typedef struct timer_display{
     UINT16 x, y;
-    int height, width;
+    int HEIGHT, WIDTH;
     int time_passed;
     Display display_value;
 } Timer;
@@ -23,5 +23,7 @@ void update_display(Timer *t);
 
 /* Call to return timer */
 Timer create_timer();
+
+void print_timer_status(Timer t);
 
 #endif
