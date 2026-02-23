@@ -13,9 +13,9 @@
 	_clear_screen();
 }*/
 
-void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
+void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	UINT32 start_mask, clear_mask, end_mask, full_mask, start_block, end_block, offset;
-	UINT16 start_x, end_x;
+	int start_x, end_x;
 	int i, j, blocks, steps;
 	
 	start_x = row;
@@ -54,26 +54,27 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
 
 }
 
-void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
+void plot_pixel(UINT8 *base, int row, int col){
 	if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT)
 	*(base + (col << 6) + (col << 4) + (row >> 3)) |= 1 << 7 - (row & 7);
 }
 
-void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 	/*variables*/
 	UINT32 start_mask, end_mask, full_block, start_block, end_block;
-	UINT16 start_x, end_x;
+	int start_x, end_x;
 	int i,num_blocks;
 	full_block = 0xFFFFFFFF;
 	
+	if (row < 0 || row > SCREEN_WIDTH || col < 0 || col > SCREEN_HEIGHT)
+        return;
+
 	start_x = row;
 	start_block = start_x >> 5;
 	end_x = row + length;
 	if(end_x > SCREEN_WIDTH) end_x = SCREEN_WIDTH;
 	end_block = end_x >> 5;
 	base += ((col << 4) + (col << 2)) + (row >> 5);
-
-	
 	
 	start_mask = full_block >> (start_x & 31);
 	end_mask = full_block << (31 - (end_x & 31));
@@ -93,10 +94,13 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 	}
 }
 
-void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
 	/*variables*/
 	int i, end_y;
 	UINT32 mask_start, mask; 
+
+	if (row < 0 || row > SCREEN_WIDTH || col < 0 || col > SCREEN_HEIGHT)
+        return;
 
 	/*set the bit mask for x pos in LW*/
 	mask_start = 1;	
@@ -107,21 +111,22 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 	if(end_y > SCREEN_HEIGHT){ 
 		end_y = SCREEN_HEIGHT;
 	}else {
-		end_y = length;
+		end_y = SCREEN_HEIGHT - col;
 	}
 	/*drawing the line*/
-	for(i = 0; i <= end_y; i++){
+	for(i = 0; i < end_y; i++){
 		*base |= mask;
 		base += 20;	
 	}
 }
 
-void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col){
+void plot_line(UINT32 *base, int start_row, int start_col, int end_row, int end_col){
 	/*Bresenham's line algorithm as per wikipedia "https://en.wikipedia.org/wiki/Bresenham's_line_algorithm"
 	// and geeksforgeeks "https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/"*/
 	/*variables*/
-	UINT16 x0,y0,x1,y1;
-	int dx,dy;
+	int x,y,dx,dy,x0,y0,x1,y1,slope_error,xi,yi,abs_dx,abs_dy;
+	UINT32 long_offset, mask_start;
+	
 	x0 = start_row;
 	x1 = end_row;
 	y0 = start_col;
@@ -129,40 +134,30 @@ void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row,
 
 	dx = x1 - x0;
 	dy = y1 - y0;
-
-	if(dx < 0) dx = ~dx + 1;
-	if(dy < 0) dy = ~dy + 1;
-
-	if(dy < dx){
-		if(x0 > x1){
-			plot_line_low(base, x1, y1, x0 , y0);
-		}else{
-			plot_line_low(base, x0, y0, x1, y1);
-		}
-	}else{
-		if(y0 > y1){
-			plot_line_high(base, x1, y1, x0, y0);
-		}else{
-			plot_line_high(base, x0, y0, x1, y1);
-		}
-	}
 	
-}
+	abs_dx = dx;
+	abs_dy = dy;
+	if(dx < 0) abs_dx = -dx;
+	if(dy < 0) abs_dy = -dy;
 
-void plot_line_low(UINT32 *base, UINT16 x0, UINT16 y0, UINT16 x1, UINT16 y1){
-	/*variables*/
-	int slope_error, x, y; /*D*/
-	UINT32 long_offset, mask_start;
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int yi = 1;
-	if(dy < 0){
-		yi = -1;
-		dy = -dy;
+	if(abs_dy < abs_dx){
+		if(x0 > x1){
+			x0 = end_row;
+			x1 = start_row;
+			y0 = end_col;
+			y1 = start_col;
+		}
+		
+		dx = x1 - x0;
+		dy = y1 - y0;
+
+		yi = 1;
+		if(dy < 0){
+			yi = -1;
+			dy = -dy;
 	}
-
-	slope_error = ((2 * dy) - dx);
-	y = y0;
+		slope_error = ((2 * dy) - dx);
+		y = y0;
 	
 	/*low*/
 	for(x = x0; x <= x1; x++){
@@ -177,17 +172,18 @@ void plot_line_low(UINT32 *base, UINT16 x0, UINT16 y0, UINT16 x1, UINT16 y1){
 		}else
 			slope_error += (2 * dy);
 	}
-}
 
-void plot_line_high(UINT32 *base, UINT16 x0, UINT16 y0, UINT16 x1, UINT16 y1){
-	/*variables*/
-	int slope_error, x, y; /*D, x, y co-ords*/
-	UINT32 long_offset, mask_start;
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int xi = 1;
-	
-	
+	}else{
+		if(y0 > y1){
+			x0 = end_row;
+			x1 = start_row;
+			y0 = end_col;
+			y1 = start_col;
+		}
+		
+		dx = x1 - x0;
+		dy = y1 - y0;
+		xi = 1;
 	if(dx < 0){
 		xi = -1;
 		dx = -dx;
@@ -207,21 +203,23 @@ void plot_line_high(UINT32 *base, UINT16 x0, UINT16 y0, UINT16 x1, UINT16 y1){
 		}else
 		slope_error += (2 * dx);
 	}
-
+	}
+	
 }
 
-void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
-	UINT16 x, y;
-	x = row + width;
-	y = col + length;
-	plot_horizontal_line(base, row, col, width);
-	plot_vertical_line(base, row, col, length);
-	plot_vertical_line(base, x, col, length);
-	plot_horizontal_line(base, row, y, width);
+void plot_rectangle(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
+	int x, y, x_end, y_end;
+	x = row; y = col;
+	x_end = row + width;
+	y_end = col + length;
+	if(0 <= y && y <= SCREEN_HEIGHT) plot_horizontal_line(base, x, y, width);
+	if(0 <= x && x <= SCREEN_WIDTH) plot_vertical_line(base, x, y, length);
+	if(0 <= x && x <= SCREEN_WIDTH) plot_vertical_line(base, x_end, y, length);
+	if(0 <= y && y <= SCREEN_HEIGHT) plot_horizontal_line(base, row, y_end, width);
 }
 
-void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side){
-	UINT16 x, y;
+void plot_square(UINT32 *base, int row, int col, UINT16 side){
+	int x, y;
 	x = row + side;
 	y = col + side;
 	plot_horizontal_line(base, row, col, side);
@@ -230,20 +228,20 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side){
 	plot_horizontal_line(base, row, y, side);
 }
 
-void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 t_base, UINT16 height, UINT8 direction){
-	UINT16 x_base, x_height, y_base, y_height;
+void plot_triangle(UINT32 *base, int row, int col, UINT16 triangle_base, UINT16 height, UINT8 direction){
+	int x_base, x_height, y_base, y_height;
 	y_base = col;
 	x_height = row;
 
 	/*handles drawing base line*/
 	if(direction == 0 | direction == 2){
-		x_base = row - t_base;
+		x_base = row - triangle_base;
 		if(x_base <= 0) x_base = 0;
-		plot_horizontal_line(base, x_base, col, t_base);
+		plot_horizontal_line(base, x_base, col, triangle_base);
 	}else{
-		x_base = row + t_base - 1;
+		x_base = row + triangle_base - 1;
 		
-		plot_horizontal_line(base, row, col, t_base);
+		plot_horizontal_line(base, row, col, triangle_base);
 	}
 	
 	/*handles drawing height line*/
@@ -259,7 +257,7 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 t_base, UINT16 h
 	plot_line(base, x_base, y_base, x_height, y_height);
 }
 
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
+void plot_bitmap_8(UINT8 *base, int row, int col, UINT16 height){
 	int i;
 	
 	UINT8 x_shift = (row & 7);
@@ -277,7 +275,7 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
 	}
 }
 
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height){
+void plot_bitmap_16(UINT16 *base, int row, int col, UINT16 height){
 	int i;
 	
 	UINT16 x_shift = (row & 15);
@@ -295,7 +293,7 @@ void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height){
 	}
 }
 
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){
+void plot_bitmap_32(UINT32 *base, int row, int col, UINT16 height){
 	int i;
 	
 	UINT32 x_shift = (row & 31);
@@ -313,7 +311,7 @@ void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){
 	}
 }
 
-void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
+void plot_character(UINT8 *base, int row, int col, char ch){
 	int i;
 	UINT8 x_shift = (row & 7);
 	UINT8 *font_map = GLYPH_START(ch);
@@ -331,7 +329,7 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
 	}
 }
 
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch){
+void plot_string(UINT8 *base, int row, int col, char *ch){
 	while(*ch != '\n'){
 		plot_character(base, row, col, *ch);	/*plot char to screen*/
 		row += 8;								/*move start point to next row*/

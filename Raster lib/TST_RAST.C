@@ -22,7 +22,7 @@ int main()
 	disable_cursor();
 	clear_screen(base);
 	
-	fill_screen(base, -1);
+	/* fill_screen(base, -1);
 	clear_screen(base);
 
 	Cnecin();
@@ -90,12 +90,12 @@ int main()
 	Cnecin();
 	plot_line(base, 20, 70, 200, 50);
 	Cnecin();
-	plot_line(base, 0, 20, 50, 49);
+	plot_line(base, 0, 20, 50, 49); */
 
+	/* Cnecin();
+	plot_rectangle(base, 0, 0, 40, 200); */
 	Cnecin();
-	plot_rectangle(base, 0, 0, 40, 200);
-	Cnecin();
-	plot_rectangle(base, 0, 40, 400, 20);
+	plot_rectangle(base, 100, 40, 400, 20);
 	
 	Cnecin();
 	clear_screen(base);
