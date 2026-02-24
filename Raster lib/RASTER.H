@@ -1,18 +1,18 @@
-#ifndef RASTER.H
-#define RASTER.H
+#ifndef RASTER_H
+#define RASTER_H
 
 #include "types.h"
 
 /*----- Function: clear_screen -----
+v
+ PURPOSE: Clears the entire screen.
 
- ;PURPOSE: Clears the entire screen.
+ INPUT: Address(UINT32*): to the start of the screen
 
- ;INPUT: Address(UINT32*): to the start of the screen
-
- ;OUTPUT: None
+ OUTPUT: None
 
 */
-/*void clear_screen(UINT32 *base);*/
+void clear_screen(UINT32 *base);
 
 
 /*----- Function: clear_region -----
@@ -27,7 +27,7 @@
  OUTPUT: None
 
 */
-void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width);
+void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width);
 
 
 /*----- Function: plot_pixel -----
@@ -40,7 +40,7 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
  OUTPUT: None
 
 */
-void plot_pixel(UINT8 *base, UINT16 row, UINT16 col);
+void plot_pixel(UINT8 *base, int row, int col);
 
 
 /*----- Function: plot_horizontal_line -----
@@ -53,7 +53,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col);
 
  OUTPUT: None
 */
-void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
+void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length);
 
 
 /*----- Function: plot_vertical_line -----
@@ -66,7 +66,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
 
  OUTPUT: None
 */
-void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
+void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length);
 
 
 /*----- Function: plot_line -----
@@ -79,7 +79,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
 
  OUTPUT: None
 */
-void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col);
+void plot_line(UINT32 *base, int start_row, int start_col, int end_row, int end_col);
 
 
 /*----- Function: plot_rectangle -----
@@ -93,7 +93,7 @@ void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row,
 
  OUTPUT: None
 */
-void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width);
+void plot_rectangle(UINT32 *base, int row, int col, UINT16 length, UINT16 width);
 
 
 /*----- Function: plot_square -----
@@ -106,15 +106,16 @@ void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 
 
  OUTPUT: None
 */
-void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side);
+void plot_square(UINT32 *base, int row, int col, UINT16 side);
 
 
 /*----- Function: plot_triangle -----
 
  PURPOSE: Plots a triangle on the screen given by the coordinate of the 90° angle, the length of the base, the length of the height, and the direction of the triangle.
 
- INPUT: Address(UINT8*): to the start of the screen
+ INPUT: Address(UINT32*): to the start of the screen
         Position(row,col): the coordinates of the pixel of the 90° angle of the triangle
+        Base: the length (number of columns) of the base in pixels of the triangle
         Height: the lenth (number of rows) of the height in pixels of the triangle
         Direction: Describes where the coordinate is relative to the rest of the triangle
               0 - Coordinate is the top left point of the triangle
@@ -125,20 +126,20 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side);
 
  OUTPUT: None
 */
-void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 t_base, UINT16 height, UINT8 direction);
+void plot_triangle(UINT32 *base, int row, int col, UINT16 triangle_base, UINT16 height, UINT8 direction);
 
 
 /*----- Function: plot_bitmap_8 -----
 
  PURPOSE: Plots a bitmap to the screen given by the top left pixel of the bitmap and the height of bitmap.
 
- INPUT: Address(UINT16*): to the start of the screen
+ INPUT: Address(UINT8*): to the start of the screen
         Position(row,col): the coordinates of the top left pixel of the bitmap
         Height: the lenth (number of rows) of the height in pixels of the bitmap
 
  OUTPUT: None
 */
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height);
+void plot_bitmap_8(UINT8 *base, int row, int col, UINT16 height);
 
 
 /*----- Function: plot_bitmap_16 -----
@@ -151,7 +152,7 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height);
 
  OUTPUT: None
 */
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height);
+void plot_bitmap_16(UINT16 *base, int row, int col, UINT16 height);
 
 
 /*----- Function: plot_bitmap_32 -----
@@ -164,32 +165,32 @@ void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height);
 
  OUTPUT: None
 */
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height);
+void plot_bitmap_32(UINT32 *base, int row, int col, UINT16 height);
 
 
 /*----- Function: plot_character -----
 
  PURPOSE: Plots a single character, as a bitmap from a font table, to the screen.
 
- INPUT: Address(UINT32*): to the start of the screen
+ INPUT: Address(UINT8*): to the start of the screen
         Position(row,col): the coordinates of the top left pixel of the character
         ch(char): the character to be written to the screen
 
  OUTPUT: None
 */
-void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
+void plot_character(UINT8 *base, int row, int col, char ch);
 
 
 /*----- Function: plot_string -----
 
  PURPOSE: Plots a string, as a sequence of bitmaps from a font table, to the screen.
 
- INPUT: Address(UINT32*): to the start of the screen
+ INPUT: Address(UINT8*): to the start of the screen
         Position(row,col): the coordinates of the top left pixel of the string
         ch(c-string): the string to be written to the screen
 
  OUTPUT: None
 */
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
+void plot_string(UINT8 *base, int row, int col, char *ch);
 
 #endif
