@@ -66,9 +66,6 @@ void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 	int i,num_blocks;
 	full_block = 0xFFFFFFFF;
 	
-	if (row < 0 || row > SCREEN_WIDTH || col < 0 || col > SCREEN_HEIGHT)
-        return;
-
 	start_x = row;
 	start_block = start_x >> 5;
 	end_x = row + length;
@@ -96,27 +93,28 @@ void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 
 void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
 	/*variables*/
-	int i, end_y;
+	int i;
 	UINT32 mask_start, mask; 
 
-	if (row < 0 || row > SCREEN_WIDTH || col < 0 || col > SCREEN_HEIGHT)
+	if (row < 0 || row > SCREEN_WIDTH )
         return;
+
+	if(col + length > SCREEN_HEIGHT){ 
+		length = SCREEN_HEIGHT - col;
+	}else {	
 
 	/*set the bit mask for x pos in LW*/
 	mask_start = 1;	
 	mask = mask_start << (31 - (row & 31));
 	base += (col << 4) + (col << 2) + (row >> 5);
-	end_y = col + length;
-
-	if(end_y > SCREEN_HEIGHT){ 
-		end_y = SCREEN_HEIGHT;
-	}else {
-		end_y = SCREEN_HEIGHT - col;
-	}
+	
 	/*drawing the line*/
-	for(i = 0; i < end_y; i++){
+	for(i = 0; i < length; i++){
+		if(0 <= col && col <= SCREEN_HEIGHT){
 		*base |= mask;
+		}
 		base += 20;	
+		}
 	}
 }
 

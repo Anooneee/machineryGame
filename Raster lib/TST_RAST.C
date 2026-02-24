@@ -92,8 +92,8 @@ int main()
 	Cnecin();
 	plot_line(base, 0, 20, 50, 49); */
 
-	/* Cnecin();
-	plot_rectangle(base, 0, 0, 40, 200); */
+	Cnecin();
+	plot_rectangle(base, 0, 0, 40, 200); 
 	Cnecin();
 	plot_rectangle(base, 100, 40, 400, 20);
 	
