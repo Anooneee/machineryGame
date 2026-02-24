@@ -3,6 +3,7 @@
 #include "raster.h"
 #include "types.h"
 #include "font.h"
+#include "bitmap.h"
 
 /*Cnecin(); to pause between tests*/
 
@@ -30,14 +31,15 @@ int main()
 	plot_pixel(base, 0, 0);
 	plot_pixel(base, 99, 99);
 
+	Cnecin();
 	clear_region(base, 200, 100, 50, 50);
 	plot_pixel(base, 200, 100);
 	plot_pixel(base, 250, 150);
 	
 	Cnecin();
-	clear_screen(base);*/
+	clear_screen(base);
 	
-	/* Cnecin();
+	Cnecin();
 	plot_pixel(base, 0, 0);
 	Cnecin();
 	plot_pixel(base, 639, 0);
@@ -54,9 +56,9 @@ int main()
 	Cnecin();
 	plot_pixel(base, 640, 0);
 	Cnecin();
-	clear_screen(base); */
+	clear_screen(base);
 
-	/* Cnecin();
+	Cnecin();
 	plot_horizontal_line(base, 20, 200, 5);
 	Cnecin();
 	plot_horizontal_line(base, -10, 20, 19);
@@ -67,9 +69,9 @@ int main()
 	Cnecin();
 	plot_horizontal_line(base, 20, 410, 40);
 	Cnecin();
-	clear_screen(base); */
+	clear_screen(base);
 	
-	/* Cnecin();
+	Cnecin();
 	plot_vertical_line(base, 50, 0, 50);
 	Cnecin();
 	plot_vertical_line(base, 100, 250, 200);
@@ -80,23 +82,23 @@ int main()
 	Cnecin();
 	plot_vertical_line(base, 650, 12, 40);
 	Cnecin();
-	clear_screen(base); */
+	clear_screen(base);
 
-	/* Cnecin();
+	Cnecin();
 	plot_line(base, 0, 0, 400, 399);
 	Cnecin();
 	plot_line(base, 20, 50, 200, 70);
 	Cnecin();
 	plot_line(base, 20, 70, 200, 50);
 	Cnecin();
-	plot_line(base, 0, 20, 50, 49); */
+	plot_line(base, 0, 20, 50, 49);
 
-	/* Cnecin();
+	Cnecin();
 	plot_rectangle(base, 0, 0, 40, 200); 
 	Cnecin();
 	plot_rectangle(base, 100, 40, 400, 20);
 	Cnecin();
-	clear_screen(base);  */
+	clear_screen(base); 
 
 	plot_square(base, 40, 40, 50);
 	Cnecin();
@@ -123,10 +125,24 @@ int main()
 	plot_triangle(base, 320, 200, 50, 100, 3);
 	Cnecin();
 	clear_screen(base);
+
+	plot_triangle(base, 60, 40, 50, 80, 0);
+	plot_triangle(base, 60, 370, 50, 80, 3);
+	plot_triangle(base, 20, 200, 50, 80, 0);
+	plot_triangle(base, 600, 200, 50, 80, 1);
+	Cnecin(); */
 	
 	/* plot_character(base, 0, 0, 'H');
-	plot_bitmap_8(base, 0, 10, 8);
+	plot_8bit_bitmap(base, 0, 10, 8);
 	Cnecin(); */
+
+	plot_8bit_bitmap(base, 635, 0, wall_R_bitmap, 32);
+	Cnecin(); 
+	plot_8bit_bitmap(base, 0, 0, wall_L_bitmap, 32);
+	Cnecin(); 
+	plot_16bit_bitmap(base, 0, 0, player_bitmap, 32);
+	Cnecin(); 
+	plot_32bit_bitmap(base, 0, 394, floor_bitmap, 4);
 	
 	/* clear_screen(base);
 	Cnecin();
