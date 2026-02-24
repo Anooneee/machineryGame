@@ -1,74 +1,176 @@
 #include "cond.h"
+#include "TYPES.H"
+#include "player.h"
+#include "room.h"
+
+bool is_collision_between_player_and_enemy(Player p, Enemy e){
+    bool is_hit = FALSE;
+    if ((p.x <= e.x + e.WIDTH && p.x + p.WIDTH >= e.x) &&   /* FIND IF p X IS WITHIN e X */
+        (p.y <= e.y + e.HEIGHT && p.y + p.HEIGHT >= e.y) ){ /* FIND IF p Y IS WITHIN e Y */
+        is_hit = TRUE;
+    }
+    return is_hit;
+};
+
+bool is_collision_between_player_and_trap(Player p, Trap t){
+    bool is_hit = FALSE;
+    if ((p.x <= t.x + t.WIDTH && p.x + p.WIDTH >= t.x) &&   /* FIND IF p X IS WITHIN t X */
+        (p.y <= t.y + t.HEIGHT && p.y + p.HEIGHT >= t.y) ){ /* FIND IF p Y IS WITHIN t Y */
+        is_hit = TRUE;
+    }
+    return is_hit;
+};
+
+bool is_collision_between_player_and_wall(Player p, Wall line){
+    bool is_hit = FALSE;
+    if ((p.x <= line.x && p.x + p.WIDTH >= line.x) && 
+        (p.y >= line.y && p.y + p.HEIGHT <= line.y + line.size)){
+            is_hit = TRUE;
+    }
+    return is_hit;
+};
+
+bool is_collision_between_player_and_floor_and_grounded(Player *p, Floor line){
+    bool is_hit = FALSE;
+    if (((*p).x + (*p).WIDTH >= line.x && (*p).x <= line.x + line.size) && 
+        ((*p).y <= line.y && (*p).y + (*p).HEIGHT >= line.y)){ 
+            is_hit = TRUE;
+    }
+    /* Player is grounded if floor is 1 pix below them */
+    if (((*p).x + (*p).WIDTH >= line.x && (*p).x <= line.x + line.size) && 
+        ((*p).y + (*p).HEIGHT == line.y + 1)){ 
+            (*p).grounded = TRUE;
+    }
+    return is_hit;
+};
+
+bool is_collision_between_sword_and_enemy(Weapon w, Enemy e){
+    bool is_hit = FALSE;
+    if ((w.x <= e.x + e.WIDTH && w.x + w.WIDTH >= e.x) &&   /* FIND IF w X IS WITHIN e X */
+        (w.y <= e.y + e.HEIGHT && w.y + w.HEIGHT >= e.y) ){ /* FIND IF w Y IS WITHIN e Y */
+        is_hit = TRUE;
+    }
+    return is_hit;
+};
+
+bool is_collision_between_player_and_door(Player p, Exit d){
+    bool is_hit = FALSE;
+
+    if (d.type == VERTICAL){
+        if ((p.x <= d.x && p.x + p.WIDTH >= d.x) && (p.y >= d.y && p.y+p.HEIGHT <= d.y + d.size)){
+            is_hit = TRUE;
+        }
+    }
+    
+    if(d.type == HORIZONTAL){
+        if((p.x+p.WIDTH >= d.x && p.x <= d.x+d.size) && (p.y <= d.y && p.y+p.HEIGHT >= d.y)){
+            is_hit = TRUE;
+        }
+    }
+
+    return is_hit;
+}
+
+/* ONLY FOR ORGANIZTION HERE ---- MOVE EACH TEST TO APPROITATE PLACES WHEN DONE  */
+int test_collisions(Player *p, Room r){
+    int i;
+    Weapon w; /* WHEN YA MOVE TESTS TO APPORIANTE PLACES, WILL HAVE ACCESSS TO REAL WEAPON*/
+
+    /* MOVE TO TEST WHENEVER ENEMY MOVES (EVERY SECOND)*/
+    for (i=0; i < r.enemy_count; i++){ /* Loop every enemy in the room and test collision with the player */
+        if (is_collision_between_player_and_enemy(*p , r.enemies[i]) == TRUE){
+            return 1;
+            /* KILL YOURSELF */
+        }
+    }
+
+    /* MOVE TO TEST WHENEVER PLAYER MOVES */
+    for (i=0; i < r.wall_count; i++){ /* Loop every wall in the room and test collision with the player */
+        if (is_collision_between_player_and_wall(*p , r.walls[i]) == TRUE){
+            (*p).horizontal_velocity = 0;
+        }
+    }
+    
+    for (i=0; i < r.floor_count; i++){ /* Loop every floor in the room and test collision with the player */
+        if (is_collision_between_player_and_floor_and_grounded(p , r.floors[i]) == TRUE){ /* Pass pointer to player so collsion tester can change the grounded flag if needed */
+            (*p).vertical_velocity = 0;
+        }
+        else{
+            if ((*p).grounded == FALSE){
+                fall_player(p,3);
+            }
+        }
+    }
+    
+    for (i=0; i < r.exit_count; i++){ /* Loop every exit in the room and test collision with the player */
+        if (is_collision_between_player_and_door(*p, r.exits[i]) == TRUE){
+            return 1;
+            /* SWITCH ROOMS */
+        }
+    }
+
+    for (i=0; i < r.trap_count; i++){ /* Loop every trap in the room and test collision with the player */
+        if (is_collision_between_player_and_trap(*p , r.traps[i]) == TRUE){
+            return 1;
+            /* KILL YOURSELF */
+        }
+    }
+
+    /* MOVE TO TEST WHENEVER WEAPON IS SUMMONED THEN EVERY ENEMY MOVEMENT (SECOND) UNTIL SWORD DISAPPEARS */
+    for (i=0; i < r.enemy_count; i++){ /* Loop every enemy in the room and test collision with the weapon */
+        if (is_collision_between_sword_and_enemy(w , r.enemies[i]) == TRUE){
+            return 1;
+            /* KILL THE ENEMY */
+        }
+    }
+
+    return 0;
+};
+
 
 /*
-Enemy front-down-ray facing no h-floor (aka platform edge) -> direction flip
-Enemy front-ray facing v-wall -> direction flip
-Sword hit box contact enemy hit box -> Enemy disappears 
-In air (inquire floor detects no floor) -> fall according to gravity 
-Player detects harmful object in the hurt box collision -> resets the program 
+Collison box calculations: peudocode cuz meyh brain hurt
 
-Event Name
-    Trigger Condition                   
-        Description
-Bottom of Player Character Floor Collision          
-        Bottom edge of player hitbox is less than or equal to top edge of floor box if vertical_velocity is negative
-            The player characters vertical_velocity is updated to 0
+Hitbox vs point
+Box(x, y, size, direction)
 
-Top of Player Character Floor Collision
-    Top edge of player hitbox is greater than or equal to the top edge of floor box if player vertical_velocity is positive
-        The player characters vertical_velocity is updated to 0
+If direction VERTICAL:
+    // Hitbox == (x,y to y + size)
+    so if(point.x == line.x && (point.y > line.y && point.y < line.y + size))
+            hit! = true;
+    }
 
-Player Character Gravity
-    The players character Grounded flag is 0, and vertical_velocity is 0
-        Player characters vertical_velocity is decreased by 5 pixels/second
+If direction HORIZONTAL:
+    if(point.y == line.y && (point.x > line.x && point.x < line.x + size))
+            hit! = true;
+    }
 
-Player Character Right Wall Collision 
-    Player Characters right edge is greater than or equal to the left edge of wall box
-        Player characters positive horizontal_velocity is updated to 0
+Box(x, y, HEIGTH, WIDTH)
+// Hitbox == (x,y to x+WIDTH,y+HEIGHT)
+    if (point.x > box.x && point.x < box.x+WIDTH) && (point.y > box.y && point.y < box.y+HEIGTH)
 
-Player Character Left Wall Collision
-    Player Characters left edge is less than or equal to the right edge of wall box
-        Player characters negative horizontal_velocity is updated to 0
-Right Edge of Player Character and Enemy Collision
+*/
 
-    The right edge of the player hitbox is greater than or equal to the left edge of the Enemy hitbox and the bottom of the Player character bottom edge is less than or equal to the top edge of the Enemy hitbox or the top edge of the player hitbox is greater than or equal to the bottom edge of the enemy hitbox
-        Game end flag is updated
+/*
+Hitbox vs hitbox
 
-Left Edge of Player Character and Enemy Collision
-    The left edge of the player hitbox is less than or equal to the right edge of the Enemy hitbox and the bottom of the Player character bottom edge is less than or equal to the top edge of the Enemy hitbox or the top edge of the player hitbox is greater than or equal to the bottom edge of the enemy hitbox
-        Game end flag is updated
+If direction VERTICAL:
+    so if((object.x <= line.x && object.x+WIDTH >= line.x) && 
+        (object.y >= line.y && object.y+HEIGHT <= line.y + size))
+            hit! = true;
+    }
 
-Right of Player Character and Door Collision
-    Bottom edge of player character is greater than or equal to bottom of doorway, top edge of player character is less than or equal to the doorway and right edge of player hitbox is greater than or equal to left edge of doorway hitbox
-        Increments Room Selector integer
+If direction HORIZONTAL:
+    so if((object.x+WIDTH >= line.x && object.x <= line.x+size) && 
+        (object.y <= line.y && object.y+HEIGHT >= line.y))
+            hit! = true;
+    }
 
-Left of Player Character and Door Collision
-    Bottom edge of player character is greater than or equal to bottom of doorway, top edge of player character is less than or equal to the doorway and left edge of player hitbox is greater than or equal to right edge of doorway hitbox
-        Increments Room Selector integer
-        
-Player Character and Trap Collision
-    Bottom of player character hitbox is less than or equal to top edge of trap hitbox and left edge of player character hitbox > right edge of trap < right edge of trap, or right edge of player character hitbox > left edge of trap < right edge of trap
-        Game end flag is updated
-
-Attack and Enemy Collision
-    Detect player sword hitbox within the body (The right edge of the enemy hitbox is greater than or equal to the left edge of the sword hitbox and the bottom of the enemy character bottom edge is less than or equal to the top edge of the sword hitbox or the top edge of the enemy hitbox is greater than or equal to the bottom edge of the sword hitbox)
-        Death animation and sound is started
-
-Bottom of Enemy and Floor Collision
-    Front bottom edge of enemy hitbox hit no floor
-        Enemy horizontal_velocity is updated by multiplying *-1
-
-Top of Enemy and Floor Collision
-    Top edge of enemy hitbox is greater than or equal to the top edge of floor box if enemy vertical_velocity is positive
-
-Enemy Left Wall Collision
-    Enemy box  left edge is less than or equal to the right edge of wall box
-        Enemy positive horizontal_velocity is updated to 1
-
-Enemy Right Wall Collision
-    Enemy box right edge is greater than or equal to the left edge of wall box
-        Enemy positive horizontal_velocity is updated to -1
-
+Box(x, y, HEIGTH, WIDTH)
+// Hitbox == (x,y to x+WIDTH,y+HEIGHT) vs Hitbox2
+    if ((object.x <= box.x + box.WIDTH && object.x + object.WIDTH >= box.x) && // FIND IF OBJECT X IS WITHIN BOX X
+        (object.y <= box.y + box.HEIGHT && object.y + object.HEIGHT >= box.y) // FIND IF OBJECT Y IS WITHIN BOX Y
+    ) 
 
 
 */

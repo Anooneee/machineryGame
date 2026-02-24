@@ -9,9 +9,15 @@ void print_timer_status(Timer t){
 /* Call every second that passes */
 void update_timer(Timer *t){
     (*t).time_passed = (*t).time_passed + 1;
+    if((*t).time_passed == 60){
+        (*t).display_value.min = (*t).display_value.min + 1;
+        (*t).time_passed == 0;
+    }      
+    (*t).display_value.sec = (*t).time_passed;
+    /*
     (*t).display_value.min = (*t).time_passed / 60;
     (*t).display_value.sec = (*t).time_passed % 60;
-
+    */
     update_display(t);
 };
 
