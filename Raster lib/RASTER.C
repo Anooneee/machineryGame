@@ -18,6 +18,7 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	int start_x, end_x;
 	int i, j, blocks, steps;
 	
+	
 	start_x = row;
 	start_block = start_x >> 5;
 	end_x = row + width;
@@ -60,10 +61,13 @@ void plot_pixel(UINT8 *base, int row, int col){
 }
 
 void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
-	/*variables*/
 	UINT32 start_mask, end_mask, full_block, start_block, end_block;
 	int start_x, end_x;
 	int i,num_blocks;
+	if(row < SCREEN_WIDTH && col <= SCREEN_HEIGHT && col >= 0){
+	if(row < 0) row = 0;
+	
+	
 	full_block = 0xFFFFFFFF;
 	
 	start_x = row;
@@ -71,6 +75,7 @@ void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 	end_x = row + length;
 	if(end_x > SCREEN_WIDTH) end_x = SCREEN_WIDTH;
 	end_block = end_x >> 5;
+
 	base += ((col << 4) + (col << 2)) + (row >> 5);
 	
 	start_mask = full_block >> (start_x & 31);
@@ -90,33 +95,36 @@ void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 		*base |= end_mask;
 	}
 }
+}
 
 void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
-	/*variables*/
-	int i;
+	
+	/*Variables*/
+	int i, end_y;
 	UINT32 mask_start, mask; 
+	if(col < SCREEN_HEIGHT && row >= 0 && row <= SCREEN_WIDTH){
+		if(col + length > SCREEN_HEIGHT){ 
+			end_y = SCREEN_HEIGHT - col;
+		}else {	
+			end_y = length;
+	}
+	if(col < 0) col = 0;
+	
 
-	if (row < 0 || row > SCREEN_WIDTH )
-        return;
-
-	if(col + length > SCREEN_HEIGHT){ 
-		length = SCREEN_HEIGHT - col;
-	}else {	
-
+	
 	/*set the bit mask for x pos in LW*/
 	mask_start = 1;	
 	mask = mask_start << (31 - (row & 31));
 	base += (col << 4) + (col << 2) + (row >> 5);
 	
 	/*drawing the line*/
-	for(i = 0; i < length; i++){
-		if(0 <= col && col <= SCREEN_HEIGHT){
-		*base |= mask;
-		}
-		base += 20;	
+		for(i = 0; i < end_y; i++){
+			*base |= mask;
+			base += 20;	
+			}
 		}
 	}
-}
+
 
 void plot_line(UINT32 *base, int start_row, int start_col, int end_row, int end_col){
 	/*Bresenham's line algorithm as per wikipedia "https://en.wikipedia.org/wiki/Bresenham's_line_algorithm"
@@ -210,10 +218,10 @@ void plot_rectangle(UINT32 *base, int row, int col, UINT16 length, UINT16 width)
 	x = row; y = col;
 	x_end = row + width;
 	y_end = col + length;
-	if(0 <= y && y <= SCREEN_HEIGHT) plot_horizontal_line(base, x, y, width);
-	if(0 <= x && x <= SCREEN_WIDTH) plot_vertical_line(base, x, y, length);
-	if(0 <= x && x <= SCREEN_WIDTH) plot_vertical_line(base, x_end, y, length);
-	if(0 <= y && y <= SCREEN_HEIGHT) plot_horizontal_line(base, row, y_end, width);
+	plot_horizontal_line(base, x, y, width);
+	plot_vertical_line(base, x, y, length);
+	plot_vertical_line(base, x_end, y, length);
+	plot_horizontal_line(base, row, y_end, width);
 }
 
 void plot_square(UINT32 *base, int row, int col, UINT16 side){
@@ -238,7 +246,6 @@ void plot_triangle(UINT32 *base, int row, int col, UINT16 triangle_base, UINT16 
 		plot_horizontal_line(base, x_base, col, triangle_base);
 	}else{
 		x_base = row + triangle_base - 1;
-		
 		plot_horizontal_line(base, row, col, triangle_base);
 	}
 	
