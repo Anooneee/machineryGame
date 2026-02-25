@@ -298,16 +298,19 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	int i;
 	
 	UINT8 x_shift = (row & 7);
+	clear_region(base, row, col, 8, height);
 	
 	base += (col << 6) + (col << 4) + (row >> 3);
 
-	for(i = 0; i <= height; i++){
+	for(i = 0; i < height; i++){
 		if(x_shift == 0){
 			*base |= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
+			if ((row >> 3) < 79) {
 			*(base + 1) |= (bitmap[i] << (8 - x_shift));
 		}
+	}
 		base += 80; 
 	}
 }
@@ -317,16 +320,19 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 	int i;
 	
 	UINT16 x_shift = (row & 15);
+	clear_region(base, row, col, 16, height);
 	
 	base += (col << 5) + (col << 3) + (row >> 4);
 
-	for(i = 0; i <= height; i++){
+	for(i = 0; i < height; i++){
 		if(x_shift == 0){
-			*base |= bitmap[i];
+			*base &= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
+			if ((row >> 3) < 39) {
 			*(base + 1) |= (bitmap[i] << (16 - x_shift));
 		}
+	}
 		base += 40; 
 	}
 }
@@ -339,13 +345,15 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 	
 	base += (col << 4) + (col << 2) + (row >> 5);
 
-	for(i = 0; i <= height; i++){
+	for(i = 0; i < height; i++){
 		if(x_shift == 0){
-			*base |= bitmap[i];
+			*base &= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
+			if ((row >> 3) < 19) {
 			*(base + 1) |= (bitmap[i] << (32 - x_shift));
 		}
+	}
 		base += 20; 
 	}
 }
@@ -359,7 +367,7 @@ void plot_character(UINT8 *base, int row, int col, char ch){
 	
 	for(i = 0; i < 8; i++){
 		if(x_shift == 0){
-			*base |= *font_map;
+			*base &= *font_map;
 		}else{
 			*base |= (*font_map >> x_shift);
 			*(base + 1) |= (*font_map << (8 - x_shift));
