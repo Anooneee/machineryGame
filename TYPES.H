@@ -7,4 +7,14 @@ typedef unsigned long UINT32;
 
 typedef int BOOL;
 
+typedef enum {
+    FALSE = 0,
+    TRUE = 1,
+}bool;
+
+typedef enum {
+    LEFT = -1,
+    RIGHT = 1,
+};
+
 #endif

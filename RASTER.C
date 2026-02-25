@@ -297,10 +297,10 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	/*variable declaration*/
 	int i;
 	
-	UINT8 x_shift = (row & 7);
-	clear_region(base, row, col, 8, height);
+	UINT8 x_shift = (col & 7);
 	
-	base += (col << 6) + (col << 4) + (row >> 3);
+	
+	base += (row << 6) + (row << 4) + (col >> 3);
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){

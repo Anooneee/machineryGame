@@ -1,7 +1,45 @@
-#include "cond.h"
+#include "events.h"
+/*
+Asynchronous:
+Movement 
+Jump: (W) applies velocity of 400 pixels/second
+After Jump is triggered when input is held maintain ~300 pixel/second acceleration downward when released acceleration increases to ~700 pixels/second
+
+When input is released velocity (horizontal and/or positive vertical) is set to 0.
+
+Attack (mouse click)
+The sword is summoned in the player's last input direction. Slash animations last 35ticks after which the object disappears and can be used again
+The hurt box of the attack interacts with enemies only if there is collision of any amount
+
+Asynchronous (Input) Events
+*/
+
+/*
+Key bindings
+
+"X":
+Call attack function on player
+
+"Space bar":
+Call jump function
+
+"D":
+Call move(RIGHT) function on player
+
+"A":
+Call move(LEFT) function on player
+
+"ESC":
+Trap 0
+(I think that quits the program 0w0?)
+
+*/
+
+
+/*conditional*/
 #include "TYPES.H"
-#include "player.h"
-#include "room.h"
+#include "model.h"
+
 
 bool is_collision_between_player_and_enemy(Player p, Enemy e){
     bool is_hit = FALSE;
@@ -174,3 +212,26 @@ Box(x, y, HEIGTH, WIDTH)
 
 
 */
+
+
+/*
+Synchronous (Timed) Events
+*/
+
+/*
+Every second:
+- Increment Timer (every 70 ticks(frames)?)
+
+Every movement frame (.5 seconds):
+- Move player according to horizontal velocity
+- Move player according to jump (vertical) velocity
+- If player not grounded, fall according to vertical velocity
+- If player not on ground, make player fall
+- Move enemy one step forward
+- Lower Attack count down (Max is set in attack function)
+
+Every frame:
+- Check if there is a floor under the player. Set grounded value accordingly
+- Check if there is a wall in front of the player according to the horizontal velocity. If so, set horizzontal velocity = 0;
+*/
+
