@@ -23,7 +23,7 @@ int main()
 	disable_cursor();
 	clear_screen(base);
 	
-	/* fill_screen(base, -1);
+	fill_screen(base, -1);
 	clear_screen(base);
 
 	Cnecin();
@@ -82,8 +82,8 @@ int main()
 	Cnecin();
 	plot_vertical_line(base, 650, 12, 40);
 	Cnecin();
-	clear_screen(base); */
-/* 
+	clear_screen(base);
+
 	Cnecin();
 	plot_line(base, 0, 0, 400, 399);
 	Cnecin();
@@ -91,24 +91,24 @@ int main()
 	Cnecin();
 	plot_line(base, 20, 70, 200, 50);
 	Cnecin();
-	plot_line(base, 0, 20, 50, 49); */
-/* 
+	plot_line(base, 0, 20, 50, 49);
+
 	Cnecin();
 	plot_rectangle(base, 0, 0, 40, 200); 
 	Cnecin();
 	plot_rectangle(base, 100, 40, 400, 20);
 	Cnecin();
-	clear_screen(base); */ 
+	clear_screen(base); 
 
-	/* plot_square(base, 40, 40, 50);
+	plot_square(base, 40, 40, 50);
 	Cnecin();
 	plot_square(base, 320, 200, 100);
 	Cnecin();
-	clear_screen(base); */
+	clear_screen(base);
 
 
 
-	/* plot_triangle(base, 320, 200, 100, 50, 0);
+	plot_triangle(base, 320, 200, 100, 50, 0);
 	Cnecin();
 	plot_triangle(base, 320, 200, 100, 50, 1);
 	Cnecin();
@@ -124,16 +124,16 @@ int main()
 	Cnecin();
 	plot_triangle(base, 320, 200, 50, 100, 3);
 	Cnecin();
-	clear_screen(base); */
+	clear_screen(base);
 
-	/* plot_triangle(base, 60, 40, 50, 80, 0);
+	plot_triangle(base, 60, 40, 50, 80, 0);
 	plot_triangle(base, 60, 370, 50, 80, 3);
 	plot_triangle(base, 20, 200, 50, 80, 0);
 	plot_triangle(base, 600, 200, 50, 80, 1);
-	Cnecin(); */
+	Cnecin();
 	
 	/* plot_character(base, 0, 0, 'H');
-	plot_8bit_bitmap(base, 0, 10, 8);
+	plot_8bit_bitmap(base, 0, 10,  8);
 	Cnecin(); */
 
 	plot_8bit_bitmap(base, 631, 0, wall_R_bitmap, 400);
@@ -145,12 +145,12 @@ int main()
 	plot_32bit_bitmap(base, 0, 390, floor_bitmap, 4);
 	Cnecin();
 	
-	/* clear_screen(base);
+	clear_screen(base);
 	Cnecin();
 	plot_string(base, 0, 0, "Hello world!\n");
 	clear_screen(base);
 	Cnecin();
-	plot_string(base, 0, 0, "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!\n"); */
+	plot_string(base, 0, 0, "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!\n");
 	return 0;
 }
 
