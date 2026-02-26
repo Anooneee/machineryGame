@@ -1,7 +1,12 @@
 CC = cc68x
 
+all: tst_obj.tos tst_rast.tos
+
 tst_obj.tos: tst_obj.o model.o bitmap.o
 	$(CC) -g tst_obj.o model.o bitmap.o -o tst_obj.tos
+
+tst_rast.tos: tst_rast.o raster.o
+	cc68x -g tst_rast.o raster.o -o tst_rast.tos
 
 tst_obj.o: tst_obj.c model.h types.h bitmap.h
 	$(CC) -c tst_obj.c
@@ -11,3 +16,9 @@ bitmap.o: bitmap.c bitmap.h
 
 model.o: model.c model.h types.h
 	$(CC) -c model.c
+
+tst_rast.o: tst_rast.c raster.h
+	cc68x -g -c tst_rast.c
+
+raster.o: raster.c raster.h
+	cc68x -g -c raster.c
