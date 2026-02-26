@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include "player.h"
-#include "room.h"
-#include "timer.h"
 #include "TYPES.H"
+#include "bitmap.h"
+#include "model.h"
 
-int main(){
+int main() {
     Room r;
     Player p;
     Timer t;
@@ -61,4 +60,4 @@ int main(){
     
     printf("Hello World!\n");
     return 0;
-};
+}

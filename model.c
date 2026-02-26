@@ -1,4 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "types.h"
 #include "model.h"
+#include "bitmap.h"
 
 /*player related functions*/
 /* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
@@ -8,14 +12,14 @@ void move_player_h(Player *pc, int direction){
     (*pc).horizontal_velocity = (*pc).speed * (*pc).direction;
     (*pc).x = (*pc).x + (*pc).horizontal_velocity;
     (*pc).horizontal_velocity = 0;
-};
+}
 
 /* Very simple "teleport" to end of jump. No roof or end of screen checks*/
 void jump_player(Player *pc){ 
     (*pc).vertical_velocity = (*pc).jump_strength;
     (*pc).y = (*pc).y + (*pc).vertical_velocity;
     (*pc).vertical_velocity = 0;
-};
+}
 
 /* NOT DONE. Call every movement frame when player is meant to fall. */
 void fall_player(Player *pc, int gravity_strength){
@@ -28,7 +32,7 @@ void fall_player(Player *pc, int gravity_strength){
         */
         (*pc).vertical_velocity = 0;
     }
-};
+}
 
 /* Return a weapon object 16 pixels in front of the player and start cooldown period */
 Weapon attack(Player *pc, UINT16 *bitmap){
@@ -38,7 +42,7 @@ Weapon attack(Player *pc, UINT16 *bitmap){
     }
     /* If the attack cooldown is still happening, summon a weapon outside the screen. */
     return create_weapon(640,400,LEFT,bitmap);
-};
+}
 
 /* Create player */
 Player create_player(int x, int y, UINT32 *bitmap){
@@ -55,7 +59,8 @@ Player create_player(int x, int y, UINT32 *bitmap){
     p.HEIGHT = 32;
     p.WIDTH = 16;
     p.bitmap = bitmap;
-};
+	return p;
+}
 
 
 /*Player attack related functions*/
@@ -67,7 +72,9 @@ Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
     w.WIDTH = 64;
     w.direction = direction;
     w.bitmap = bitmap;
-};
+
+	return w;
+}
 
 
 /*enemy related functions*/
@@ -96,7 +103,7 @@ Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UI
     e.dead = FALSE;
     e.bitmap = bitmap;
     return e;
-};
+}
 
 
 /*floor related functions*/
@@ -107,7 +114,7 @@ Floor create_floor(UINT16 x,UINT16 y,int size){
     f.y = y;
     f.size = size;
     return f;
-};
+}
 
 
 /*wall related functions*/
@@ -118,7 +125,7 @@ Wall create_wall(UINT16 x, UINT16 y, int size){
         w.y = y;
         w.size = size;
     return w;
-};
+}
 
 
 
@@ -132,7 +139,7 @@ Exit create_exit(UINT16 x, UINT16 y, int size, int type){
     e.size = size;
     e.type = type;
     return e;
-};
+}
 
 
 
@@ -146,7 +153,7 @@ Trap create_trap(UINT16 x, UINT16 y, UINT16 *bitmap){
     t.WIDTH = 16;
     t.bitmap = bitmap;
     return t;
-};
+}
 
 
 /*time related functions*/
@@ -164,7 +171,7 @@ void update_timer(Timer *t){
     (*t).display_value.sec = (*t).time_passed % 60;
     */
     update_display(t);
-};
+}
 
 /* NOT DONE. Draw with font the display value */
 void update_display(Timer *t){
@@ -183,7 +190,7 @@ Timer create_timer(){
     t.display_value.min = 0;
     t.display_value.sec = 0;
     return t;
-};
+}
 
 
 
@@ -214,8 +221,8 @@ Room create_room_1(){
     /* Make enemies */
     r1.enemy_count = 2;
     r1.enemies = malloc(r1.enemy_count * sizeof(Enemy));
-    r1.enemies[0] = create_enemy(100,300,50,150,);
-    r1.enemies[1] = create_enemy(300,200,250,350,);
+    r1.enemies[0] = create_enemy(100,300,50,150,test_bitmap_16);
+    r1.enemies[1] = create_enemy(300,200,250,350,test_bitmap_16);
 
     /* Make traps */
     r1.trap_count = 2;
@@ -224,54 +231,74 @@ Room create_room_1(){
     r1.traps[1] = create_trap(300,200,test_bitmap_16);
 
     return r1;
-};
+}
 
 /* Use print_object_status routines for each object in the room, up to 3 of each kind. */
 void print_room_status(Room r){
+	int i;
+
     printf("Room:\n");
-    if(r.wall_count > 0){
-        print_wall_status(r.walls[0]);
-    }
-    if(r.wall_count > 1){
-        print_wall_status(r.walls[1]);
-    }
-    if(r.wall_count > 2){
-        print_wall_status(r.walls[2]);
-    }
-    if(r.floor_count > 0){
-        print_floor_status(r.floors[0]);
-    }
-    if(r.floor_count > 1){
-        print_floor_status(r.floors[1]);
-    }
-    if(r.floor_count > 2){
-        print_floor_status(r.floors[2]);
-    }
-    if(r.exit_count > 0){
-        print_exit_status(r.exits[0]);
-    }
-    if(r.exit_count > 1){
-        print_exit_status(r.exits[1]);
-    }
-    if(r.exit_count > 2){
-        print_exit_status(r.exits[2]);
-    }
-    if(r.enemy_count > 0){
-        print_enemy_status(r.enemies[0]);
-    }
-    if(r.enemy_count > 1){
-        print_enemy_status(r.enemies[1]);
-    }
-    if(r.enemy_count > 2){
-        print_enemy_status(r.enemies[2]);
-    }
-    if(r.trap_count > 0){
-        print_trap_status(r.traps[0]);
-    }
-    if(r.trap_count > 1){
-        print_trap_status(r.traps[1]);
-    }
-    if(r.trap_count > 2){
-        print_trap_status(r.traps[2]);
-    }
-};
+	for (i = 0; i < r.wall_count && i < 3; i++) {
+		print_wall_status(r.walls[i]);
+	}
+	for (i = 0; i < r.floor_count && i < 3; i++) {
+		print_floor_status(r.floors[i]);
+	}
+	for (i = 0; i < r.exit_count && i < 3; i++) {
+		print_exit_status(r.exits[i]);
+	}
+	for (i = 0; i < r.enemy_count && i < 3; i++) {
+		print_enemy_status(r.enemies[i]);
+	}
+	for (i = 0; i < r.trap_count && i < 3; i++) {
+		print_trap_status(r.traps[i]);
+	}
+}
+
+void print_wall_status(Wall t) {
+	printf("Wall: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_floor_status(Floor t) {
+	printf("Floor: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_exit_status(Exit t) {
+	printf("Exit: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_enemy_status(Enemy t) {
+	printf("Enemy: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_trap_status(Trap t) {
+	printf("Trap: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_player_status(Player t) {
+	printf("Player: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_weapon_status(Weapon t) {
+	printf("Weapon: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}
+
+void print_timer_status(Timer t) {
+	printf("Timer: ");
+	printf("X: %u ", (unsigned int)t.x);
+	printf("Y: %u\n", (unsigned int)t.y);
+}

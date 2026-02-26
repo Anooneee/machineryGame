@@ -1,11 +1,13 @@
-tst_rast: tst_rast.o raster.o rast_asm.o
-	cc68x -g tst_rast.o raster.o rast_asm.o -o tst_rast
+CC = cc68x
 
-tst_rast.o: tst_rast.c raster.h
-	cc68x -g -c tst_rast.c
+tst_obj.tos: tst_obj.o model.o bitmap.o
+	$(CC) -g tst_obj.o model.o bitmap.o -o tst_obj.tos
 
-raster.o: raster.c raster.h
-	cc68x -g -c raster.c
+tst_obj.o: tst_obj.c model.h types.h bitmap.h
+	$(CC) -c tst_obj.c
 
-rast_asm.o: rast_asm.s
-	gen -D -L2 rast_asm.s
+bitmap.o: bitmap.c bitmap.h
+	$(CC) -c bitmap.c
+
+model.o: model.c model.h types.h
+	$(CC) -c model.c

@@ -20,10 +20,10 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	int i, j, blocks, steps;
 	
 	/*set variables*/
-	start_x = col;	/*set the start x co-ord*/
+	start_x = row;	/*set the start x co-ord*/
 	start_block = start_x >> 5; /*specify the start LW block*/
 	
-	end_x = col + width;	/*specify the end x co-ord*/
+	end_x = row + width;	/*specify the end x co-ord*/
 	if(end_x > SCREEN_WIDTH) end_x = SCREEN_WIDTH;	/*end of line guard statement*/
 	end_block = end_x >> 5;
 	
@@ -35,7 +35,7 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	blocks = end_block - start_block - 2; /*-2 gives number of LW's between start and end exclusive*/
 	steps = 18 - blocks;	/*specifies number of LW left in line*/
 	
-	base += (row << 4) + (row << 2) + (col >> 5);
+	base += (col << 4) + (col << 2) + (row >> 5);
 	
 	if(start_block == end_block){ 	/*clear loop if region is less than 32bit wide*/
 		for(i = 0; i < length; i++){  
@@ -60,7 +60,7 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 
 void plot_pixel(UINT8 *base, int row, int col){
 	if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT) /*guard statement*/
-	*(base + (row << 6) + (row << 4) + (col >> 3)) |= 1 << 7 - (col & 7);	/*plot individual pixel*/
+	*(base + (col << 6) + (col << 4) + (row >> 3)) |= 1 << 7 - (row & 7);	/*plot individual pixel*/
 }
 
 void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
@@ -70,18 +70,18 @@ void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 	int start_x, end_x;
 	int i,num_blocks;
 
-	if(col < SCREEN_WIDTH && row <= SCREEN_HEIGHT && row >= 0){ /*guard statement handles out of bounds pos*/
-		end_x = col + length;	/*holds end of the line co-ords*/
-		if(col < 0) col = 0;	/*handles left side clipping*/
+	if(row < SCREEN_WIDTH && col <= SCREEN_HEIGHT && col >= 0){ /*guard statement handles out of bounds pos*/
+		end_x = row + length;	/*holds end of the line co-ords*/
+		if(row < 0) row = 0;	/*handles left side clipping*/
 	
 		full_block = 0xFFFFFFFF;
-		start_x = col;
+		start_x = row;
 		start_block = start_x >> 5;
 	
 		if(end_x > SCREEN_WIDTH) end_x = SCREEN_WIDTH; /*handles right side screen clipping*/
 		end_block = end_x >> 5;	/*LW position offset*/
 
-		base += ((row << 4) + (row << 2)) + (col >> 5);	/*set pos of base to start of line*/
+		base += ((col << 4) + (col << 2)) + (row >> 5);	/*set pos of base to start of line*/
 	
 		start_mask = full_block >> (start_x & 31);	/*bitshift for start block*/
 		end_mask = full_block << (31 - (end_x & 31)); /*bitshift for end block*/
@@ -103,19 +103,19 @@ void plot_horizontal_line(UINT32 *base, int row, int col, UINT16 length){
 
 void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
 	/*Variable declaration*/
-	int i, end_y, abs_row;
+	int i, end_y, abs_col;
 	UINT32 mask_start, mask;
 
 
-	if(row < SCREEN_HEIGHT && col >= 0 && col <= SCREEN_WIDTH){ /*guard statement, handels out of bounds clipping*/
+	if(col < SCREEN_HEIGHT && row >= 0 && row <= SCREEN_WIDTH){ /*guard statement, handels out of bounds clipping*/
 		
-		if(row + length > SCREEN_HEIGHT){  /*handles bottom screen clipping*/
+		if(col + length > SCREEN_HEIGHT){  /*handles bottom screen clipping*/
 			end_y = SCREEN_HEIGHT - col; /*ends line at bottome*/
 		}else {	
-			if(row < 0){ 
-			abs_row = -row;	/*handles top screen clippin*/
-			end_y = length - abs_row;	/*gets full length of the line*/
-			row = 0;
+			if(col < 0){ 
+			abs_col = -col;	/*handles top screen clippin*/
+			end_y = length - abs_col;	/*gets full length of the line*/
+			col = 0;
 			}else{
 				end_y = length;
 			}
@@ -124,9 +124,9 @@ void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
 
 		/*set the bit mask for x pos in LW*/
 		mask_start = 1;	
-		mask = mask_start << (31 - (col & 31));
+		mask = mask_start << (31 - (row & 31));
 		
-		base += (row << 4) + (row << 2) + (col >> 5); /*sets FB pointer to start of line*/
+		base += (col << 4) + (col << 2) + (row >> 5); /*sets FB pointer to start of line*/
 	
 		/*drawing the line*/
 			for(i = 0; i < end_y; i++){
@@ -140,86 +140,157 @@ void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
 void plot_line(UINT32 *base, int start_row, int start_col, int end_row, int end_col){
 	/*Bresenham's line algorithm as per wikipedia "https://en.wikipedia.org/wiki/Bresenham's_line_algorithm"
 	// and geeksforgeeks "https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/"*/
-	int dx,dy,sx,sy,error,e2;
-	dx =  start_col - end_col; 
-    dy = end_row - start_row;
-	if(dx < 0) dx = -dx; /*absolute of dx*/
-	if(dy > 0) dy = -dy; /*absolute of -(dy)*/
-	sx = start_col < end_col ? 1 : -1;
-	sy = start_row < end_row ? 1 : -1;
-    error = dx + dy;
+	
+	/*variable declaration*/
+	int x,y,dx,dy,x0,y0,x1,y1,slope_error,xi,yi,abs_dx,abs_dy;
+	UINT32 long_offset, mask_start;
+	
+	x0 = start_row;
+	x1 = end_row;
+	y0 = start_col;
+	y1 = end_col;
 
+	/*delta of x and y*/
+	dx = x1 - x0;
+	dy = y1 - y0;
+	
+	/*sets the absolute values of dx & dy*/
+	abs_dx = dx;
+	abs_dy = dy;
+	if(dx < 0) abs_dx = -dx;
+	if(dy < 0) abs_dy = -dy;
 
-    while (1) {
-        /* Clipping guard and Plotting */
-        if (start_col >= 0 && start_col < SCREEN_WIDTH && start_row >= 0 && start_row < SCREEN_HEIGHT) {
-            base[(start_row << 4) + (start_row << 2) + (start_col >> 5)] |= (1UL << (31 - (start_col & 31)));
-        }
-		/*end of line guard. I hate using breaks like this*/
-        if (start_col == end_col && start_row == end_row) break; /*would be a JMP instruction out of the loop in Assembly*/
+	/*determines the intensity of line slope*/
+	if(abs_dy < abs_dx){
+		/*swaps point lables so line draws from left to right*/
+		if(x0 > x1){
+			x0 = end_row;
+			x1 = start_row;
+			y0 = end_col;
+			y1 = start_col;
+		}
+		
+		/*re-initialize delta x & y*/
+		dx = x1 - x0;
+		dy = y1 - y0;
 
-        e2 = 2 * error;
-        if (e2 >= dy) { /* step x */
-            error += dy;
-            start_col += sx;
-        }
-        if (e2 <= dx) { /* step y */
-            error += dx;
-            start_row += sy;
-        }
+		/*determines +/- slope*/
+		yi = 1;
+		if(dy < 0){
+			yi = -1;
+			dy = -dy;
 	}
-}
+		/*initializes slope error for bresenham's algo*/	
+		slope_error = ((2 * dy) - dx);
+		y = y0; /*sets start point of line*/
+	
+	/*low slope line drawing*/
+	for(x = x0; x <= x1; x++){
+		mask_start = 1; /*initializes mask to be manipulated*/
+		long_offset = (y << 4) + (y << 2) + (x >> 5);	/*determines offset of pixel in LW*/
+		if((0 <= y && y <= SCREEN_HEIGHT) && (0 <= x && x <= SCREEN_WIDTH)){ /*clipping guard statement*/
+		base[long_offset] |= mask_start << (31 - (x & 31));	/*draw the pixel*/
+		}
+		
+		/*adjusts slop_error for next pos and determines next pixel pos*/
+		if(slope_error > 0){	
+			y += yi;
+			slope_error +=  (2 * (dy - dx));
+		}else
+			slope_error += (2 * dy);
+	}
 
+	}else{	/*handles high slope*/
+		/*swaps point lables so line draws from left to right*/
+		if(y0 > y1){
+			x0 = end_row;
+			x1 = start_row;
+			y0 = end_col;
+			y1 = start_col;
+		}
+		
+		/**/
+		dx = x1 - x0;
+		dy = y1 - y0;
+		xi = 1;
+		/*determines +/- slope*/
+		if(dx < 0){
+			xi = -1;
+			dx = -dx;
+	}
+	/*initializes slope with swapped x and y*/
+	slope_error = ((2 * dx) - dy);
+	x = x0;	/*sets start point of line*/
+
+	/*High slope line drawing*/
+	for(y = y0; y <= y1; y++){
+		mask_start = 1;	/*initializes mask to be manipulated*/
+		long_offset = (y << 4) + (y << 2) + (x >> 5);	/*LW pixel offset*/
+		if((0 <= y && y <= SCREEN_HEIGHT) && (0 <= x && x <= SCREEN_WIDTH)){ /*clipping guard statement*/
+		base[long_offset] |= mask_start << (31 - (x & 31)); /*draw the pixel gronk*/
+		}
+		
+		/*re-adjust slope_error for next pixel pos*/
+		if(slope_error > 0){
+			x += xi; 
+			slope_error += (2 * (dx - dy));
+		}else
+		slope_error += (2 * dx);
+	}
+	}
+	
+}
 
 void plot_rectangle(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	/*variable declaration*/
 	int x, y, x_end, y_end;
-	x = col; y = row;
+	x = row; y = col;
 
-	x_end = col + width;	/*find right edge of shape*/
-	y_end = row + length;	/*find bottom edge of shape*/
+	x_end = row + width;	/*find right edge of shape*/
+	y_end = col + length;	/*find bottom edge of shape*/
 
-	plot_horizontal_line(base, y, x, width);		/*plot top edge*/
-	plot_vertical_line(base, y, x, length);			/*plot left edge*/
-	plot_vertical_line(base, y, x_end, length);		/*plot right edge*/
-	plot_horizontal_line(base, y_end, x, width);	/*plot bottom edge*/
+	plot_horizontal_line(base, x, y, width);		/*plot top edge*/
+	plot_vertical_line(base, x, y, length);			/*plot left edge*/
+	plot_vertical_line(base, x_end, y, length);		/*plot right edge*/
+	plot_horizontal_line(base, row, y_end, width);	/*plot bottom edge*/
 }
 
 void plot_square(UINT32 *base, int row, int col, UINT16 side){
 	/*variable declaration*/
-	int x_end = col + side;
-	int y_end = row + side;
+	int x, y;
+	x = row + side;
+	y = col + side;
 	plot_horizontal_line(base, row, col, side);	/*plot top edge*/
 	plot_vertical_line(base, row, col, side);	/*plot left edge*/
-	plot_vertical_line(base, row, x_end, side);		/*plot right edge*/
-	plot_horizontal_line(base, y_end, col, side);	/*plot bottom edge*/
+	plot_vertical_line(base, x, col, side);		/*plot right edge*/
+	plot_horizontal_line(base, row, y, side);	/*plot bottom edge*/
 }
 
 void plot_triangle(UINT32 *base, int row, int col, UINT16 triangle_base, UINT16 height, UINT8 direction){
 	/*variable declaration*/
-	int x_start, x_tip, y_start, y_tip;
-	y_start = row;
-	x_tip = col;
+	int x_base, x_height, y_base, y_height;
+	y_base = col;
+	x_height = row;
 
 	/*handles drawing base line*/
 	if(direction == 0 | direction == 2){ 	/*base drawn left*/
-		x_start = col - triangle_base;
-		plot_horizontal_line(base, row, x_start, triangle_base);
+		x_base = row - triangle_base;
+		plot_horizontal_line(base, x_base, col, triangle_base);
 	}else{									/*base drawn right*/
-		x_start = col + triangle_base - 1;
+		x_base = row + triangle_base - 1;
 		plot_horizontal_line(base, row, col, triangle_base);
 	}
 	
 	/*handles drawing height line*/
 	if(direction == 0 | direction == 1){		/*height drawn up*/
-		y_tip = row - height;
-		plot_vertical_line(base, y_tip, col, height);
+		y_height = col - height;
+		plot_vertical_line(base, row, y_height, height);
 	}else{										/*base drawn down*/
-		y_tip = row + height;
+		y_height = col + height;
 		plot_vertical_line(base, row, col, height);
 	}
 	/*draws line between the 2 unconnected ends of base and height lines*/
-	plot_line(base, y_start, x_start, y_tip, x_tip);
+	plot_line(base, x_base, y_base, x_height, y_height);
 }
 
 void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16 height){
@@ -229,8 +300,6 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	UINT8 x_shift = (col & 7);
 	
 	
-	
-	base += (row << 6) + (row << 4) + (col >> 3);
 	base += (row << 6) + (row << 4) + (col >> 3);
 
 	for(i = 0; i < height; i++){
@@ -238,7 +307,7 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 			*base |= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
-			if ((col >> 3) < 79) {
+			if ((row >> 3) < 79) {
 			*(base + 1) |= (bitmap[i] << (8 - x_shift));
 		}
 	}
@@ -251,16 +320,16 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 	int i;
 	
 	UINT16 x_shift = (row & 15);
+	clear_region(base, row, col, 16, height);
 	
-	
-	base += (row << 5) + (row << 3) + (col >> 4);
+	base += (col << 5) + (col << 3) + (row >> 4);
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){
 			*base &= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
-			if ((col >> 3) < 39) {
+			if ((row >> 3) < 39) {
 			*(base + 1) |= (bitmap[i] << (16 - x_shift));
 		}
 	}
@@ -272,16 +341,16 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 	/*variable declaration*/
 	int i;
 	
-	UINT32 x_shift = (col & 31);
+	UINT32 x_shift = (row & 31);
 	
-	base += (row << 4) + (row << 2) + (col >> 5);
+	base += (col << 4) + (col << 2) + (row >> 5);
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){
 			*base &= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
-			if ((col >> 3) < 19) {
+			if ((row >> 3) < 19) {
 			*(base + 1) |= (bitmap[i] << (32 - x_shift));
 		}
 	}
@@ -292,13 +361,13 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 void plot_character(UINT8 *base, int row, int col, char ch){
 	/*variable declaration*/
 	int i;
-	UINT8 x_shift = (col & 7);
+	UINT8 x_shift = (row & 7);
 	UINT8 *font_map = GLYPH_START(ch);
-	base += (row << 6) + (row << 4) + (col >> 3);
+	base += (col << 6) + (col << 4) + (row >> 3);
 	
 	for(i = 0; i < 8; i++){
 		if(x_shift == 0){
-			*base = *font_map; /* Changed from &= to = or |= depending on desired transparency */
+			*base &= *font_map;
 		}else{
 			*base |= (*font_map >> x_shift);
 			*(base + 1) |= (*font_map << (8 - x_shift));
@@ -309,12 +378,12 @@ void plot_character(UINT8 *base, int row, int col, char ch){
 }
 
 void plot_string(UINT8 *base, int row, int col, char *ch){
-	while(*ch != '\0'){
+	while(*ch != '\n'){
 		plot_character(base, row, col, *ch);	/*plot char to screen*/
-		col += 8;								/*move start point to next row*/
-		if(col >= SCREEN_WIDTH){
-			row += 8;
-			col = 0;
+		row += 8;								/*move start point to next row*/
+		if(row >= SCREEN_WIDTH){
+			col += 8;
+			row = 0;
 		}
 		ch++;
 	}

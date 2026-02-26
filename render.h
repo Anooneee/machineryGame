@@ -4,7 +4,7 @@
 #include "types.h"
 #include "model.h"
 
-void render (const Model *model , UINT8 * base );
+void render(const Model *model, UINT8 * base);
 void player_render();
 
 
