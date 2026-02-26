@@ -140,92 +140,36 @@ void plot_vertical_line(UINT32 *base, int row, int col, UINT16 length){
 void plot_line(UINT32 *base, int start_row, int start_col, int end_row, int end_col){
 	/*Bresenham's line algorithm as per wikipedia "https://en.wikipedia.org/wiki/Bresenham's_line_algorithm"
 	// and geeksforgeeks "https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/"*/
-	
-	/*variable declaration*/
-	int x,y,dx,dy,x0,y0,x1,y1,slope_error,xi,yi,abs_dx,abs_dy;
-	UINT32 long_offset, mask_start;
-	
-	x0 = start_col;
-	x1 = end_col;
-	y0 = start_row;
-	y1 = end_row;
+	int dx,dy,sx,sy,error,e2;
+	dx =  start_col - end_col; 
+    dy = end_row - start_row;
+	if(dx < 0) dx = -dx; /*absolute of dx*/
+	if(dy > 0) dy = -dy; /*absolute of -(dy)*/
+	sx = start_col < end_col ? 1 : -1;
+	sy = start_row < end_row ? 1 : -1;
+    error = dx + dy;
 
-	/*delta of x and y*/
-	dx = x1 - x0;
-	dy = y1 - y0;
-	
-	/*sets the absolute values of dx & dy*/
-	abs_dx = (dx < 0) ? -dx : dx;
-	abs_dy = (dy < 0) ? -dy : dy;
 
-	/*determines the intensity of line slope*/
-	if(abs_dy < abs_dx){
-		/*swaps point lables so line draws from left to right*/
-		if(x0 > x1){
-			x0 = end_col; x1 = start_col;
-			y0 = end_row; y1 = start_row;
-		}
-		
-		/*re-initialize delta x & y*/
-		dx = x1 - x0;
-		dy = y1 - y0;
-		yi = (dy < 0) ? -1 : 1;
-		if(dy < 0) dy = -dy;	/*determines +/- slope*/		
-		
-		/*initializes slope error for bresenham's algo*/	
-		slope_error = ((2 * dy) - dx);
-		y = y0; 				/*sets start point of line*/
-	
-	/*low slope line drawing*/
-		for(x = x0; x <= x1; x++){
-			mask_start = 1; /*initializes mask to be manipulated*/
-			long_offset = (y << 4) + (y << 2) + (x >> 5);	/*determines offset of pixel in LW*/
-			if((0 <= y && y <= SCREEN_HEIGHT) && (0 <= x && x <= SCREEN_WIDTH)){ /*clipping guard statement*/
-				base[long_offset] |= mask_start << (31 - (x & 31));	/*draw the pixel*/
-			}
-		
-		/*adjusts slop_error for next pos and determines next pixel pos*/
-			if(slope_error > 0){	
-				y += yi;
-				slope_error +=  (2 * (dy - dx));
-			}else
-				slope_error += (2 * dy);
-		}
+    while (1) {
+        /* Clipping guard and Plotting */
+        if (start_col >= 0 && start_col < SCREEN_WIDTH && start_row >= 0 && start_row < SCREEN_HEIGHT) {
+            base[(start_row << 4) + (start_row << 2) + (start_col >> 5)] |= (1UL << (31 - (start_col & 31)));
+        }
+		/*end of line guard. I hate using breaks like this*/
+        if (start_col == end_col && start_row == end_row) break; /*would be a JMP instruction out of the loop in Assembly*/
 
-	}else{	/*handles high slope*/
-		/*swaps point lables so line draws from left to right*/
-		if(y0 > y1){
-			x0 = end_col; x1 = start_col;
-			y0 = end_row; y1 = start_row;
-		}
-		
-		/**/
-		dx = x1 - x0;
-		dy = y1 - y0;
-		xi = (dx < 0) ? -1 : 1;
-		/*determines +/- slope*/
-		if(dx < 0) dx = -dx;
-	}
-		/*initializes slope with swapped x and y*/
-		slope_error = ((2 * dx) - dy);
-		x = x0;						/*sets start point of line*/
-
-	/*High slope line drawing*/
-	for(y = y0; y <= y1; y++){
-		mask_start = 1;	/*initializes mask to be manipulated*/
-		long_offset = (y << 4) + (y << 2) + (x >> 5);	/*LW pixel offset*/
-		if((0 <= y && y <= SCREEN_HEIGHT) && (0 <= x && x <= SCREEN_WIDTH)){ /*clipping guard statement*/
-		base[long_offset] |= mask_start << (31 - (x & 31)); /*draw the pixel gronk*/
-		}
-		
-		/*re-adjust slope_error for next pixel pos*/
-		if(slope_error > 0){
-			x += xi; 
-			slope_error += (2 * (dx - dy));
-		}else
-		slope_error += (2 * dx);
+        e2 = 2 * error;
+        if (e2 >= dy) { /* step x */
+            error += dy;
+            start_col += sx;
+        }
+        if (e2 <= dx) { /* step y */
+            error += dx;
+            start_row += sy;
+        }
 	}
 }
+
 
 void plot_rectangle(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	/*variable declaration*/
@@ -283,8 +227,7 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	int i;
 	
 	UINT8 x_shift = (col & 7);
-	UINT8 x_shift = (col & 7);
-	clear_region(base, row, col, 8, height);
+	
 	
 	
 	base += (row << 6) + (row << 4) + (col >> 3);
@@ -308,7 +251,7 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 	int i;
 	
 	UINT16 x_shift = (row & 15);
-	clear_region(base, row, col, 16, height);
+	
 	
 	base += (row << 5) + (row << 3) + (col >> 4);
 

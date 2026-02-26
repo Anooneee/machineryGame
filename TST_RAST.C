@@ -32,9 +32,9 @@ int main()
 	plot_pixel(base, 99, 99);
 
 	Cnecin();
-	clear_region(base, 200, 100, 50, 50);
-	plot_pixel(base, 200, 100);
-	plot_pixel(base, 250, 150);
+	clear_region(base, 100, 200, 50, 50);
+	plot_pixel(base, 100, 200);
+	plot_pixel(base, 150, 250);
 	
 	Cnecin();
 	clear_screen(base);
@@ -42,94 +42,94 @@ int main()
 	Cnecin();
 	plot_pixel(base, 0, 0);
 	Cnecin();
-	plot_pixel(base, 639, 0);
+	plot_pixel(base, 0, 639);
 	Cnecin();
-	plot_pixel(base, 639, 399);
+	plot_pixel(base, 399, 639);
 	Cnecin();
-	plot_pixel(base, 0, 399);
-	Cnecin();
-	plot_pixel(base, -1, 0);
+	plot_pixel(base, 399, 0);
 	Cnecin();
 	plot_pixel(base, 0, -1);
 	Cnecin();
-	plot_pixel(base, 0, 400);
+	plot_pixel(base, -1, 0);
 	Cnecin();
-	plot_pixel(base, 640, 0);
+	plot_pixel(base, 400, 0);
+	Cnecin();
+	plot_pixel(base, 0, 640);
 	Cnecin();
 	clear_screen(base);
 
 	Cnecin();
-	plot_horizontal_line(base, 20, 200, 5);
+	plot_horizontal_line(base, 200, 20, 5);
 	Cnecin();
-	plot_horizontal_line(base, -10, 20, 19);
+	plot_horizontal_line(base, 20, -10, 19);
 	Cnecin();
-	plot_horizontal_line(base, 300, 150, 400);
+	plot_horizontal_line(base, 150, 300, 400);
 	Cnecin();
-	plot_horizontal_line(base, 20, -10, 40);
+	plot_horizontal_line(base, -10, 20, 40);
 	Cnecin();
-	plot_horizontal_line(base, 20, 410, 40);
+	plot_horizontal_line(base, 410, 20, 40);
 	Cnecin();
 	clear_screen(base);
 	
 	Cnecin();
-	plot_vertical_line(base, 50, 0, 50);
+	plot_vertical_line(base, 0, 50, 50);
 	Cnecin();
-	plot_vertical_line(base, 100, 250, 200);
+	plot_vertical_line(base, 250, 100, 200);
 	Cnecin();
-	plot_vertical_line(base, 200, -10, 40);
+	plot_vertical_line(base, -10, 200, 40);
 	Cnecin();
-	plot_vertical_line(base, -10, 0, 40);
+	plot_vertical_line(base, 0, -10, 40);
 	Cnecin();
-	plot_vertical_line(base, 650, 12, 40);
+	plot_vertical_line(base, 0, 650, 40);
 	Cnecin();
 	clear_screen(base);
 
 	Cnecin();
-	plot_line(base, 0, 0, 400, 399);
+	plot_line(base, 0, 0, 399, 400);
 	Cnecin();
-	plot_line(base, 20, 50, 200, 70);
+	plot_line(base, 50, 20, 70, 200);
 	Cnecin();
-	plot_line(base, 20, 70, 200, 50);
+	plot_line(base, 70, 20, 50, 200);
 	Cnecin();
-	plot_line(base, 0, 20, 50, 49);
+	plot_line(base, 20, 0, 49, 50);
 
 	Cnecin();
-	plot_rectangle(base, 0, 0, 40, 200); 
+	plot_rectangle(base, 0, 0, 200, 40); 
 	Cnecin();
-	plot_rectangle(base, 100, 40, 400, 20);
+	plot_rectangle(base, 40, 100, 20, 400);
 	Cnecin();
 	clear_screen(base); 
 
 	plot_square(base, 40, 40, 50);
 	Cnecin();
-	plot_square(base, 320, 200, 100);
+	plot_square(base, 200, 320, 100);
 	Cnecin();
 	clear_screen(base);
 
 
 
-	plot_triangle(base, 320, 200, 100, 50, 0);
+	plot_triangle(base, 200, 320, 50, 100, 0);
 	Cnecin();
-	plot_triangle(base, 320, 200, 100, 50, 1);
+	plot_triangle(base, 200, 320, 50, 100, 1);
 	Cnecin();
-	plot_triangle(base, 320, 200, 100, 50, 2);
+	plot_triangle(base, 200, 320, 50, 100, 2);
 	Cnecin();
-	plot_triangle(base, 320, 200, 100, 50, 3);
+	plot_triangle(base, 200, 320, 50, 100, 3);
 	Cnecin();
-	plot_triangle(base, 320, 200, 50, 100, 0);
+	plot_triangle(base, 200, 320, 100, 50, 0);
 	Cnecin();
-	plot_triangle(base, 320, 200, 50, 100, 1);
+	plot_triangle(base, 200, 320, 100, 50, 1);
 	Cnecin();
-	plot_triangle(base, 320, 200, 50, 100, 2);
+	plot_triangle(base, 200, 320, 100, 50, 2);
 	Cnecin();
-	plot_triangle(base, 320, 200, 50, 100, 3);
+	plot_triangle(base, 200, 320, 100, 50, 3);
 	Cnecin();
 	clear_screen(base);
 
-	plot_triangle(base, 60, 40, 50, 80, 0);
-	plot_triangle(base, 60, 370, 50, 80, 3);
-	plot_triangle(base, 20, 200, 50, 80, 0);
-	plot_triangle(base, 600, 200, 50, 80, 1);
+	plot_triangle(base, 40, 60, 80, 50, 0);
+	plot_triangle(base, 370, 60, 80, 50, 3);
+	plot_triangle(base, 200, 20, 80, 50, 0);
+	plot_triangle(base, 200, 600, 80, 50, 1);
 	Cnecin();
 	
 	/* plot_character(base, 0, 0, 'H');
