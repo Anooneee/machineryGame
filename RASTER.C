@@ -283,8 +283,11 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	int i;
 	
 	UINT8 x_shift = (col & 7);
+	UINT8 x_shift = (col & 7);
 	clear_region(base, row, col, 8, height);
 	
+	
+	base += (row << 6) + (row << 4) + (col >> 3);
 	base += (row << 6) + (row << 4) + (col >> 3);
 
 	for(i = 0; i < height; i++){
