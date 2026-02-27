@@ -145,25 +145,24 @@ void plot_line(UINT32 *base, int start_row, int start_col, int end_row, int end_
     dy = end_row - start_row;
 	if(dx < 0) dx = -dx; /*absolute of dx*/
 	if(dy > 0) dy = -dy; /*absolute of -(dy)*/
-	sx = start_col < end_col ? 1 : -1;
-	sy = start_row < end_row ? 1 : -1;
-    error = dx + dy;
-
+	sx = start_col < end_col ? 1 : -1; /*determines moving direction for x*/
+	sy = start_row < end_row ? 1 : -1; /*determines moving direction for y*/
+    error = dx + dy; /*will decide between 2 pixels which one to step to*/
 
     while (1) {
         /* Clipping guard and Plotting */
-        if (start_col >= 0 && start_col < SCREEN_WIDTH && start_row >= 0 && start_row < SCREEN_HEIGHT) {
+        if (start_col >= 0 && start_col < SCREEN_WIDTH && start_row >= 0 && start_row < SCREEN_HEIGHT){
             base[(start_row << 4) + (start_row << 2) + (start_col >> 5)] |= (1UL << (31 - (start_col & 31)));
         }
-		/*end of line guard. I hate using breaks like this*/
+		/*end of line trip. 1633 makes me hate use a break like this*/
         if (start_col == end_col && start_row == end_row) break; /*would be a JMP instruction out of the loop in Assembly*/
 
         e2 = 2 * error;
-        if (e2 >= dy) { /* step x */
+        if (e2 >= dy){ /* step x */  
             error += dy;
             start_col += sx;
         }
-        if (e2 <= dx) { /* step y */
+        if (e2 <= dx){ /* step y */
             error += dx;
             start_row += sy;
         }
