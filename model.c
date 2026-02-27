@@ -10,14 +10,13 @@
 void give_player_horizontal_velocity(Player *pc, int direction){             
     (*pc).direction = direction;
     (*pc).horizontal_velocity = (*pc).speed * (*pc).direction;
-    (*pc).x = (*pc).x + (*pc).horizontal_velocity;
-    (*pc).horizontal_velocity = 0;
 }
 
 /* Very simple "teleport" to end of jump. No roof or end of screen checks*/
 void jump_player(Player *pc){ 
-    (*pc).vertical_velocity = (*pc).jump_strength;
-    (*pc).y = (*pc).y + (*pc).vertical_velocity;
+    if((*pc).jump_time <= 0){
+        (*pc).vertical_velocity = (*pc).jump_strength;
+    }
 }
 
 /* NOT DONE. Call every movement frame when player is meant to fall. */
@@ -47,6 +46,7 @@ Player create_player(int x, int y, UINT32 *bitmap){
     p.grounded = FALSE;
     p.attack_cooldown = 0;
     p.jump_strength = 64;
+    p.jump_time = 0;
     p.horizontal_velocity = 0;
     p.vertical_velocity = 0;
     p.speed = 1;

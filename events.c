@@ -1,17 +1,16 @@
 #include "events.h"
-#include "TYPES.H"
-#include "model.h"
+
 
 /*
 Asynchronous (Input) Events
 */
 
 /* This is lame and kinda useless function we should get rid of. I only put it here to finish the inputs but it redunant*/
-Weapon user_input_x(Player *p, UINT16 bitmap){
+Weapon user_input_x(Player *p, UINT16 *bitmap){
     Weapon w = attack(p,bitmap); /* Attack still summons a weapon if the cooldown is still going because it crashes if I don't return anything (NULL dont exist). The weapon is spawn at (640,400) thought so it's offscreen */
 };
 
-void user_input_space(Player *p, Room r){
+void user_input_space(Player *p){
     if((*p).grounded == TRUE){
         jump_player(p);
     };
@@ -294,5 +293,18 @@ void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
     /* Lower attack cooldown */
     if((*p).attack_cooldown > 0){
         (*p).attack_cooldown = (*p).attack_cooldown - 5;
+    }
+
+    /* Automatically stops postive vertical velocity after jumping for a certain amount of time */
+    if((*p).vertical_velocity > 0){ /* If player is moving up */
+        if((*p).jump_time < 30){    /* Start jump counter */
+            (*p).jump_time = (*p).jump_time + 5;
+        }
+        else {
+            (*p).vertical_velocity = 0;
+        }
+    }
+    else{
+        (*p).jump_time = 0;
     }
 }

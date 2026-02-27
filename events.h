@@ -1,14 +1,16 @@
 #ifndef EVENTS_H
 #define EVENTS_H
+#include "TYPES.H"
+#include "model.h"
 
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */
 
 /* Kinda useless. Need to fix/make better later */
-Weapon user_input_x(Player *p, UINT16 bitmap);
+Weapon user_input_x(Player *p, UINT16 *bitmap);
 
 /* Jump! if on ground */
-void user_input_space(Player *p, Room r);
+void user_input_space(Player *p);
 
 void user_input_d(Player *p);
 void user_input_a(Player *p);

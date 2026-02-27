@@ -13,6 +13,7 @@ typedef struct Player_character{     /* type definition for player object */
     int horizontal_velocity;            /* horiz . displacement per clock tick */
     int vertical_velocity;              /* vert . displacement per clock tick*/
     int jump_strength;
+    int jump_time;
     int speed;
     int direction;
     BOOL grounded;
