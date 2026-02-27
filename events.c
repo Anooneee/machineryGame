@@ -1,45 +1,39 @@
 #include "events.h"
-/*
-Asynchronous:
-Movement 
-Jump: (W) applies velocity of 400 pixels/second
-After Jump is triggered when input is held maintain ~300 pixel/second acceleration downward when released acceleration increases to ~700 pixels/second
-
-When input is released velocity (horizontal and/or positive vertical) is set to 0.
-
-Attack (mouse click)
-The sword is summoned in the player's last input direction. Slash animations last 35ticks after which the object disappears and can be used again
-The hurt box of the attack interacts with enemies only if there is collision of any amount
-
-Asynchronous (Input) Events
-*/
-
-/*
-Key bindings
-
-"X":
-Call attack function on player
-
-"Space bar":
-Call jump function
-
-"D":
-Call move(RIGHT) function on player
-
-"A":
-Call move(LEFT) function on player
-
-"ESC":
-Trap 0
-(I think that quits the program 0w0?)
-
-*/
-
-
-/*conditional*/
 #include "TYPES.H"
 #include "model.h"
 
+/*
+Asynchronous (Input) Events
+*/
+
+/* This is lame and kinda useless function we should get rid of. I only put it here to finish the inputs but it redunant*/
+Weapon user_input_x(Player *p, UINT16 bitmap){
+    Weapon w = attack(p,bitmap); /* Attack still summons a weapon if the cooldown is still going because it crashes if I don't return anything (NULL dont exist). The weapon is spawn at (640,400) thought so it's offscreen */
+};
+
+void user_input_space(Player *p, Room r){
+    if((*p).grounded == TRUE){
+        jump_player(p);
+    };
+};
+
+void user_input_d(Player *p){
+    give_player_horizontal_velocity(p,RIGHT);
+};
+
+void user_input_a(Player *p){
+    give_player_horizontal_velocity(p,LEFT);
+};
+
+void user_release_d_or_a(Player *p){
+    (*p).horizontal_velocity = 0;
+};
+
+void user_input_ESC(){
+    return; /* Quit the program */
+};
+
+/*conditional*/
 
 bool is_collision_between_player_and_enemy(Player p, Enemy e){
     bool is_hit = FALSE;
@@ -68,17 +62,26 @@ bool is_collision_between_player_and_wall(Player p, Wall line){
     return is_hit;
 };
 
+/*
 bool is_collision_between_player_and_floor_and_grounded(Player *p, Floor line){
     bool is_hit = FALSE;
     if (((*p).x + (*p).WIDTH >= line.x && (*p).x <= line.x + line.size) && 
         ((*p).y <= line.y && (*p).y + (*p).HEIGHT >= line.y)){ 
             is_hit = TRUE;
     }
-    /* Player is grounded if floor is 1 pix below them */
+    /* Player is grounded if floor is 1 pix below them 
     if (((*p).x + (*p).WIDTH >= line.x && (*p).x <= line.x + line.size) && 
         ((*p).y + (*p).HEIGHT == line.y + 1)){ 
             (*p).grounded = TRUE;
     }
+    return is_hit;
+};*/
+bool is_collision_between_player_and_floor(Player p, Floor line){
+    bool is_hit = FALSE;
+    if ((p.x + p.WIDTH >= line.x && p.x <= line.x + line.size) && 
+        (p.y <= line.y && p.y + p.HEIGHT >= line.y)){ 
+            is_hit = TRUE;
+    };
     return is_hit;
 };
 
@@ -110,6 +113,7 @@ bool is_collision_between_player_and_door(Player p, Exit d){
 }
 
 /* ONLY FOR ORGANIZTION HERE ---- MOVE EACH TEST TO APPROITATE PLACES WHEN DONE  */
+/**/
 int test_collisions(Player *p, Room r){
     int i;
     Weapon w; /* WHEN YA MOVE TESTS TO APPORIANTE PLACES, WILL HAVE ACCESSS TO REAL WEAPON*/
@@ -129,8 +133,11 @@ int test_collisions(Player *p, Room r){
         }
     }
     
-    for (i=0; i < r.floor_count; i++){ /* Loop every floor in the room and test collision with the player */
-        if (is_collision_between_player_and_floor_and_grounded(p , r.floors[i]) == TRUE){ /* Pass pointer to player so collsion tester can change the grounded flag if needed */
+    /* I changed the collison between player and floor function but I'm too lazy to fix this. 
+        View Synchronous events (Every movement frame()) to see the right collision check*/
+    /*
+    for (i=0; i < r.floor_count; i++){ /* Loop every floor in the room and test collision with the player /
+        if (is_collision_between_player_and_floor_and_grounded(p , r.floors[i]) == TRUE){ /* Pass pointer to player so collsion tester can change the grounded flag if needed /
             (*p).vertical_velocity = 0;
         }
         else{
@@ -139,6 +146,7 @@ int test_collisions(Player *p, Room r){
             }
         }
     }
+    */
     
     for (i=0; i < r.exit_count; i++){ /* Loop every exit in the room and test collision with the player */
         if (is_collision_between_player_and_door(*p, r.exits[i]) == TRUE){
@@ -225,13 +233,66 @@ Every second:
 Every movement frame (.5 seconds):
 - Move player according to horizontal velocity
 - Move player according to jump (vertical) velocity
-- If player not grounded, fall according to vertical velocity
-- If player not on ground, make player fall
+- If player not on ground, make player fall according to vertical velocity
 - Move enemy one step forward
 - Lower Attack count down (Max is set in attack function)
 
-Every frame:
+Every frame: /////// I added these to every movement frame /////////////
 - Check if there is a floor under the player. Set grounded value accordingly
 - Check if there is a wall in front of the player according to the horizontal velocity. If so, set horizzontal velocity = 0;
 */
 
+/* Move the contents to whereever we can calculate the ticks*/
+void every_second(Timer *t){ /* 70 ticks */
+    update_timer(t);
+}
+
+void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
+    Weapon w;
+    Player player_test;
+    int i;
+
+    /* Move player according to horizonal velocity. Check walls*/
+    if((*p).horizontal_velocity != 0){
+        player_test = *p;
+        player_test.x + player_test.horizontal_velocity; /* Give playertest the position real player would have if it moved*/
+        for (i=0; i < (*r).wall_count; i++){ /* Loop every wall in the room and test collision with the test player */
+            if (is_collision_between_player_and_wall(player_test , (*r).walls[i]) == TRUE){
+                (*p).horizontal_velocity = 0;
+            }
+            else{
+                (*p).x = (*p).x + (*p).horizontal_velocity;
+            }
+        }
+    }
+
+    /* Move player according to vertical velocity. Check grounded value and floors/roofs collisions */
+    player_test = *p;
+    player_test.y + player_test.vertical_velocity; /* Give playertest the position real player would have if it moved*/
+    for (i=0; i < (*r).floor_count; i++){ /* Loop every floor in the room and test collision with the player */
+        if (is_collision_between_player_and_floor(player_test , (*r).floors[i]) == TRUE){ 
+            (*p).vertical_velocity = 0;
+        } 
+        else {
+            (*p).y = (*p).y + (*p).vertical_velocity;
+        }
+
+        if (((*p).x + (*p).WIDTH >= (*r).floors[i].x && (*p).x <= (*r).floors[i].x + (*r).floors[i].size) && ((*p).y + (*p).HEIGHT == (*r).floors[i].y + 1)) { /* Player is grounded if floor is 1 pix below them */
+            (*p).grounded = TRUE;
+        }
+        else{
+            (*p).grounded = FALSE;
+            fall_player(p,3);
+        }
+    }
+
+    /* Move all enemys in the room */
+    for (i=0; i < (*r).enemy_count; i++){
+        move_enemy(&(*r).enemies[i]);
+    }
+
+    /* Lower attack cooldown */
+    if((*p).attack_cooldown > 0){
+        (*p).attack_cooldown = (*p).attack_cooldown - 5;
+    }
+}

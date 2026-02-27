@@ -4,6 +4,7 @@
 #include "model.h"
 
 int main() {
+    int i; /* For testing timer*/
     Room r;
     Player p;
     Timer t;
@@ -17,31 +18,31 @@ int main() {
     print_room_status(r);
     printf("\n-------- Enemy movement:\n");
     if(r.enemy_count>0){
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
-        move_enemy(&r.enemies[0],15);
+        move_enemy(&r.enemies[0]);
         print_enemy_status(r.enemies[0]);
     }
 
     printf("\n-------- Player routines:\n");
     print_player_status(p);
-    move_player_h(&p, LEFT);
+    give_player_horizontal_velocity(&p, LEFT);
     jump_player(&p);
-    printf("After move LEFT and Jump\n");
+    printf("After move LEFT and Jump:\n");
     print_player_status(p);
     fall_player(&p, 3);
     w = attack(&p, test_bitmap_16);
@@ -56,6 +57,9 @@ int main() {
     update_timer(&t);
     print_timer_status(t);
     update_timer(&t);
+    for(i=0;i<100;i++){
+        update_timer(&t);
+    }
     print_timer_status(t);
     
     printf("Hello World!\n");

@@ -7,7 +7,7 @@
 /*player related functions*/
 /* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
 /* direction should be the enum for LEFT and RIGHT for readibility but it can also work with just -1 and 1 */
-void move_player_h(Player *pc, int direction){             
+void give_player_horizontal_velocity(Player *pc, int direction){             
     (*pc).direction = direction;
     (*pc).horizontal_velocity = (*pc).speed * (*pc).direction;
     (*pc).x = (*pc).x + (*pc).horizontal_velocity;
@@ -18,7 +18,6 @@ void move_player_h(Player *pc, int direction){
 void jump_player(Player *pc){ 
     (*pc).vertical_velocity = (*pc).jump_strength;
     (*pc).y = (*pc).y + (*pc).vertical_velocity;
-    (*pc).vertical_velocity = 0;
 }
 
 /* NOT DONE. Call every movement frame when player is meant to fall. */
@@ -27,10 +26,6 @@ void fall_player(Player *pc, int gravity_strength){
         (*pc).vertical_velocity = -gravity_strength;
         
         (*pc).y = (*pc).y + (*pc).vertical_velocity;
-        /* 
-            if detect ground at new location + 1: change grounded to true
-        */
-        (*pc).vertical_velocity = 0;
     }
 }
 
@@ -80,12 +75,11 @@ Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
 /*enemy related functions*/
 
 /* Move enemy within bounds. One step forward. */
-void move_enemy(Enemy *e, int speed){
+void move_enemy(Enemy *e){
     if((*e).x + (*e).horizontal_velocity > (*e).bound_right || (*e).x + (*e).horizontal_velocity < (*e).bound_left){
-        speed = speed * (-1);
+        (*e).direction = (*e).direction * (-1);
     }
-    (*e).horizontal_velocity = speed;
-    (*e).x = (*e).x + (*e).horizontal_velocity;
+    (*e).x = (*e).x + ((*e).horizontal_velocity * (*e).direction);
 }
 
 /* Create enemy at x,y with bound positions at x = bound left and x = bound right */
@@ -97,7 +91,8 @@ Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UI
     e.bound_right = bound_right;
     e.HEIGHT = 32;
     e.WIDTH = 16;
-    e.horizontal_velocity = 0;
+    e.direction = RIGHT;
+    e.horizontal_velocity = 1;
     e.vertical_velocity = 0;
     e.grounded = TRUE;
     e.dead = FALSE;
@@ -155,7 +150,6 @@ Trap create_trap(UINT16 x, UINT16 y, UINT16 *bitmap){
     return t;
 }
 
-
 /*time related functions*/
 
 /* Call every second that passes */
@@ -163,7 +157,7 @@ void update_timer(Timer *t){
     (*t).time_passed = (*t).time_passed + 1;
     if((*t).time_passed == 60){
         (*t).display_value.min = (*t).display_value.min + 1;
-        (*t).time_passed == 0;
+        (*t).time_passed = 0;
     }      
     (*t).display_value.sec = (*t).time_passed;
     /*
@@ -299,6 +293,6 @@ void print_weapon_status(Weapon t) {
 
 void print_timer_status(Timer t) {
 	printf("Timer: ");
-	printf("X: %u ", (unsigned int)t.x);
-	printf("Y: %u\n", (unsigned int)t.y);
+	printf("Seconds: %u ", (unsigned int)t.display_value.sec);
+	printf("Minute: %u\n", (unsigned int)t.display_value.min);
 }

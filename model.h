@@ -37,6 +37,7 @@ typedef struct {
     bool dead;
     /* Maybe delete */
     int HEIGHT, WIDTH;            /* 32, 16 */
+    int direction;
     UINT16 bound_left, bound_right;
     UINT16 *bitmap;
 } Enemy;
@@ -92,9 +93,9 @@ typedef struct timer_display{
 /* Create player with all default values at position x,y and pointer to bitmap */
 Player create_player(int x, int y, UINT32 *bitmap);
 
-void move_player_h(Player *pc, int direction);
+void give_player_horizontal_velocity(Player *pc, int direction);
 
-void move_enemy(Enemy *e, int speed);
+void move_enemy(Enemy *e);
 
 Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap);
 
