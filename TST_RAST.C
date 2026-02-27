@@ -136,13 +136,13 @@ int main()
 	plot_8bit_bitmap(base, 0, 10,  8);
 	Cnecin(); */
 
-	plot_8bit_bitmap(base, 631, 0, wall_R_bitmap, 400);
+	plot_8bit_bitmap(base, 0, 631, wall_R_bitmap, 400);
 	Cnecin(); 
 	plot_8bit_bitmap(base, 0, 0, wall_L_bitmap, 400);
 	Cnecin(); 
-	plot_16bit_bitmap(base, 50, 0, player_bitmap, 32);
+	plot_16bit_bitmap(base, 0, 50, player_bitmap, 32);
 	Cnecin(); 
-	plot_32bit_bitmap(base, 0, 390, floor_bitmap, 4);
+	plot_32bit_bitmap(base, 390, 0, floor_bitmap, 4);
 	Cnecin();
 	
 	clear_screen(base);

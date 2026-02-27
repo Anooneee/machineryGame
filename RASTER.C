@@ -235,7 +235,6 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	
 	
 	base += (row << 6) + (row << 4) + (col >> 3);
-	base += (row << 6) + (row << 4) + (col >> 3);
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){
@@ -254,7 +253,7 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 	/*variable declaration*/
 	int i;
 	
-	UINT16 x_shift = (row & 15);
+	UINT16 x_shift = (col & 15);
 	
 	
 	base += (row << 5) + (row << 3) + (col >> 4);
@@ -264,7 +263,7 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 			*base &= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
-			if ((col >> 3) < 39) {
+			if ((col >> 4) < 39) {
 			*(base + 1) |= (bitmap[i] << (16 - x_shift));
 		}
 	}
@@ -285,7 +284,7 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 			*base &= bitmap[i];
 		}else{
 			*base |= (bitmap[i] >> x_shift);
-			if ((col >> 3) < 19) {
+			if ((col >> 5) < 19) {
 			*(base + 1) |= (bitmap[i] << (32 - x_shift));
 		}
 	}
@@ -314,12 +313,14 @@ void plot_character(UINT8 *base, int row, int col, char ch){
 
 void plot_string(UINT8 *base, int row, int col, char *ch){
 	while(*ch != '\0'){
-		plot_character(base, row, col, *ch);	/*plot char to screen*/
+		if (*ch > 31) {
+			plot_character(base, row, col, *ch);	/*plot char to screen, if it's an actual character*/
+		}
 		col += 8;								/*move start point to next row*/
-		if(col >= SCREEN_WIDTH){
+		ch++;
+		if(col >= SCREEN_WIDTH || *ch == '\n'){
 			row += 8;
 			col = 0;
 		}
-		ch++;
 	}
 }
