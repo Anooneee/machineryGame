@@ -9,9 +9,14 @@
 /*for all functions assume the co-ordinates follow x first y second sturcture regardless of weather it is row or col first*/
 
 
-/*void clear_screen(UINT32 *base){
-	_clear_screen();
-}*/
+void clear_screen(UINT32 *base){
+	int i;
+	int screen_size = ((SCREEN_WIDTH+1)>>5) * (SCREEN_HEIGHT+1);
+
+	for (i = 0; i < screen_size; i++) {
+		base[i] = 0;
+	}
+}
 
 void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	/*variable declaration*/
