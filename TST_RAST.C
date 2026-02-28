@@ -23,7 +23,7 @@ int main()
 	disable_cursor();
 	clear_screen(base);
 	
-	fill_screen(base, -1);
+	/* fill_screen(base, -1);
 	clear_screen(base);
 
 	Cnecin();
@@ -130,27 +130,51 @@ int main()
 	plot_triangle(base, 370, 60, 80, 50, 3);
 	plot_triangle(base, 200, 20, 80, 50, 0);
 	plot_triangle(base, 200, 600, 80, 50, 1);
-	Cnecin();
+	Cnecin(); */
 	
 	/* plot_character(base, 0, 0, 'H');
 	plot_8bit_bitmap(base, 0, 10,  8);
 	Cnecin(); */
 
-	plot_8bit_bitmap(base, 0, 631, wall_R_bitmap, 400);
-	Cnecin(); 
-	plot_8bit_bitmap(base, 0, 0, wall_L_bitmap, 400);
-	Cnecin(); 
-	plot_16bit_bitmap(base, 0, 50, player_bitmap, 32);
-	Cnecin(); 
-	plot_32bit_bitmap(base, 390, 0, floor_bitmap, 4);
+	/* plot_8bit_bitmap(base, -4, 0, wall_L_bitmap, 32);
+	Cnecin();
+	clear_screen(base); 
+	plot_8bit_bitmap(base, 0, 0, wall_L_bitmap, 32);
+	Cnecin();
+	plot_8bit_bitmap(base, 32, -3, wall_L_bitmap, 32);
+	Cnecin();
+	plot_8bit_bitmap(base, 380, 0, wall_L_bitmap, 32);
+	Cnecin(); */
+
+	/* plot_16bit_bitmap(base, 0, 0, player_bitmap, 32);
+	Cnecin();
+	clear_screen(base);
+	plot_16bit_bitmap(base, -12, 0, player_bitmap, 32);
+	Cnecin();
+	plot_16bit_bitmap(base, 380, 0, player_bitmap, 32);
+	Cnecin();
+	plot_16bit_bitmap(base, 200, 630, player_bitmap, 32);
+	Cnecin();
+	plot_16bit_bitmap(base, 200, -5, player_bitmap, 32);
+	Cnecin(); */
+
+	plot_32bit_bitmap(base, 0, 0, floor_bitmap, 4);
+	Cnecin();
+	plot_32bit_bitmap(base, 10, -20, floor_bitmap, 4);
+	Cnecin();
+	plot_32bit_bitmap(base, 398, 0, floor_bitmap, 4);
+	Cnecin();
+	plot_32bit_bitmap(base, -1, 50, floor_bitmap, 4);
+	Cnecin();
+	plot_32bit_bitmap(base, 0, 620, floor_bitmap, 4);
 	Cnecin();
 	
 	clear_screen(base);
-	Cnecin();
+	/* Cnecin();
 	plot_string(base, 0, 0, "Hello world!\n");
 	clear_screen(base);
 	Cnecin();
-	plot_string(base, 0, 0, "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!\n");
+	plot_string(base, 0, 0, "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!\n"); */
 	return 0;
 }
 

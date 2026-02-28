@@ -240,7 +240,9 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 		if(x_shift == 0){
 			*base |= bitmap[i];
 		}else{
+			if(col >= 0){
 			*base |= (bitmap[i] >> x_shift);
+			}
 			if ((col >> 3) < 79) {
 			*(base + 1) |= (bitmap[i] << (8 - x_shift));
 		}
@@ -260,9 +262,11 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){
-			*base &= bitmap[i];
+			*base |= bitmap[i];
 		}else{
+			if(col >= -7){
 			*base |= (bitmap[i] >> x_shift);
+			}
 			if ((col >> 4) < 39) {
 			*(base + 1) |= (bitmap[i] << (16 - x_shift));
 		}
@@ -281,9 +285,11 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){
-			*base &= bitmap[i];
+			*base |= bitmap[i];
 		}else{
+			if(col >= 0){
 			*base |= (bitmap[i] >> x_shift);
+			}
 			if ((col >> 5) < 19) {
 			*(base + 1) |= (bitmap[i] << (32 - x_shift));
 		}
