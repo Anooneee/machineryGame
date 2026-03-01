@@ -11,7 +11,7 @@ int main() {
     Weapon w;
 
     r = create_room_1();
-    p = create_player(100,100, test_bitmap_32);
+    p = create_player(100,100, player_bitmap);
     t = create_timer();
 
     printf("\n-------- Room routines:\n");

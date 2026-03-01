@@ -39,7 +39,7 @@ Weapon attack(Player *pc, UINT16 *bitmap){
 }
 
 /* Create player */
-Player create_player(int x, int y, UINT32 *bitmap){
+Player create_player(int x, int y, UINT16 *bitmap){
     Player p;
     p.x = x;
     p.y = y;
@@ -197,32 +197,32 @@ Room create_room_1(){
     /* Make walls */
     r1.wall_count = 2;
     r1.walls = malloc(r1.wall_count * sizeof(Wall));
-    r1.walls[0] = create_wall(10,50,150);
-    r1.walls[1] = create_wall(350,50,300);
+    r1.walls[0] = create_wall(10,50,148);
+    r1.walls[1] = create_wall(350,50,148);
 
     /* Make floor or roofs */
     r1.floor_count = 2;
     r1.floors = malloc(r1.floor_count * sizeof(Floor));
-    r1.floors[0] = create_floor(50,350,150);
-    r1.floors[1] = create_floor(50,200,400);
+    r1.floors[0] = create_floor(10,46,340);
+    r1.floors[1] = create_floor(10,198,340);
 
     /* Make exits */
     r1.exit_count = 2;
     r1.exits = malloc(r1.exit_count * sizeof(Exit));
-    r1.exits[0] = create_exit(50,350,150,VERTICAL);
-    r1.exits[1] = create_exit(50,200,400,HORIZONTAL);
+    r1.exits[0] = create_exit(10,80,50,VERTICAL);
+    r1.exits[1] = create_exit(130,198,50,HORIZONTAL);
 
     /* Make enemies */
     r1.enemy_count = 2;
     r1.enemies = malloc(r1.enemy_count * sizeof(Enemy));
-    r1.enemies[0] = create_enemy(100,300,50,150,test_bitmap_16);
-    r1.enemies[1] = create_enemy(300,200,250,350,test_bitmap_16);
+    r1.enemies[0] = create_enemy(100,166,50,150,enemy_bitmap);
+    r1.enemies[1] = create_enemy(200,166,250,350,enemy_bitmap);
 
     /* Make traps */
     r1.trap_count = 2;
     r1.traps = malloc(r1.trap_count * sizeof(Trap));
-    r1.traps[0] = create_trap(50,330,test_bitmap_16);
-    r1.traps[1] = create_trap(300,200,test_bitmap_16);
+    r1.traps[0] = create_trap(80,182,trap_bitmap);
+    r1.traps[1] = create_trap(300,182,trap_bitmap);
 
     return r1;
 }

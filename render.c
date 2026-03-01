@@ -1,0 +1,106 @@
+#include "types.h"
+#include "bitmap.h"
+#include "raster.h"
+#include "model.h"
+#include "render.h"
+
+void init_render(UINT32* base) {
+	clear_screen(base);
+}
+
+void render_player(UINT16* base, Player* p) {
+	plot_16bit_bitmap(base, p->y, p->x, p->bitmap, p->HEIGHT);
+}
+
+void render_weapon(UINT16* base, Weapon* w) {
+	plot_16bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
+}
+
+void render_enemy(UINT16* base, Enemy* e) {
+	plot_16bit_bitmap(base, e->y, e->x, e->bitmap, e->HEIGHT);
+}
+
+void render_trap(UINT16* base, Trap* t) {
+	plot_16bit_bitmap(base, t->y, t->x, t->bitmap, t->HEIGHT);
+}
+
+void render_exit(UINT32* base, Exit* e) {
+	if (e->type == VERTICAL) {
+		clear_region(base, e->y, e->x, e->size, 8);
+	}
+	else {
+		clear_region(base, e->y, e->x, 4, e->size);
+	}
+}
+
+void render_floor(UINT32* base, Floor* f) {
+	int i;
+	for (i = 0; i < f->size; i += 32) {
+		plot_32bit_bitmap(base, f->y, f->x + i, floor_bitmap, 4);
+	}
+}
+
+void render_left_wall(UINT8* base, Wall* w) {
+	int i;
+	for (i = 0; i < (w->size - 32); i += 32) {
+		plot_8bit_bitmap(base, w->y + i, w->x, wall_L_bitmap, 32);
+	}
+	plot_8bit_bitmap(base, w->y + i, w->x, wall_L_bitmap, w->size & 31);
+}
+
+void render_right_wall(UINT8* base, Wall* w) {
+	int i;
+	for (i = 0; i < (w->size - 32); i += 32) {
+		plot_8bit_bitmap(base, w->y + i, w->x, wall_R_bitmap, 32);
+	}
+	plot_8bit_bitmap(base, w->y + i, w->x, wall_R_bitmap, w->size & 31);	
+}
+
+void render_room(UINT32* base, Room* r) {
+	int i;
+
+	for (i = 0; i < r->wall_count; i++) {
+		if (r->walls[i].x > 320) {
+			render_right_wall((UINT8*)base, &r->walls[i]);
+		}
+		else {
+			render_left_wall((UINT8*)base, &r->walls[i]);
+		}
+	}
+
+	for (i = 0; i < r->floor_count; i++) {
+		render_floor(base, &r->floors[i]);
+	}
+
+	for (i = 0; i < r->exit_count; i++) {
+		render_exit(base, &r->exits[i]);
+	}
+
+	for (i = 0; i < r->enemy_count; i++) {
+		render_enemy((UINT16*)base, &r->enemies[i]);
+	}
+
+	for (i = 0; i < r->trap_count; i++) {
+		render_trap((UINT16*)base, &r->traps[i]);
+	}
+}
+
+void render_timer(UINT8* base, Timer* t) {
+	char timeString[5];
+	if (t->display_value.min > 99) {
+		timeString[0] = '9';
+		timeString[1] = '9';
+		timeString[2] = ':';
+		timeString[3] = '9';
+		timeString[4] = '9';
+	}
+	else {
+		timeString[0] = '0' + t->display_value.min / 10;
+		timeString[1] = '0' + t->display_value.min % 10;
+		timeString[2] = ':';
+		timeString[3] = '0' + t->display_value.sec / 10;
+		timeString[4] = '0' + t->display_value.sec % 10;
+	}
+
+	plot_string(base, t->y, t->x, timeString);
+}

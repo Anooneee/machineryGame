@@ -4,9 +4,19 @@
 #include "types.h"
 #include "model.h"
 
-void render(const Model *model, UINT8 * base);
-void player_render();
+void init_render(UINT32* base);
 
+void render_player(UINT16* base, Player* p);
+void render_weapon(UINT16* base, Weapon* w);
 
+void render_enemy(UINT16* base, Enemy* e);
+void render_trap(UINT16* base, Trap* t);
+void render_exit(UINT32* base, Exit* e);
+void render_left_wall(UINT8* base, Wall* w);
+void render_right_wall(UINT8* base, Wall* w);
+void render_floor(UINT32* base, Floor* f);
+void render_room(UINT32* base, Room* r);
+
+void render_timer(UINT8* base, Timer* t);
 
 #endif
