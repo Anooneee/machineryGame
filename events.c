@@ -13,6 +13,7 @@ Weapon user_input_x(Player *p, UINT16 *bitmap){
 void user_input_space(Player *p){
     if((*p).grounded == TRUE){
         jump_player(p);
+        (*p).grounded == FALSE;
     };
 };
 
@@ -171,59 +172,6 @@ int test_collisions(Player *p, Room r){
 
     return 0;
 };
-
-
-/*
-Collison box calculations: peudocode cuz meyh brain hurt
-
-Hitbox vs point
-Box(x, y, size, direction)
-
-If direction VERTICAL:
-    // Hitbox == (x,y to y + size)
-    so if(point.x == line.x && (point.y > line.y && point.y < line.y + size))
-            hit! = true;
-    }
-
-If direction HORIZONTAL:
-    if(point.y == line.y && (point.x > line.x && point.x < line.x + size))
-            hit! = true;
-    }
-
-Box(x, y, HEIGTH, WIDTH)
-// Hitbox == (x,y to x+WIDTH,y+HEIGHT)
-    if (point.x > box.x && point.x < box.x+WIDTH) && (point.y > box.y && point.y < box.y+HEIGTH)
-
-*/
-
-/*
-Hitbox vs hitbox
-
-If direction VERTICAL:
-    so if((object.x <= line.x && object.x+WIDTH >= line.x) && 
-        (object.y >= line.y && object.y+HEIGHT <= line.y + size))
-            hit! = true;
-    }
-
-If direction HORIZONTAL:
-    so if((object.x+WIDTH >= line.x && object.x <= line.x+size) && 
-        (object.y <= line.y && object.y+HEIGHT >= line.y))
-            hit! = true;
-    }
-
-Box(x, y, HEIGTH, WIDTH)
-// Hitbox == (x,y to x+WIDTH,y+HEIGHT) vs Hitbox2
-    if ((object.x <= box.x + box.WIDTH && object.x + object.WIDTH >= box.x) && // FIND IF OBJECT X IS WITHIN BOX X
-        (object.y <= box.y + box.HEIGHT && object.y + object.HEIGHT >= box.y) // FIND IF OBJECT Y IS WITHIN BOX Y
-    ) 
-
-
-*/
-
-
-/*
-Synchronous (Timed) Events
-*/
 
 /*
 Every second:

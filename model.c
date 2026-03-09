@@ -30,9 +30,12 @@ void fall_player(Player *pc, int gravity_strength){
 
 /* Return a weapon object 16 pixels in front of the player and start cooldown period */
 Weapon attack(Player *pc, UINT16 *bitmap){
+    Weapon w;
     if ((*pc).attack_cooldown <= 0){
         (*pc).attack_cooldown = 32;
-        return create_weapon((*pc).x + (16 * (*pc).direction), (*pc).y, (*pc).direction, bitmap);
+        w = create_weapon((*pc).x + (16 * (*pc).direction), (*pc).y, (*pc).direction, bitmap);
+        w.active = TRUE;
+        return w;
     }
     /* If the attack cooldown is still happening, summon a weapon outside the screen. */
     return create_weapon(640,400,LEFT,bitmap);
@@ -63,6 +66,7 @@ Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
     Weapon w;
     w.x = x;
     w.y = y;
+    w.active = FALSE;
     w.HEIGHT = 32;
     w.WIDTH = 64;
     w.direction = direction;
@@ -288,7 +292,8 @@ void print_player_status(Player t) {
 void print_weapon_status(Weapon t) {
 	printf("Weapon: ");
 	printf("X: %u ", (unsigned int)t.x);
-	printf("Y: %u\n", (unsigned int)t.y);
+	printf("Y: %u", (unsigned int)t.y);
+    printf("Active: %u\n", (bool) t.active)
 }
 
 void print_timer_status(Timer t) {

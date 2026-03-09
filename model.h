@@ -26,6 +26,7 @@ typedef struct {
     UINT16 x, y;
     int HEIGHT, WIDTH;
     int direction;
+    bool active;
     UINT16 *bitmap;
 } Weapon;
 
@@ -111,6 +112,7 @@ Floor create_floor(UINT16 x,UINT16 y,int size);
 /* Create enemy at x,y with bound positions at x = bound left and x = bound right */
 Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UINT16 *bitmap);
 
+/* DO NOT USE THIS */
 Room create_room_1();
 
 void jump_player(Player *pc);
@@ -146,6 +148,40 @@ void print_player_status(Player p);
 void print_weapon_status(Weapon p);
 
 void print_timer_status(Timer p);
+
+/*
+
+Room ROOM_ONE = {
+    ROOM_ONE.wall_count = 2;
+    ROOM_ONE.walls[0] = create_wall(10,50,148);
+    ROOM_ONE.walls[1] = create_wall(350,50,148);
+
+    /* Make floor or roofs *//*
+    ROOM_ONE.floor_count = 2;
+    ROOM_ONE.floors[0] = create_floor(10,46,340);
+    ROOM_ONE.floors[1] = create_floor(10,198,340);
+
+    /* Make exits *//*
+    ROOM_ONE.exit_count = 2;
+    ROOM_ONE.exits[0] = create_exit(10,80,50,VERTICAL);
+    ROOM_ONE.exits[1] = create_exit(130,198,50,HORIZONTAL);
+
+    /* Make enemies *//*
+    ROOM_ONE.enemy_count = 2;
+    ROOM_ONE.enemies[0] = create_enemy(100,166,50,150,enemy_bitmap);
+    ROOM_ONE.enemies[1] = create_enemy(200,166,250,350,enemy_bitmap);
+
+    /* Make traps *//*
+    ROOM_ONE.trap_count = 2;
+    ROOM_ONE.traps[0] = create_trap(80,182,trap_bitmap);
+    ROOM_ONE.traps[1] = create_trap(300,182,trap_bitmap);
+}
+*/
+
+
+
+
+
 
 #endif
 
