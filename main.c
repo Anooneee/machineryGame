@@ -1,5 +1,8 @@
 #include "model.h"
+#include "bitmap.h"
+#include <osbind.h>
 
+UINT32 get_time(){};
 
 int main(){
     Room cur_room;
@@ -7,6 +10,9 @@ int main(){
     Player p1;
     Weapon sword;
     int i; /* For loop counters */
+
+   
+
 
     p1 = create_player(100,100,PLAYERBITMAP);
 
@@ -67,3 +73,12 @@ int main(){
     
     return 0;
 }
+
+UINT32 get_time() {
+    long old_ssp;
+    old_ssp = Super(0);
+    timeNow = *timer;
+    Super(old_ssp);
+    return timer;
+}
+
