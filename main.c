@@ -1,6 +1,8 @@
 #include "model.h"
 #include "bitmap.h"
 #include <osbind.h>
+#include "types.h"
+
 
 UINT32 get_time(){};
 
@@ -10,10 +12,10 @@ int main(){
     Player p1;
     Weapon sword;
     int i; /* For loop counters */
+    int quit = 0;
+    UINT32 timeThen, timeNow, timeElapsed;
 
-   
-
-
+    while(quit < 1){
     p1 = create_player(100,100,PLAYERBITMAP);
 
     if (input in buffer){ /* I'll figure this out later im just mapping it out rn */
@@ -70,6 +72,7 @@ int main(){
     if (time_passed == 1second){
         every_second(&timer);
     }
+}
     
     return 0;
 }
