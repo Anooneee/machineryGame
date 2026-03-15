@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "types.h"
 #include "model.h"
 #include "bitmap.h"
+#include "mem.h"
 
 /*player related functions*/
 /* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
@@ -10,6 +10,14 @@
 void give_player_horizontal_velocity(Player *pc, int direction){             
     (*pc).direction = direction;
     (*pc).horizontal_velocity = (*pc).speed * (*pc).direction;
+}
+
+void give_player_jump_time(Player *pc, int time){             
+    (*pc).jump_time = time;
+}
+
+void update_player_grounded(Player *p, bool val) {
+	p->grounded = val;
 }
 
 /* Very simple "teleport" to end of jump. No roof or end of screen checks*/
@@ -22,23 +30,28 @@ void jump_player(Player *pc){
 /* NOT DONE. Call every movement frame when player is meant to fall. */
 void fall_player(Player *pc, int gravity_strength){
     if ((*pc).grounded == FALSE){
-        (*pc).vertical_velocity = -gravity_strength;
+        (*pc).vertical_velocity = gravity_strength;
         
         (*pc).y = (*pc).y + (*pc).vertical_velocity;
     }
 }
 
 /* Return a weapon object 16 pixels in front of the player and start cooldown period */
-Weapon attack(Player *pc, UINT16 *bitmap){
-    Weapon w;
+Weapon* attack(Player *pc, UINT16 *bitmap){
+    Weapon* w;
     if ((*pc).attack_cooldown <= 0){
         (*pc).attack_cooldown = 32;
         w = create_weapon((*pc).x + (16 * (*pc).direction), (*pc).y, (*pc).direction, bitmap);
-        w.active = TRUE;
+        w->active = TRUE;
         return w;
     }
-    /* If the attack cooldown is still happening, summon a weapon outside the screen. */
-    return create_weapon(640,400,LEFT,bitmap);
+    /* If the attack cooldown is still happening, return NULL. */
+    return NULL;
+}
+
+void free_weapon(Weapon* w) {
+	my_free(w);
+	w = NULL;
 }
 
 /* Create player */
@@ -62,16 +75,15 @@ Player create_player(int x, int y, UINT16 *bitmap){
 
 
 /*Player attack related functions*/
-Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
-    Weapon w;
-    w.x = x;
-    w.y = y;
-    w.active = FALSE;
-    w.HEIGHT = 32;
-    w.WIDTH = 64;
-    w.direction = direction;
-    w.bitmap = bitmap;
-
+Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
+	Weapon* w = my_malloc(sizeof(Weapon));
+	w->x = x;
+	w->y = y;
+	w->active = FALSE;
+	w->HEIGHT = 32;
+	w->WIDTH = 64;
+	w->direction = direction;
+	w->bitmap = bitmap;
 	return w;
 }
 
@@ -97,8 +109,6 @@ Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UI
     e.WIDTH = 16;
     e.direction = RIGHT;
     e.horizontal_velocity = 1;
-    e.vertical_velocity = 0;
-    e.grounded = TRUE;
     e.dead = FALSE;
     e.bitmap = bitmap;
     return e;
@@ -162,7 +172,7 @@ void update_timer(Timer *t){
     if((*t).time_passed == 60){
         (*t).display_value.min = (*t).display_value.min + 1;
         (*t).time_passed = 0;
-    }      
+    }
     (*t).display_value.sec = (*t).time_passed;
     /*
     (*t).display_value.min = (*t).time_passed / 60;
@@ -190,46 +200,45 @@ Timer create_timer(){
     return t;
 }
 
-
-
 /*room functions*/
 
-/* Example room */
-Room create_room_1(){
-    Room r1;
+Room* create_room_1(){
+    Room* r = my_malloc(sizeof(Room));
 
     /* Make walls */
-    r1.wall_count = 2;
-    r1.walls = malloc(r1.wall_count * sizeof(Wall));
-    r1.walls[0] = create_wall(10,50,148);
-    r1.walls[1] = create_wall(350,50,148);
+    r->wall_count = 2;
+    r->walls = my_malloc(r->wall_count * sizeof(Wall));
+    r->walls[0] = create_wall(0,0,400);
+    r->walls[1] = create_wall(624,0,400);
 
     /* Make floor or roofs */
-    r1.floor_count = 2;
-    r1.floors = malloc(r1.floor_count * sizeof(Floor));
-    r1.floors[0] = create_floor(10,46,340);
-    r1.floors[1] = create_floor(10,198,340);
+    r->floor_count = 2;
+    r->floors = my_malloc(r->floor_count * sizeof(Floor));
+    r->floors[0] = create_floor(10,46,340);
+    r->floors[1] = create_floor(10,198,340);
 
     /* Make exits */
-    r1.exit_count = 2;
-    r1.exits = malloc(r1.exit_count * sizeof(Exit));
-    r1.exits[0] = create_exit(10,80,50,VERTICAL);
-    r1.exits[1] = create_exit(130,198,50,HORIZONTAL);
+    r->exit_count = 2;
+    r->exits = my_malloc(r->exit_count * sizeof(Exit));
+    r->exits[0] = create_exit(10,80,50,VERTICAL);
+    r->exits[1] = create_exit(130,198,50,HORIZONTAL);
 
     /* Make enemies */
-    r1.enemy_count = 2;
-    r1.enemies = malloc(r1.enemy_count * sizeof(Enemy));
-    r1.enemies[0] = create_enemy(100,166,50,150,enemy_bitmap);
-    r1.enemies[1] = create_enemy(200,166,250,350,enemy_bitmap);
+    r->enemy_count = 2;
+    r->enemies = my_malloc(r->enemy_count * sizeof(Enemy));
+    r->enemies[0] = create_enemy(100,166,50,150,enemy_bitmap);
+    r->enemies[1] = create_enemy(200,166,250,350,enemy_bitmap);
 
     /* Make traps */
-    r1.trap_count = 2;
-    r1.traps = malloc(r1.trap_count * sizeof(Trap));
-    r1.traps[0] = create_trap(80,182,trap_bitmap);
-    r1.traps[1] = create_trap(300,182,trap_bitmap);
+    r->trap_count = 2;
+    r->traps = my_malloc(r->trap_count * sizeof(Trap));
+    r->traps[0] = create_trap(80,182,trap_bitmap);
+    r->traps[1] = create_trap(300,182,trap_bitmap);
 
-    return r1;
+    return r;
 }
+
+
 
 /* Use print_object_status routines for each object in the room, up to 3 of each kind. */
 void print_room_status(Room r){
@@ -293,7 +302,7 @@ void print_weapon_status(Weapon t) {
 	printf("Weapon: ");
 	printf("X: %u ", (unsigned int)t.x);
 	printf("Y: %u", (unsigned int)t.y);
-    printf("Active: %u\n", (bool) t.active)
+	printf("Active: %u\n", (bool) t.active);
 }
 
 void print_timer_status(Timer t) {

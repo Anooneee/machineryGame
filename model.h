@@ -33,9 +33,6 @@ typedef struct {
 typedef struct {
     UINT16 x, y;
     int horizontal_velocity;            /* horiz . displacement per clock tick */
-    /* Maybe delete */
-    int vertical_velocity; 
-    bool grounded;
     bool dead;
     /* Maybe delete */
     int HEIGHT, WIDTH;            /* 32, 16 */
@@ -95,11 +92,15 @@ typedef struct timer_display{
 /* Create player with all default values at position x,y and pointer to bitmap */
 Player create_player(int x, int y, UINT16 *bitmap);
 
+void give_player_jump_time(Player *pc, int time);
+
 void give_player_horizontal_velocity(Player *pc, int direction);
+
+void update_player_grounded(Player *p, bool val);
 
 void move_enemy(Enemy *e);
 
-Weapon create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap);
+Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap);
 
 Exit create_exit(UINT16 x, UINT16 y, int size, int type);
 
@@ -113,13 +114,15 @@ Floor create_floor(UINT16 x,UINT16 y,int size);
 Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UINT16 *bitmap);
 
 /* DO NOT USE THIS */
-Room create_room_1();
+Room* create_room_1();
 
 void jump_player(Player *pc);
 
 void fall_player(Player *pc, int gravity_strength);
 
-Weapon attack(Player *pc, UINT16 *bitmap);
+Weapon* attack(Player *pc, UINT16 *bitmap);
+
+void free_weapon(Weapon* w);
 
 /* Call every second that passes. Calls update_display when done */
 void update_timer(Timer *t);
@@ -148,36 +151,6 @@ void print_player_status(Player p);
 void print_weapon_status(Weapon p);
 
 void print_timer_status(Timer p);
-
-/*
-
-Room ROOM_ONE = {
-    ROOM_ONE.wall_count = 2;
-    ROOM_ONE.walls[0] = create_wall(10,50,148);
-    ROOM_ONE.walls[1] = create_wall(350,50,148);
-
-    /* Make floor or roofs *//*
-    ROOM_ONE.floor_count = 2;
-    ROOM_ONE.floors[0] = create_floor(10,46,340);
-    ROOM_ONE.floors[1] = create_floor(10,198,340);
-
-    /* Make exits *//*
-    ROOM_ONE.exit_count = 2;
-    ROOM_ONE.exits[0] = create_exit(10,80,50,VERTICAL);
-    ROOM_ONE.exits[1] = create_exit(130,198,50,HORIZONTAL);
-
-    /* Make enemies *//*
-    ROOM_ONE.enemy_count = 2;
-    ROOM_ONE.enemies[0] = create_enemy(100,166,50,150,enemy_bitmap);
-    ROOM_ONE.enemies[1] = create_enemy(200,166,250,350,enemy_bitmap);
-
-    /* Make traps *//*
-    ROOM_ONE.trap_count = 2;
-    ROOM_ONE.traps[0] = create_trap(80,182,trap_bitmap);
-    ROOM_ONE.traps[1] = create_trap(300,182,trap_bitmap);
-}
-*/
-
 
 
 

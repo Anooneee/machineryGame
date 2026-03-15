@@ -6,8 +6,7 @@
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */
 
-/* Kinda useless. Need to fix/make better later */
-Weapon user_input_x(Player *p, UINT16 *bitmap);
+void user_input_x(Player *p, Weapon *w, UINT16 *bitmap);
 
 /* Jump! if on ground */
 void user_input_space(Player *p);
@@ -24,16 +23,19 @@ void user_input_ESC();
 bool is_collision_between_player_and_enemy(Player p, Enemy e);
 bool is_collision_between_player_and_trap(Player p, Trap t);
 bool is_collision_between_player_and_wall(Player p, Wall line);
-bool is_collision_between_player_and_floor(Player p, Floor line);
+bool is_collision_between_player_and_floor(Player *p, Room *r);
 bool is_collision_between_sword_and_enemy(Weapon w, Enemy e);
 bool is_collision_between_player_and_door(Player p, Exit d);
 /* Figure out how to kill enemy/player */
 
 /* ---------------------- Synchronous (Timed) Events -----------------------------*/
-/* Call when time has passed (IDK howw)*/
+/* Call when time has passed*/
 
 /* Only updates timer right now*/
 void every_second(Timer *t); /* Call every 70 ticks */
+void move_player_horiz(Player *p);
+void move_player_vert(Player *p);
+void move_enemies_horiz(Room* r);
 
 /*Every movement frame (.5 seconds):
 - Checks wall collision and Move player according to horizontal velocity

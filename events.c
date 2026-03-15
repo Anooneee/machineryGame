@@ -1,4 +1,5 @@
 #include "events.h"
+#include "model.h"
 
 
 /*
@@ -6,32 +7,32 @@ Asynchronous (Input) Events
 */
 
 /* This is lame and kinda useless function we should get rid of. I only put it here to finish the inputs but it redunant*/
-Weapon user_input_x(Player *p, UINT16 *bitmap){
-    Weapon w = attack(p,bitmap); /* Attack still summons a weapon if the cooldown is still going because it crashes if I don't return anything (NULL dont exist). The weapon is spawn at (640,400) thought so it's offscreen */
-};
+void user_input_x(Player *p, Weapon *w, UINT16 *bitmap){
+	w = attack(p,bitmap);
+}
 
 void user_input_space(Player *p){
     if((*p).grounded == TRUE){
-        jump_player(p);
+        give_player_jump_time(p, 30);
         (*p).grounded == FALSE;
-    };
-};
+    }
+}
 
 void user_input_d(Player *p){
     give_player_horizontal_velocity(p,RIGHT);
-};
+}
 
 void user_input_a(Player *p){
     give_player_horizontal_velocity(p,LEFT);
-};
+}
 
 void user_release_d_or_a(Player *p){
     (*p).horizontal_velocity = 0;
-};
+}
 
 void user_input_ESC(){
     return; /* Quit the program */
-};
+}
 
 /*conditional*/
 
@@ -42,7 +43,7 @@ bool is_collision_between_player_and_enemy(Player p, Enemy e){
         is_hit = TRUE;
     }
     return is_hit;
-};
+}
 
 bool is_collision_between_player_and_trap(Player p, Trap t){
     bool is_hit = FALSE;
@@ -51,7 +52,7 @@ bool is_collision_between_player_and_trap(Player p, Trap t){
         is_hit = TRUE;
     }
     return is_hit;
-};
+}
 
 bool is_collision_between_player_and_wall(Player p, Wall line){
     bool is_hit = FALSE;
@@ -60,30 +61,20 @@ bool is_collision_between_player_and_wall(Player p, Wall line){
             is_hit = TRUE;
     }
     return is_hit;
-};
+}
 
-/*
-bool is_collision_between_player_and_floor_and_grounded(Player *p, Floor line){
-    bool is_hit = FALSE;
-    if (((*p).x + (*p).WIDTH >= line.x && (*p).x <= line.x + line.size) && 
-        ((*p).y <= line.y && (*p).y + (*p).HEIGHT >= line.y)){ 
-            is_hit = TRUE;
-    }
-    /* Player is grounded if floor is 1 pix below them 
-    if (((*p).x + (*p).WIDTH >= line.x && (*p).x <= line.x + line.size) && 
-        ((*p).y + (*p).HEIGHT == line.y + 1)){ 
-            (*p).grounded = TRUE;
-    }
-    return is_hit;
-};*/
-bool is_collision_between_player_and_floor(Player p, Floor line){
-    bool is_hit = FALSE;
-    if ((p.x + p.WIDTH >= line.x && p.x <= line.x + line.size) && 
-        (p.y <= line.y && p.y + p.HEIGHT >= line.y)){ 
-            is_hit = TRUE;
-    };
-    return is_hit;
-};
+bool is_collision_between_player_and_floor(Player *p, Room *r) {
+	int i;
+
+	for (i = 0; i < r->floor_count; i++) {
+		if (p->y + p->HEIGHT + 1 == r->floors[i].y) {
+			if (p->x + p->WIDTH >= r->floors[i].x && p->x <= r->floors[i].x + r->floors[i].size) {
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
 
 bool is_collision_between_sword_and_enemy(Weapon w, Enemy e){
     bool is_hit = FALSE;
@@ -92,7 +83,7 @@ bool is_collision_between_sword_and_enemy(Weapon w, Enemy e){
         is_hit = TRUE;
     }
     return is_hit;
-};
+}
 
 bool is_collision_between_player_and_door(Player p, Exit d){
     bool is_hit = FALSE;
@@ -112,66 +103,7 @@ bool is_collision_between_player_and_door(Player p, Exit d){
     return is_hit;
 }
 
-/* ONLY FOR ORGANIZTION HERE ---- MOVE EACH TEST TO APPROITATE PLACES WHEN DONE  */
-/**/
-int test_collisions(Player *p, Room r){
-    int i;
-    Weapon w; /* WHEN YA MOVE TESTS TO APPORIANTE PLACES, WILL HAVE ACCESSS TO REAL WEAPON*/
 
-    /* MOVE TO TEST WHENEVER ENEMY MOVES (EVERY SECOND)*/
-    for (i=0; i < r.enemy_count; i++){ /* Loop every enemy in the room and test collision with the player */
-        if (is_collision_between_player_and_enemy(*p , r.enemies[i]) == TRUE){
-            return 1;
-            /* KILL YOURSELF */
-        }
-    }
-
-    /* MOVE TO TEST WHENEVER PLAYER MOVES */
-    for (i=0; i < r.wall_count; i++){ /* Loop every wall in the room and test collision with the player */
-        if (is_collision_between_player_and_wall(*p , r.walls[i]) == TRUE){
-            (*p).horizontal_velocity = 0;
-        }
-    }
-    
-    /* I changed the collison between player and floor function but I'm too lazy to fix this. 
-        View Synchronous events (Every movement frame()) to see the right collision check*/
-    /*
-    for (i=0; i < r.floor_count; i++){ /* Loop every floor in the room and test collision with the player /
-        if (is_collision_between_player_and_floor_and_grounded(p , r.floors[i]) == TRUE){ /* Pass pointer to player so collsion tester can change the grounded flag if needed /
-            (*p).vertical_velocity = 0;
-        }
-        else{
-            if ((*p).grounded == FALSE){
-                fall_player(p,3);
-            }
-        }
-    }
-    */
-    
-    for (i=0; i < r.exit_count; i++){ /* Loop every exit in the room and test collision with the player */
-        if (is_collision_between_player_and_door(*p, r.exits[i]) == TRUE){
-            return 1;
-            /* SWITCH ROOMS */
-        }
-    }
-
-    for (i=0; i < r.trap_count; i++){ /* Loop every trap in the room and test collision with the player */
-        if (is_collision_between_player_and_trap(*p , r.traps[i]) == TRUE){
-            return 1;
-            /* KILL YOURSELF */
-        }
-    }
-
-    /* MOVE TO TEST WHENEVER WEAPON IS SUMMONED THEN EVERY ENEMY MOVEMENT (SECOND) UNTIL SWORD DISAPPEARS */
-    for (i=0; i < r.enemy_count; i++){ /* Loop every enemy in the room and test collision with the weapon */
-        if (is_collision_between_sword_and_enemy(w , r.enemies[i]) == TRUE){
-            return 1;
-            /* KILL THE ENEMY */
-        }
-    }
-
-    return 0;
-};
 
 /*
 Every second:
@@ -189,21 +121,41 @@ Every frame: /////// I added these to every movement frame /////////////
 - Check if there is a wall in front of the player according to the horizontal velocity. If so, set horizzontal velocity = 0;
 */
 
-/* Move the contents to whereever we can calculate the ticks*/
 void every_second(Timer *t){ /* 70 ticks */
     update_timer(t);
 }
 
-void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
+void move_player_horiz(Player *p) {
+	p->x += p->horizontal_velocity;
+}
+
+void move_player_vert(Player *p) {
+	if (p->jump_time > 0) {
+		p->jump_time--;
+		p->vertical_velocity = p->jump_strength;
+	}
+	else {
+		fall_player(p, 1);
+	}
+}
+
+void move_enemies_horiz(Room *r) {
+	int i;
+	for (i = 0; i < r->enemy_count; i++) {
+		move_enemy(&(r->enemies[i]));
+	}
+}
+
+/*
+void every_movement_frame(Player *p, Room *r){
     Weapon w;
     Player player_test;
     int i;
 
-    /* Move player according to horizonal velocity. Check walls*/
     if((*p).horizontal_velocity != 0){
         player_test = *p;
-        player_test.x + player_test.horizontal_velocity; /* Give playertest the position real player would have if it moved*/
-        for (i=0; i < (*r).wall_count; i++){ /* Loop every wall in the room and test collision with the test player */
+        player_test.x + player_test.horizontal_velocity;
+        for (i=0; i < (*r).wall_count; i++){
             if (is_collision_between_player_and_wall(player_test , (*r).walls[i]) == TRUE){
                 (*p).horizontal_velocity = 0;
             }
@@ -213,10 +165,9 @@ void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
         }
     }
 
-    /* Move player according to vertical velocity. Check grounded value and floors/roofs collisions */
     player_test = *p;
-    player_test.y + player_test.vertical_velocity; /* Give playertest the position real player would have if it moved*/
-    for (i=0; i < (*r).floor_count; i++){ /* Loop every floor in the room and test collision with the player */
+    player_test.y + player_test.vertical_velocity; 
+    for (i=0; i < (*r).floor_count; i++){ 
         if (is_collision_between_player_and_floor(player_test , (*r).floors[i]) == TRUE){ 
             (*p).vertical_velocity = 0;
         } 
@@ -224,7 +175,7 @@ void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
             (*p).y = (*p).y + (*p).vertical_velocity;
         }
 
-        if (((*p).x + (*p).WIDTH >= (*r).floors[i].x && (*p).x <= (*r).floors[i].x + (*r).floors[i].size) && ((*p).y + (*p).HEIGHT == (*r).floors[i].y + 1)) { /* Player is grounded if floor is 1 pix below them */
+        if (((*p).x + (*p).WIDTH >= (*r).floors[i].x && (*p).x <= (*r).floors[i].x + (*r).floors[i].size) && ((*p).y + (*p).HEIGHT == (*r).floors[i].y + 1)) {
             (*p).grounded = TRUE;
         }
         else{
@@ -233,19 +184,16 @@ void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
         }
     }
 
-    /* Move all enemys in the room */
     for (i=0; i < (*r).enemy_count; i++){
         move_enemy(&(*r).enemies[i]);
     }
 
-    /* Lower attack cooldown */
     if((*p).attack_cooldown > 0){
         (*p).attack_cooldown = (*p).attack_cooldown - 5;
     }
 
-    /* Automatically stops postive vertical velocity after jumping for a certain amount of time */
-    if((*p).vertical_velocity > 0){ /* If player is moving up */
-        if((*p).jump_time < 30){    /* Start jump counter */
+    if((*p).vertical_velocity > 0){
+        if((*p).jump_time < 30){
             (*p).jump_time = (*p).jump_time + 5;
         }
         else {
@@ -255,4 +203,4 @@ void every_movement_frame(Player *p, Room *r){ /* 35 ticks */
     else{
         (*p).jump_time = 0;
     }
-}
+}*/

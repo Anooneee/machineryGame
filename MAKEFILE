@@ -1,33 +1,30 @@
 CC = cc68x
 
-all: tst_obj.tos tst_rast.tos tst_rend.tos
+all: game.tos
 
-tst_obj.tos: tst_obj.o model.o bitmap.o
-	$(CC) -g tst_obj.o model.o bitmap.o -o tst_obj.tos
+game.tos: main.o model.o events.o input.o render.o raster.o mem.o
+	$(CC) main.o model.o events.o input.o render.o raster.o mem.o -o game.tos
 
-tst_rast.tos: tst_rast.o raster.o raster.o
-	$(CC) -g tst_rast.o raster.o -o tst_rast.tos
-
-tst_rend.tos: tst_rend.o render.o model.o raster.o
-	$(CC) -g tst_rend.o render.o model.o raster.o -o tst_rend.tos
-
-tst_obj.o: tst_obj.c model.h types.h bitmap.h
-	$(CC) -c tst_obj.c
+main.o: main.c model.h events.h render.h input.h bitmap.h
+	$(CC) -c main.c
 
 bitmap.o: bitmap.c bitmap.h
 	$(CC) -c bitmap.c
 
-model.o: model.c model.h types.h
+model.o: model.c model.h types.h bitmap.h mem.h
 	$(CC) -c model.c
 
-tst_rast.o: tst_rast.c raster.h
-	$(CC) -g -c tst_rast.c
+events.o: events.c events.h
+	$(CC) -c events.c
+
+input.o: input.c input.h types.h
+	$(CC) -c input.c
 
 raster.o: raster.c raster.h
-	$(CC) -g -c raster.c
-
-tst_rend.o: tst_rend.c types.h bitmap.h model.h render.h
-	$(CC) -c tst_rend.c
+	$(CC) -c raster.c
 
 render.o: render.c render.h types.h raster.h model.h bitmap.h
 	$(CC) -c render.c
+
+mem.o: mem.c mem.h types.h
+	$(CC) -c mem.c

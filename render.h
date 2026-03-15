@@ -6,10 +6,16 @@
 
 void init_render(UINT32* base);
 
+void clear_player(UINT32* base, Player* p);
+void clear_enemies(UINT32* base, Room* room);
+void clear_weapon(UINT32* base, Weapon* w);
+
 void render_player(UINT16* base, Player* p);
 void render_weapon(UINT16* base, Weapon* w);
 
+void render_enemies(UINT16* base, Room* r);
 void render_enemy(UINT16* base, Enemy* e);
+
 void render_trap(UINT16* base, Trap* t);
 void render_exit(UINT32* base, Exit* e);
 void render_left_wall(UINT8* base, Wall* w);

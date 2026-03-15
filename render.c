@@ -8,12 +8,38 @@ void init_render(UINT32* base) {
 	clear_screen(base);
 }
 
+void clear_player(UINT32* base, Player* p) {
+	clear_region(base, p->y, p->x, p->HEIGHT, p->WIDTH);
+}
+
+void clear_enemies(UINT32* base, Room* room) {
+	int i;
+	Enemy current;
+	for (i = 0; i < room->enemy_count; i++) {
+		current = room->enemies[i];
+		
+		clear_region(base, current.y, current.x, current.HEIGHT, current.WIDTH);
+	}
+}
+
+void clear_weapon(UINT32* base, Weapon* w) {
+	clear_region(base, w->y, w->x, w->HEIGHT, w->WIDTH);
+}
+
 void render_player(UINT16* base, Player* p) {
 	plot_16bit_bitmap(base, p->y, p->x, p->bitmap, p->HEIGHT);
 }
 
 void render_weapon(UINT16* base, Weapon* w) {
 	plot_16bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
+}
+
+void render_enemies(UINT16* base, Room* r) {
+	int i;
+
+	for (i = 0; i < r->enemy_count; i++) {
+		render_enemy(base, &r->enemies[i]);
+	}
 }
 
 void render_enemy(UINT16* base, Enemy* e) {
@@ -74,10 +100,6 @@ void render_room(UINT32* base, Room* r) {
 
 	for (i = 0; i < r->exit_count; i++) {
 		render_exit(base, &r->exits[i]);
-	}
-
-	for (i = 0; i < r->enemy_count; i++) {
-		render_enemy((UINT16*)base, &r->enemies[i]);
 	}
 
 	for (i = 0; i < r->trap_count; i++) {
