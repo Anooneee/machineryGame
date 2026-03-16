@@ -17,7 +17,6 @@ void clear_enemies(UINT32* base, Room* room) {
 	Enemy current;
 	for (i = 0; i < room->enemy_count; i++) {
 		current = room->enemies[i];
-		
 		clear_region(base, current.y, current.x, current.HEIGHT, current.WIDTH);
 	}
 }
@@ -30,15 +29,17 @@ void render_player(UINT16* base, Player* p) {
 	plot_16bit_bitmap(base, p->y, p->x, p->bitmap, p->HEIGHT);
 }
 
-void render_weapon(UINT16* base, Weapon* w) {
-	plot_16bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
+void render_weapon(UINT32* base, Weapon* w) {
+	plot_32bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
 }
 
 void render_enemies(UINT16* base, Room* r) {
 	int i;
 
 	for (i = 0; i < r->enemy_count; i++) {
-		render_enemy(base, &r->enemies[i]);
+		if (!r->enemies[i].dead) {
+			render_enemy(base, &r->enemies[i]);
+		}
 	}
 }
 
@@ -125,4 +126,8 @@ void render_timer(UINT8* base, Timer* t) {
 	}
 
 	plot_string(base, t->y, t->x, timeString);
+}
+
+void game_message(UINT8* base, char* message) {
+	plot_string(base, 220, 300, message);
 }

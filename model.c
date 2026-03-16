@@ -20,10 +20,24 @@ void update_player_grounded(Player *p, bool val) {
 	p->grounded = val;
 }
 
+void teleport_player(int x, int y, Player *p) {
+	p->x = x;
+	p->y = y;
+}
+
+void decrement_cooldown(Player *p) {
+	if (p->attack_cooldown > 0) {
+		p->attack_cooldown--;
+	}
+}
+
 /* Very simple "teleport" to end of jump. No roof or end of screen checks*/
 void jump_player(Player *pc){ 
-    if((*pc).jump_time <= 0){
+    if((*pc).jump_time > 0){
+	(*pc).jump_time--;
         (*pc).vertical_velocity = (*pc).jump_strength;
+
+	(*pc).y -= (*pc).vertical_velocity;
     }
 }
 
@@ -37,22 +51,18 @@ void fall_player(Player *pc, int gravity_strength){
 }
 
 /* Return a weapon object 16 pixels in front of the player and start cooldown period */
-Weapon* attack(Player *pc, UINT16 *bitmap){
+Weapon* attack(Player *pc) {
     Weapon* w;
-    if ((*pc).attack_cooldown <= 0){
+    if ((*pc).attack_cooldown <= 0) {
         (*pc).attack_cooldown = 32;
-        w = create_weapon((*pc).x + (16 * (*pc).direction), (*pc).y, (*pc).direction, bitmap);
+        w = create_weapon((*pc).x + (32 * (*pc).direction), (*pc).y, (*pc).direction, weapon_bitmap);
         w->active = TRUE;
         return w;
     }
     /* If the attack cooldown is still happening, return NULL. */
-    return NULL;
+    return 0;
 }
 
-void free_weapon(Weapon* w) {
-	my_free(w);
-	w = NULL;
-}
 
 /* Create player */
 Player create_player(int x, int y, UINT16 *bitmap){
@@ -61,11 +71,11 @@ Player create_player(int x, int y, UINT16 *bitmap){
     p.y = y;
     p.grounded = FALSE;
     p.attack_cooldown = 0;
-    p.jump_strength = 64;
+    p.jump_strength = 1;
     p.jump_time = 0;
     p.horizontal_velocity = 0;
     p.vertical_velocity = 0;
-    p.speed = 1;
+    p.speed = 4;
     p.direction = RIGHT;
     p.HEIGHT = 32;
     p.WIDTH = 16;
@@ -75,13 +85,13 @@ Player create_player(int x, int y, UINT16 *bitmap){
 
 
 /*Player attack related functions*/
-Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap){
+Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT32 *bitmap){
 	Weapon* w = my_malloc(sizeof(Weapon));
 	w->x = x;
 	w->y = y;
 	w->active = FALSE;
-	w->HEIGHT = 32;
-	w->WIDTH = 64;
+	w->HEIGHT = 8;
+	w->WIDTH = 32;
 	w->direction = direction;
 	w->bitmap = bitmap;
 	return w;
@@ -202,40 +212,70 @@ Timer create_timer(){
 
 /*room functions*/
 
+void free_room(Room* r) {
+	my_free(r->walls);
+	my_free(r->floors);
+	my_free(r->exits);
+	my_free(r->enemies);
+	my_free(r->traps);
+
+	my_free(r);
+	r = 0;
+}
+
+void free_weapon(Weapon* w) {
+	my_free(w);
+}
+
 Room* create_room_1(){
     Room* r = my_malloc(sizeof(Room));
 
     /* Make walls */
     r->wall_count = 2;
     r->walls = my_malloc(r->wall_count * sizeof(Wall));
-    r->walls[0] = create_wall(0,0,400);
-    r->walls[1] = create_wall(624,0,400);
+    r->walls[0] = create_wall(0,0,300);
+    r->walls[1] = create_wall(632,0,300);
 
     /* Make floor or roofs */
     r->floor_count = 2;
     r->floors = my_malloc(r->floor_count * sizeof(Floor));
-    r->floors[0] = create_floor(10,46,340);
-    r->floors[1] = create_floor(10,198,340);
+    r->floors[0] = create_floor(0,0,640);
+    r->floors[1] = create_floor(0,300,640);
 
     /* Make exits */
-    r->exit_count = 2;
+    r->exit_count = 1;
     r->exits = my_malloc(r->exit_count * sizeof(Exit));
-    r->exits[0] = create_exit(10,80,50,VERTICAL);
-    r->exits[1] = create_exit(130,198,50,HORIZONTAL);
+    r->exits[0] = create_exit(632,250,50,VERTICAL);
 
     /* Make enemies */
     r->enemy_count = 2;
     r->enemies = my_malloc(r->enemy_count * sizeof(Enemy));
-    r->enemies[0] = create_enemy(100,166,50,150,enemy_bitmap);
-    r->enemies[1] = create_enemy(200,166,250,350,enemy_bitmap);
+    r->enemies[0] = create_enemy(200,267,180,220,enemy_bitmap);
+    r->enemies[1] = create_enemy(400,267,380,420,enemy_bitmap);
 
     /* Make traps */
     r->trap_count = 2;
     r->traps = my_malloc(r->trap_count * sizeof(Trap));
-    r->traps[0] = create_trap(80,182,trap_bitmap);
-    r->traps[1] = create_trap(300,182,trap_bitmap);
+    r->traps[0] = create_trap(110,283,trap_bitmap);
+    r->traps[1] = create_trap(450,283,trap_bitmap);
 
     return r;
+}
+
+Room* create_room_2(){
+	return create_room_1();
+}
+
+Room* create_room_3(){
+	return create_room_1();
+}
+
+Room* create_room_4(){
+	return create_room_1();
+}
+
+Room* create_room_5(){
+	return create_room_1();
 }
 
 

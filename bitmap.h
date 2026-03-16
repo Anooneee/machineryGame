@@ -9,6 +9,7 @@ extern const UINT16 player_bitmap[];
 extern const UINT16 enemy_bitmap[];
 extern const UINT16 trap_bitmap[];
 extern const UINT32 floor_bitmap[];
+extern const UINT32 weapon_bitmap[];
 extern const UINT32 test_bitmap_32[];
 extern const UINT16 test_bitmap_16[];
 

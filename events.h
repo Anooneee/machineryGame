@@ -6,7 +6,7 @@
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */
 
-void user_input_x(Player *p, Weapon *w, UINT16 *bitmap);
+Weapon* user_input_x(Player *p);
 
 /* Jump! if on ground */
 void user_input_space(Player *p);
@@ -20,13 +20,17 @@ void user_input_ESC();
 
 
 /* ---------------------- Conditional Events (Mostly collisions) -----------------------------*/
-bool is_collision_between_player_and_enemy(Player p, Enemy e);
-bool is_collision_between_player_and_trap(Player p, Trap t);
-bool is_collision_between_player_and_wall(Player p, Wall line);
+bool is_collision_between_player_and_enemy(Player* p, Enemy* e);
+bool is_collision_between_player_and_trap(Player* p, Trap* t);
+bool is_collision_between_player_and_wall(Player* p, Room* r);
 bool is_collision_between_player_and_floor(Player *p, Room *r);
-bool is_collision_between_sword_and_enemy(Weapon w, Enemy e);
-bool is_collision_between_player_and_door(Player p, Exit d);
+bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e);
+bool is_collision_between_player_and_exits(Player *p, Room *r);
 /* Figure out how to kill enemy/player */
+
+Room* change_map(Room* r, int room_number);
+void kill_attacked_enemies(Room* r, Weapon* w);
+bool is_player_dead(Room* r, Player* p);
 
 /* ---------------------- Synchronous (Timed) Events -----------------------------*/
 /* Call when time has passed*/

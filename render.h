@@ -11,7 +11,7 @@ void clear_enemies(UINT32* base, Room* room);
 void clear_weapon(UINT32* base, Weapon* w);
 
 void render_player(UINT16* base, Player* p);
-void render_weapon(UINT16* base, Weapon* w);
+void render_weapon(UINT32* base, Weapon* w);
 
 void render_enemies(UINT16* base, Room* r);
 void render_enemy(UINT16* base, Enemy* e);
@@ -24,5 +24,7 @@ void render_floor(UINT32* base, Floor* f);
 void render_room(UINT32* base, Room* r);
 
 void render_timer(UINT8* base, Timer* t);
+
+void game_message(UINT8* base, char* message);
 
 #endif

@@ -27,7 +27,7 @@ typedef struct {
     int HEIGHT, WIDTH;
     int direction;
     bool active;
-    UINT16 *bitmap;
+    UINT32 *bitmap;
 } Weapon;
 
 typedef struct {
@@ -98,9 +98,13 @@ void give_player_horizontal_velocity(Player *pc, int direction);
 
 void update_player_grounded(Player *p, bool val);
 
+void teleport_player(int x, int y, Player *p);
+
+void decrement_cooldown(Player *p);
+
 void move_enemy(Enemy *e);
 
-Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT16 *bitmap);
+Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT32 *bitmap);
 
 Exit create_exit(UINT16 x, UINT16 y, int size, int type);
 
@@ -113,16 +117,20 @@ Floor create_floor(UINT16 x,UINT16 y,int size);
 /* Create enemy at x,y with bound positions at x = bound left and x = bound right */
 Enemy create_enemy(UINT16 x, UINT16 y, UINT16 bound_left, UINT16 bound_right, UINT16 *bitmap);
 
-/* DO NOT USE THIS */
+void free_room(Room* r);
+void free_weapon(Weapon* w);
+
 Room* create_room_1();
+Room* create_room_2();
+Room* create_room_3();
+Room* create_room_4();
+Room* create_room_5();
 
 void jump_player(Player *pc);
 
 void fall_player(Player *pc, int gravity_strength);
 
-Weapon* attack(Player *pc, UINT16 *bitmap);
-
-void free_weapon(Weapon* w);
+Weapon* attack(Player *pc);
 
 /* Call every second that passes. Calls update_display when done */
 void update_timer(Timer *t);
