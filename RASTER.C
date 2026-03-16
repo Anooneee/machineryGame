@@ -26,22 +26,25 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	
 	/*set variables*/
 	/*col is the start x co-ord*/
+
 	start_block = col >> 5; /*specify the start LW block*/
-	
-	end_x = col + width;	/*specify the end x co-ord*/
+
+	end_x = col + width - 1;	/*specify the end x co-ord*/
 	if(end_x > SCREEN_WIDTH) end_x = SCREEN_WIDTH;	/*end of line guard statement*/
 	end_block = end_x >> 5;
 	
 	
 	/*0xFFFFFFFF specifies mask to be manipulated to clear edge of region*/
 	start_mask = 0xFFFFFFFF << (32 - (col & 31)); /*shift for left edge of region*/
+	end_mask = 0xFFFFFFFF >> (end_x & 31);
+
 	end_mask = 0xFFFFFFFF >> ((end_x & 31) + 1); /*shift for right edge of region*/
 	
-	base += (row << 4) + (row << 2) + (col >> 5);
+	base += (row << 4) + (row << 2) + start_block;
 	
 	if(start_block == end_block){ 	/*clear loop if region is less than 32bit wide*/
 		for(i = 0; i < length; i++){  
-			*base &= (start_mask & end_mask); 
+			*base &= (start_mask | end_mask); 
 			base += 20;
 		}
 	}else{
