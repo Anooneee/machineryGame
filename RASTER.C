@@ -20,9 +20,9 @@ void clear_screen(UINT32 *base){
 
 void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	/*variable declaration*/
-	UINT32 start_mask, end_mask, start_block, end_block;
+	UINT32 start_mask, end_mask;
 	int end_x;	/*start and end x co-ords for clear region*/
-	int i, j, blocks, steps;
+	int i, j, blocks, steps, start_block, end_block;
 	
 	/*set variables*/
 	/*col is the start x co-ord*/
@@ -35,9 +35,7 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 	
 	/*0xFFFFFFFF specifies mask to be manipulated to clear edge of region*/
 	start_mask = 0xFFFFFFFF << (32 - (col & 31)); /*shift for left edge of region*/
-	end_mask = 0xFFFFFFFF >> (end_x & 31) + 1; /*shift for right edge of region*/
-	blocks = end_block - start_block - 2; /*-2 gives number of LW's between start and end exclusive*/
-	steps = 18 - blocks;	/*specifies number of LW left in line*/
+	end_mask = 0xFFFFFFFF >> ((end_x & 31) + 1); /*shift for right edge of region*/
 	
 	base += (row << 4) + (row << 2) + (col >> 5);
 	
@@ -48,15 +46,20 @@ void clear_region(UINT32 *base, int row, int col, UINT16 length, UINT16 width){
 		}
 	}else{
 		/*main clearing loop*/
-		for(i = 0; i <= length; i++){ /*y-portion of the loop*/
+		blocks = end_block - start_block - 1; /*-2 gives number of LW's between start and end exclusive*/
+		steps = 20 - (blocks + 1 );
+		for(i = 0; i < length; i++){ /*y-portion of the loop*/
 			*base &= start_mask;
 			base++;
-			for(j = 0; j <= blocks; j++){	/*x-portion of the loop*/
+			for(j = 0; j < blocks; j++){	/*x-portion of the loop*/
 				*base &= 0x00000000;	/*mask used to empty region*/
 				base++;
 			}
+			if (end_block > start_block){
 			*base &= end_mask;
+			}
 			base += steps;	/*advance to next line*/
+			
 		}
 
 	}
