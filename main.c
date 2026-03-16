@@ -5,11 +5,15 @@
 #include "render.h"
 #include "input.h"
 #include "bitmap.h"
+#include "mem.h"
 
 #define START_X 100
 #define START_Y 40
 
+UINT32* original;
+
 int main(){
+	/* Variables: */
 	char input;
 
 	Timer timer;
@@ -17,15 +21,17 @@ int main(){
 
 	Weapon* sword;
 
-	int room_number;
+	int room_number = 1;
 	Room* room = 0;
 
 	UINT32* base;
+	UINT32* back;
+	UINT32* temp;
 
 	int i, ticks; /* For loop counters */
+	int loop = 1; /* 1 if the game is running, 0 if not */
 
-	int loop = 1;
-	room_number = 1;
+	/* Program */
 
 	p1 = create_player(START_X,START_Y,player_bitmap);
 	timer = create_timer();
@@ -33,12 +39,17 @@ int main(){
 	sword = 0;
 
 	base = (UINT32*)Physbase();
+	original = base;
+	back = my_malloc(32000);
 
 	init_render(base);
+	init_render(back);
 	render_room(base, room);
+	render_room(back, room);
 
 	/* main game loop: */
 	while (loop) {
+
 		/* Input portion: */
 		if (has_input()) {
 			input = get_input();
@@ -76,14 +87,15 @@ int main(){
 			/* synchronous events: */
 			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
 
-			clear_player(base, &p1);
-			clear_enemies(base, room);
+			/* Clear the screen around movable entites: */
+			clear_player(back, &p1);
+			clear_enemies(back, room);
 
 			if (sword) {
-				render_weapon(base, sword);
+				render_weapon(back, sword);
 				kill_attacked_enemies(room, sword);
 
-				clear_weapon(base, sword);
+				clear_weapon(back, sword);
 				free_weapon(sword);
 				sword = 0;
 			}
@@ -93,18 +105,25 @@ int main(){
 				if (room_number == 5) {
 					loop = 0;
 					game_message((UINT8*)base, "You win!");
+					game_message((UINT8*)back, "You win!");
 				}
 				else {
 					room_number++;
+					room = change_map(room, room_number);
+
+					init_render(base);
+					init_render(back);
+					render_room(base, room);
+					render_room(back, room);
+
+					teleport_player(START_X, START_Y, &p1);
+
 				}
-				room = change_map(room, room_number);
-				init_render(base);
-				render_room(base, room);
-				teleport_player(START_X, START_Y, &p1);
 			}
 
 			if (is_player_dead(room, &p1)) {
 				game_message((UINT8*)base, "You lose!!!");
+				game_message((UINT8*)back, "You lose!!!");
 				loop = 0;
 			}
 
@@ -117,12 +136,22 @@ int main(){
 
 			/* Rendering portion: */
 
-			render_timer((UINT8*)base, &timer);
-			render_player((UINT16*)base, &p1);
-			render_enemies((UINT16*)base, room);
+			render_timer((UINT8*)back, &timer);
+			render_player((UINT16*)back, &p1);
+			render_enemies((UINT16*)back, room);
 
+
+			/* Swap framebuffers: CURRENTLY DISABLED */
+			Vsync();
+			Setscreen(back, -1, -1);
+
+			temp = base;
+			base = back;
+			back = temp;
 		}
 	}
+
+	Setscreen(original, -1, -1);
 
 	return 0;
 }

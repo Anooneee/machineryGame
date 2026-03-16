@@ -1,7 +1,7 @@
 #include "mem.h"
 #include <stdio.h>
 
-#define HEAP_SIZE 128000
+#define HEAP_SIZE 256000
 
 header_t *head = NULL;
 header_t *tail = NULL;

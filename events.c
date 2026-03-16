@@ -13,7 +13,7 @@ Weapon* user_input_x(Player *p){
 
 void user_input_space(Player *p){
     if((*p).grounded == TRUE){
-        give_player_jump_time(p, 100);
+        give_player_jump_time(p, 60);
         (*p).grounded == FALSE;
     }
 }
