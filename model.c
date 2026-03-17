@@ -53,9 +53,11 @@ void fall_player(Player *pc, int gravity_strength){
 /* Return a weapon object 16 pixels in front of the player and start cooldown period */
 Weapon* attack(Player *pc) {
     Weapon* w;
+	int weaponX = ((*pc).direction == LEFT) ? (*pc).x - 32 : (*pc).x + 16;
+	UINT32* bitmap = ((*pc).direction == LEFT) ? weapon_bitmap_left : weapon_bitmap_right;
     if ((*pc).attack_cooldown <= 0) {
         (*pc).attack_cooldown = 32;
-        w = create_weapon((*pc).x + (32 * (*pc).direction), (*pc).y, (*pc).direction, weapon_bitmap);
+        w = create_weapon(weaponX, (*pc).y + 16, (*pc).direction, bitmap);
         w->active = TRUE;
         return w;
     }

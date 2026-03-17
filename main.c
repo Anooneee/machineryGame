@@ -33,6 +33,8 @@ int main(){
 
 	Timer timer;
 	Player p1;
+	int oldX;
+	int oldY;
 
 	Weapon* sword;
 
@@ -80,7 +82,9 @@ int main(){
 					user_input_space(&p1);
 					break;
 				case 'x':
-					sword = user_input_x(&p1);
+					if (!p1.attack_cooldown) {
+						sword = user_input_x(&p1);
+					}
 					break;
 				case 0x1B: /* if pressed escape */
 					user_input_ESC();
@@ -93,6 +97,9 @@ int main(){
 		}
 
 		if (timer_ticked()) {
+			oldX = p1.x;
+			oldY = p1.y;
+
 			ticks++;
 			if (ticks >= 70) {
 				update_timer(&timer);
@@ -106,9 +113,12 @@ int main(){
 				render_weapon(back, sword);
 				kill_attacked_enemies(room, sword);
 
-				clear_weapon(back, sword);
-				free_weapon(sword);
-				sword = 0;
+				if (p1.attack_cooldown <= 1) {
+					clear_weapon(back, sword);
+					clear_weapon(base, sword);
+					free_weapon(sword);
+					sword = 0;
+				}
 			}
 
 			/* Conditional events: */
@@ -128,7 +138,6 @@ int main(){
 					render_room(back, room);
 
 					teleport_player(START_X, START_Y, &p1);
-
 				}
 			}
 
@@ -161,7 +170,7 @@ int main(){
 			Setscreen(base, -1, -1);
 
 			/* Clear the screen around movable entites: */
-			clear_player(back, &p1);
+			clear_player(back, &p1, oldX, oldY);
 			clear_enemies(back, room);
 
 		}

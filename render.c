@@ -8,8 +8,8 @@ void init_render(UINT32* base) {
 	clear_screen(base);
 }
 
-void clear_player(UINT32* base, Player* p) {
-	clear_region(base, p->y, p->x, p->HEIGHT, p->WIDTH);
+void clear_player(UINT32* base, Player* p, int x, int y) {
+	clear_region(base, y, x, p->HEIGHT, p->WIDTH);
 }
 
 void clear_enemies(UINT32* base, Room* room) {
@@ -17,7 +17,7 @@ void clear_enemies(UINT32* base, Room* room) {
 	Enemy current;
 	for (i = 0; i < room->enemy_count; i++) {
 		current = room->enemies[i];
-		clear_region(base, current.y, current.x, current.HEIGHT, current.WIDTH);
+		clear_region(base, current.y, current.bound_left - 2, current.HEIGHT, (current.bound_right + current.WIDTH + 2) - current.bound_left);
 	}
 }
 

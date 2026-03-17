@@ -41,7 +41,11 @@ const UINT16 trap_bitmap[16] = {
 0xffff
 };
 
-const UINT32 weapon_bitmap[8] = {
+const UINT32 weapon_bitmap_left[8] = {
+0xffffff80,0x80000080,0x80000c80,0x400000ff,0x300000ff,0x0c000080,0x03e00080,0x001fff80
+};
+
+const UINT32 weapon_bitmap_right[8] = {
 0x01ffffff,0x01000001,0x01300001,0xff000002,0xff00000c,0x01000030,0x010007c0,0x01fff800
 };
 

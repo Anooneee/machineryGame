@@ -6,7 +6,7 @@
 
 void init_render(UINT32* base);
 
-void clear_player(UINT32* base, Player* p);
+void clear_player(UINT32* base, Player* p, int x, int y);
 void clear_enemies(UINT32* base, Room* room);
 void clear_weapon(UINT32* base, Weapon* w);
 
