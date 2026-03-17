@@ -12,6 +12,21 @@
 
 UINT32* original;
 
+long *timer = (long*) 0x462;
+long current_time = 0;
+
+bool timer_ticked() {
+	long old_ssp = Super(0);
+
+	if (current_time != *timer) {
+		current_time = *timer;
+		Super(old_ssp);
+		return TRUE;
+	}
+	Super(old_ssp);
+	return FALSE;
+}
+
 int main(){
 	/* Variables: */
 	char input;
@@ -28,7 +43,7 @@ int main(){
 	UINT32* back;
 	UINT32* temp;
 
-	int i, ticks; /* For loop counters */
+	int i, ticks = 0; /* For loop counters */
 	int loop = 1; /* 1 if the game is running, 0 if not */
 
 	/* Program */
@@ -77,7 +92,7 @@ int main(){
 			user_release_d_or_a(&p1);
 		}
 
-		if (1) { /* REPLACE: if clock ticked, run... */
+		if (timer_ticked()) {
 			ticks++;
 			if (ticks >= 70) {
 				update_timer(&timer);
@@ -86,10 +101,6 @@ int main(){
 
 			/* synchronous events: */
 			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
-
-			/* Clear the screen around movable entites: */
-			clear_player(back, &p1);
-			clear_enemies(back, room);
 
 			if (sword) {
 				render_weapon(back, sword);
@@ -141,13 +152,18 @@ int main(){
 			render_enemies((UINT16*)back, room);
 
 
-			/* Swap framebuffers: CURRENTLY DISABLED */
-			Vsync();
-			Setscreen(back, -1, -1);
-
+			/* Swap framebuffers: */
 			temp = base;
 			base = back;
 			back = temp;
+
+			Vsync();
+			Setscreen(base, -1, -1);
+
+			/* Clear the screen around movable entites: */
+			clear_player(back, &p1);
+			clear_enemies(back, room);
+
 		}
 	}
 
