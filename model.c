@@ -239,10 +239,11 @@ Room* create_room_1(){
     r->walls[1] = create_wall(632,0,300);
 
     /* Make floor or roofs */
-    r->floor_count = 2;
+    r->floor_count = 3;
     r->floors = my_malloc(r->floor_count * sizeof(Floor));
     r->floors[0] = create_floor(0,0,640);
     r->floors[1] = create_floor(0,300,640);
+    r->floors[2] = create_floor(30,260,20);
 
     /* Make exits */
     r->exit_count = 1;

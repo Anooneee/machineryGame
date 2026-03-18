@@ -74,13 +74,27 @@ bool is_collision_between_player_and_floor(Player *p, Room *r) {
 
 	for (i = 0; i < r->floor_count; i++) {
 		if (p->y + p->HEIGHT + 1 == r->floors[i].y) {
-			if (p->x + p->WIDTH >= r->floors[i].x && p->x <= r->floors[i].x + r->floors[i].size) {
+			if (p->x + p->WIDTH >= r->floors[i].x && p->x <= r->floors[i].x + r->floors[i].size - 1) {
 				return TRUE;
 			}
 		}
 	}
 	return FALSE;
 }
+
+bool is_collision_between_player_and_roof(Player *p, Room *r) {
+	int i;
+
+	for (i = 0; i < r->floor_count; i++) {
+		if (p->y == r->floors[i].y + 4) {
+			if (p->x + p->WIDTH >= r->floors[i].x && p->x <= r->floors[i].x + r->floors[i].size - 1) {
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
 
 bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e){
     bool is_hit = FALSE;
@@ -153,13 +167,20 @@ void every_second(Timer *t){ /* 70 ticks */
     update_timer(t);
 }
 
-void move_player_horiz(Player *p) {
-	p->x += p->horizontal_velocity;
+void move_player_horiz(Player *p, Room* r) {
+	if (!is_collision_between_player_and_wall(p, r)) {
+		p->x += p->horizontal_velocity;
+	}
 }
 
-void move_player_vert(Player *p) {
+void move_player_vert(Player *p, Room* r) {
 	if (p->jump_time > 0) {
-		jump_player(p);
+		if (!is_collision_between_player_and_roof(p, r)) {
+			jump_player(p);
+		}
+		else {
+			give_player_jump_time(p, 0);
+		}
 	}
 	else {
 		fall_player(p, 1);

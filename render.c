@@ -86,6 +86,13 @@ void render_right_wall(UINT8* base, Wall* w) {
 void render_room(UINT32* base, Room* r) {
 	int i;
 
+	for (i = 0; i < r->floor_count; i++) {
+		render_floor(base, &r->floors[i]);
+		if (r->floors[i].x + r->floors[i].size & 31) {
+			clear_region(base, r->floors[i].y, r->floors[i].x + r->floors[i].size, 4, ((r->floors[i].x + r->floors[i].size - 1) & ~31) + 32);
+		}
+	}
+
 	for (i = 0; i < r->wall_count; i++) {
 		if (r->walls[i].x > 320) {
 			render_right_wall((UINT8*)base, &r->walls[i]);
@@ -93,10 +100,6 @@ void render_room(UINT32* base, Room* r) {
 		else {
 			render_left_wall((UINT8*)base, &r->walls[i]);
 		}
-	}
-
-	for (i = 0; i < r->floor_count; i++) {
-		render_floor(base, &r->floors[i]);
 	}
 
 	for (i = 0; i < r->exit_count; i++) {

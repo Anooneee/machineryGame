@@ -7,7 +7,7 @@
 #include "bitmap.h"
 #include "mem.h"
 
-#define START_X 100
+#define START_X 96
 #define START_Y 40
 
 UINT32* original;
@@ -63,6 +63,8 @@ int main(){
 	init_render(back);
 	render_room(base, room);
 	render_room(back, room);
+	render_timer((UINT8*)base, &timer);
+	render_timer((UINT8*)back, &timer);
 
 	/* main game loop: */
 	while (loop) {
@@ -104,6 +106,7 @@ int main(){
 			if (ticks >= 70) {
 				update_timer(&timer);
 				ticks = 0;
+				render_timer((UINT8*)back, &timer);
 			}
 
 			/* synchronous events: */
@@ -136,6 +139,7 @@ int main(){
 					init_render(back);
 					render_room(base, room);
 					render_room(back, room);
+					render_timer((UINT8*)back, &timer);
 
 					teleport_player(START_X, START_Y, &p1);
 				}
@@ -147,16 +151,15 @@ int main(){
 				loop = 0;
 			}
 
-			move_player_vert(&p1);
-			if (!is_collision_between_player_and_wall(&p1, room)) {
-				move_player_horiz(&p1);	
-			}
+
+			move_player_vert(&p1, room);
+			move_player_horiz(&p1, room);
+
 			move_enemies_horiz(room);
 			decrement_cooldown(&p1);
 
 			/* Rendering portion: */
 
-			render_timer((UINT8*)back, &timer);
 			render_player((UINT16*)back, &p1);
 			render_enemies((UINT16*)back, room);
 

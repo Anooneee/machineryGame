@@ -24,6 +24,7 @@ bool is_collision_between_player_and_enemy(Player* p, Enemy* e);
 bool is_collision_between_player_and_trap(Player* p, Trap* t);
 bool is_collision_between_player_and_wall(Player* p, Room* r);
 bool is_collision_between_player_and_floor(Player *p, Room *r);
+bool is_collision_between_player_and_roof(Player *p, Room *r);
 bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e);
 bool is_collision_between_player_and_exits(Player *p, Room *r);
 /* Figure out how to kill enemy/player */
@@ -37,8 +38,8 @@ bool is_player_dead(Room* r, Player* p);
 
 /* Only updates timer right now*/
 void every_second(Timer *t); /* Call every 70 ticks */
-void move_player_horiz(Player *p);
-void move_player_vert(Player *p);
+void move_player_horiz(Player *p, Room* r);
+void move_player_vert(Player *p, Room* r);
 void move_enemies_horiz(Room* r);
 
 /*Every movement frame (.5 seconds):
