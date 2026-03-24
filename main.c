@@ -10,10 +10,16 @@
 #define START_X 96
 #define START_Y 40
 
+UINT32* base;
+UINT32* back;
+UINT32* temp;
+
 UINT32* original;
 
 long *timer = (long*) 0x462;
 long current_time = 0;
+
+char keyboard[128];
 
 bool timer_ticked() {
 	long old_ssp = Super(0);
@@ -27,9 +33,51 @@ bool timer_ticked() {
 	return FALSE;
 }
 
-int main(){
+int main_menu() {
+	UINT8 input = 0;
+	char chosen = 0;
+	int mouse_coords[2] = {0,0}; /* index 0 = x, index 1 = y */
+
+	init_render(base);
+
+	while (1) {
+		if (has_input()) {
+			input = get_input();
+
+			if (is_mouse_input(input)) {
+				clear_mouse(base, mouse_coords);
+
+				chosen = handle_mouse(mouse_coords, input);
+
+				if (mouse_coords[0] < 0) {
+					mouse_coords[0] = 0;
+				} else if (mouse_coords[0] > 631) {
+					mouse_coords[0] = 631;
+				}
+
+				if (mouse_coords[1] < 0) {
+					mouse_coords[1] = 0;
+				} else if (mouse_coords[1] > 391) {
+					mouse_coords[1] = 391;
+				}					/* setting bounds for mouse */
+			}
+		}
+
+		render_mouse((UINT8*)base, mouse_coords);
+
+		if (chosen) {
+			break;
+		}
+	}
+
+	Setscreen(original, -1, -1);
+
+	return chosen;
+}
+
+int game() {
 	/* Variables: */
-	char input;
+	UINT8 input;
 
 	Timer timer;
 	Player p1;
@@ -41,10 +89,6 @@ int main(){
 	int room_number = 1;
 	Room* room = 0;
 
-	UINT32* base;
-	UINT32* back;
-	UINT32* temp;
-
 	int i, ticks = 0; /* For loop counters */
 	int loop = 1; /* 1 if the game is running, 0 if not */
 
@@ -54,10 +98,6 @@ int main(){
 	timer = create_timer();
 	room = change_map(room, room_number);
 	sword = 0;
-
-	base = (UINT32*)Physbase();
-	original = base;
-	back = my_malloc(32000);
 
 	init_render(base);
 	init_render(back);
@@ -70,31 +110,39 @@ int main(){
 	while (loop) {
 
 		/* Input portion: */
-		if (has_input()) {
+
+		/* recieve input and sort it into the corresponding keyboard array */
+		while (has_input()) {
 			input = get_input();
 
-			switch (input){
-				case 'a':
-					user_input_a(&p1);
-					break;
-				case 'd':
-					user_input_d(&p1);
-					break;
-				case ' ':
-					user_input_space(&p1);
-					break;
-				case 'x':
-					if (!p1.attack_cooldown) {
-						sword = user_input_x(&p1);
-					}
-					break;
-				case 0x1B: /* if pressed escape */
-					user_input_ESC();
-					loop = 0;
-					break;
+			if (is_mouse_input(input)) {				/* clear IKBD if a mouse movement was detected */
+				clear_mouse_input();
+			}
+			else {
+				keyboard[input & ~(0x80)] = input & 0x80;	/* If a key is pressed, that spot in the keyboard array will be set to 0. Else, it will be a nonzero value */
 			}
 		}
-		else {
+		/* Welcome to magic number zone. I will regrettably be using EXTENSIVE magic numbers to parse input here.
+		I don't really see a better way of doing this, so I'll just be commenting what each number means. */
+		if (!keyboard[0x1E]) {	/* 0x1E = a */
+			user_input_a(&p1);
+		}
+		if (!keyboard[0x20]) {	/* 0x20 = d */
+			user_input_d(&p1);
+		}
+		if (!keyboard[0x39]) {	/* 0x39 = space */
+			user_input_space(&p1);
+		}
+		if (!keyboard[0x2D]) {	/* 0x2D = x */
+			if (!p1.attack_cooldown) {
+						sword = user_input_x(&p1);
+			}
+		}
+		if (!keyboard[0x01]) {	/* 0x01 = esc */
+			user_input_ESC();
+			loop = 0;
+		}
+		if (keyboard[0x1E] && keyboard[0x20]) {	/* Runs if a and d are both released. */
 			user_release_d_or_a(&p1);
 		}
 
@@ -180,6 +228,34 @@ int main(){
 	}
 
 	Setscreen(original, -1, -1);
+
+	return 0;
+}
+
+int main() {
+	int i;
+	int game_chosen = 0;
+
+	disable_interrupts();
+
+	base = (UINT32*)Physbase();
+	original = base;
+	back = my_malloc(32000);
+
+	for (i = 0; i < 128; i++) {	/* initialize keyboard */
+		keyboard[i] = 0x80;
+	}
+
+
+	game_chosen = main_menu();
+
+	if (game_chosen == 2) {
+		game();
+	}
+
+	Setscreen(original, -1, -1);
+
+	enable_interrupts();
 
 	return 0;
 }

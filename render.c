@@ -8,6 +8,14 @@ void init_render(UINT32* base) {
 	clear_screen(base);
 }
 
+void render_mouse(UINT8* base, int* mouse_coords) {
+	plot_8bit_bitmap(base, mouse_coords[1], mouse_coords[0], mouse_bitmap, 8);
+}
+
+void clear_mouse(UINT32* base, int* mouse_coords) {
+	clear_region(base, mouse_coords[1], mouse_coords[0], 8, 8);
+}
+
 void clear_player(UINT32* base, Player* p, int x, int y) {
 	clear_region(base, y, x, p->HEIGHT, p->WIDTH);
 }

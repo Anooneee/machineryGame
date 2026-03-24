@@ -4,6 +4,7 @@
 #include "types.h"
 
 extern const UINT8 wall_R_bitmap[];
+extern const UINT8 mouse_bitmap[];
 extern const UINT8 wall_L_bitmap[];
 extern const UINT16 player_bitmap[];
 extern const UINT16 enemy_bitmap[];

@@ -12,7 +12,6 @@ void* heap_end = heap;
 
 /* based on https://mohitmishra786.github.io/chessman/2024/11/24/Everything-About-Memory-Allocators-Write-a-simple-memory-allocator.html */
 
-
 void* setbrk(long increment) {
 	void* old_heap = heap_end;
 
