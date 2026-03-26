@@ -1,36 +1,29 @@
 #include <osbind.h>
 #include "types.h"
 
+#define WAIT_TIME 50
 
 volatile char *PSG_reg_select = 0xFF8800;
 volatile char *PSG_reg_write = 0xFF8802;
 
-
 void write_psg(int reg, UINT8 val){
-    long old_ssp = Super(0);
     *PSG_reg_select = reg;
 	*PSG_reg_write = val;
-    Super(old_ssp);
 }
 
 UINT8 read_psg(int reg){
-    UINT8 value;
-    long old_ssp = Super(0);
     *PSG_reg_select = reg;
-    value = *PSG_reg_write;
-    Super(old_ssp);
-    return value;
-    
+    return *PSG_reg_write;
 }
 
 /*channel 0=A, 1=B, 2=C*/
 void set_tone(int channel, int tuning){
     if(channel >= 0 && channel <= 2){
-    UINT8 fine = (UINT8)(tuning & 0xFF);
-    UINT8 course = (UINT8)((tuning >> 8) & 0x0F);
-    channel = (channel << 1);
-    write_psg(channel + 1, course);
-    write_psg(channel, fine);
+        UINT8 course = (((UINT16)tuning) & 0x0F00);
+        UINT8 fine = (((UINT16)tuning) & 0x00FF);
+        channel = (channel << 1);
+        write_psg(channel + 1, (course >> 8));
+        write_psg(channel, fine);
     }
 }
 
@@ -47,12 +40,11 @@ void set_volume(int channel, int mode, int volume){
     }
 }
 
-/*channel 0=A, 1=B, 2=C enable = 0, disable = 1*/
+/*channel 0=A, 1=B, 2=C enable = 1, disable = 0*/
 void enable_channel(int channel, int tone_on, int noise_on){
     UINT8 current_mixer = read_psg(7);
     UINT8 tone = (1 << channel);
     UINT8 noise = (1 << (channel + 3));
-    
     if(tone_on) {
         current_mixer &= ~tone;
     }else {
@@ -63,9 +55,7 @@ void enable_channel(int channel, int tone_on, int noise_on){
     } else {
         current_mixer |= noise;
     }
-    
     write_psg(7, current_mixer);
-    
 }
 
 void stop_sound(){

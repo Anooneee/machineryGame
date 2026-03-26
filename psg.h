@@ -6,6 +6,8 @@
 void write_psg(int reg, UINT8 val);
 /*Writes given byte value (0-255) to given PSG register (0-15)*/
 
+
+
 UINT8 read_psg(int reg);
 /*testing purposes*/
 
@@ -25,6 +27,7 @@ void enable_channel(int channel, int tone_on, int noise_on);
 
 void stop_sound();
 /*silences all PSG sound production*/
+
 
 
 #endif
