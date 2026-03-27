@@ -237,7 +237,8 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 	
 	UINT8 x_shift = (col & 7);
 	
-	
+	if (row > 399) return;
+	height = (row + height > 399) ? 399 - row : height;
 	
 	base += (row << 6) + (row << 4) + (col >> 3);
 
@@ -252,7 +253,7 @@ void plot_8bit_bitmap(UINT8 *base, int row, int col, const UINT8 *bitmap, UINT16
 			*(base + 1) |= (bitmap[i] << (8 - x_shift));
 		}
 	}
-		base += 80; 
+		base += 80;
 	}
 }
 
@@ -262,6 +263,8 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 	
 	UINT16 x_shift = (col & 15);
 	
+	if (row > 399) return;
+	height = (row + height > 399) ? 399 - row : height;
 	
 	base += (row << 5) + (row << 3) + (col >> 4);
 
@@ -285,6 +288,9 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 	int i;
 	
 	UINT32 x_shift = (col & 31);
+
+	if (row > 399) return;
+	height = (row + height > 399) ? 399 - row : height;
 	
 	base += (row << 4) + (row << 2) + (col >> 5);
 

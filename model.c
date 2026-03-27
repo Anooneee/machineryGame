@@ -77,7 +77,7 @@ Player create_player(int x, int y, UINT16 *bitmap){
     p.jump_time = 0;
     p.horizontal_velocity = 0;
     p.vertical_velocity = 0;
-    p.speed = 4;
+    p.speed = 2;
     p.direction = RIGHT;
     p.HEIGHT = 32;
     p.WIDTH = 16;
@@ -215,11 +215,26 @@ Timer create_timer(){
 /*room functions*/
 
 void free_room(Room* r) {
-	my_free(r->walls);
-	my_free(r->floors);
-	my_free(r->exits);
-	my_free(r->enemies);
-	my_free(r->traps);
+	if (r->walls) {
+		my_free(r->walls);
+		r->walls = 0;
+	}
+	if (r->floors) {
+		my_free(r->floors);
+		r->floors = 0;
+	}
+	if (r->exits) {
+		my_free(r->exits);
+		r->exits = 0;
+	}
+	if (r->enemies) {
+		my_free(r->enemies);
+		r->enemies = 0;
+	}
+	if (r->traps) {
+		my_free(r->traps);
+		r->traps = 0;
+	}
 
 	my_free(r);
 	r = 0;
@@ -233,34 +248,45 @@ Room* create_room_1(){
     Room* r = my_malloc(sizeof(Room));
 
     /* Make walls */
-    r->wall_count = 2;
+    r->wall_count = 7;
     r->walls = my_malloc(r->wall_count * sizeof(Wall));
-    r->walls[0] = create_wall(0,0,300);
-    r->walls[1] = create_wall(632,0,300);
+    r->walls[0] = create_wall(0,0,400);
+    r->walls[1] = create_wall(632,0,400);
+    r->walls[2] = create_wall(200,300,32);
+    r->walls[3] = create_wall(250,268,32);
+    r->walls[4] = create_wall(326,268,64);
+    r->walls[5] = create_wall(400,268,64);
+    r->walls[6] = create_wall(560,268,131);
 
     /* Make floor or roofs */
-    r->floor_count = 3;
+    r->floor_count = 6;
     r->floors = my_malloc(r->floor_count * sizeof(Floor));
     r->floors[0] = create_floor(0,0,640);
-    r->floors[1] = create_floor(0,300,640);
-    r->floors[2] = create_floor(30,260,20);
+    r->floors[1] = create_floor(8,332,200);
+    r->floors[2] = create_floor(200,300,58);
+    r->floors[3] = create_floor(250,268,84);
+    r->floors[4] = create_floor(326,332,82);
+    r->floors[5] = create_floor(400,268,168);
 
     /* Make exits */
     r->exit_count = 1;
     r->exits = my_malloc(r->exit_count * sizeof(Exit));
-    r->exits[0] = create_exit(632,250,50,VERTICAL);
+    r->exits[0] = create_exit(568,350,64,HORIZONTAL);
 
     /* Make enemies */
     r->enemy_count = 2;
     r->enemies = my_malloc(r->enemy_count * sizeof(Enemy));
-    r->enemies[0] = create_enemy(200,267,180,220,enemy_bitmap);
-    r->enemies[1] = create_enemy(400,267,380,420,enemy_bitmap);
+    r->enemies[0] = create_enemy(250,235,250,318,enemy_bitmap);
+    r->enemies[1] = create_enemy(400,235,400,552,enemy_bitmap);
 
     /* Make traps */
-    r->trap_count = 2;
+    r->trap_count = 4;
     r->traps = my_malloc(r->trap_count * sizeof(Trap));
-    r->traps[0] = create_trap(110,283,trap_bitmap);
-    r->traps[1] = create_trap(450,283,trap_bitmap);
+    r->traps[0] = create_trap(335,316,trap_bitmap);
+    r->traps[1] = create_trap(351,316,trap_bitmap);
+    r->traps[2] = create_trap(367,316,trap_bitmap);
+    r->traps[3] = create_trap(383,316,trap_bitmap);
+
 
     return r;
 }

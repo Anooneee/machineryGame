@@ -20,8 +20,9 @@ bool has_input() {
 
 char get_input() {
 	char scancode;
+	long old_ssp;
 
-	long old_ssp = Super(0);		/* Enter supervisor mode */
+	old_ssp = Super(0);		/* Enter supervisor mode */
 	scancode = *IKBD_RDR;
 	Super(old_ssp);
 
@@ -60,10 +61,7 @@ char handle_mouse(int* mouse_coords, UINT8 scancode) {
 }
 
 void clear_mouse_input() {
-	while (!has_input());
 	get_input();
-
-	while (!has_input());
 	get_input();
 }
 
