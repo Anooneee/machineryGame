@@ -1,0 +1,18 @@
+CC = cc68x
+
+all: psg.tos
+
+psg.tos: tst_psg.o psg.o music.o
+	$(CC) music.o tst_psg.o psg.o  -o tst_psg.tos
+
+tst_PSG: tst_PSG.c music.h
+	$(CC) -c tst_PSG.c
+
+psg.o: psg.c psg.h
+	$(CC) -c psg.c
+
+music.o: music.c music.h
+	$(CC) -c music.c
+
+clean:
+	rm -f *.o tst_psg
