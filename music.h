@@ -3,10 +3,27 @@
 
 #include "types.h"
 
+typedef enum {
+    C = 0,
+    Cs,
+    D,
+    Ds,
+    E,
+    F,
+    G,
+    Gs,
+    A,
+    As,
+    B
+} Note;
 
+extern const int note[12][8];
 
+extern const int melody[29][3];
 
+void start_music();
 
+int upd_music(int i);
 
 
 #endif
