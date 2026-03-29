@@ -3,6 +3,7 @@
 #include "music.h"
 #include "PSG.h"
 #include "types.h"
+#include "Sfx.h"
 
 
 
@@ -66,7 +67,7 @@ void wait(long time) {
 
 int main()
 {
-	long now;
+	/* long now;
 	int i,temp,note;
 	note = 1;
 
@@ -78,5 +79,30 @@ int main()
         wait(temp);
 		}
 			
-	return 0;
+	return 0; */
+	char ch;
+	while(ch != 'a'){
+	sfx_attack();
+	ch = Cnecin();
+	}
+	ch = '0';
+
+	while(ch != 'a'){
+	sfx_beep();
+	ch = Cnecin();
+	}
+	ch = '0';
+	
+	while(ch != 'a'){
+	sfx_enemy_die();
+	ch = Cnecin();
+	}
+
+	ch='0';
+	while(ch != 'a'){
+	sfx_jump();
+	ch = Cnecin();
+	}
+
+
 }

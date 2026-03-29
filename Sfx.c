@@ -6,10 +6,10 @@ void sfx_attack(){
     int v;
 
     /* Setup a channel for sound and turn it on */
-    enable_channel(0, 1, 0);
-    set_volume(0, 0, 15); 
+    enable_channel(0, 3, 0);
+    set_volume(3, 0, 15); 
 
-    for (i = 350; i >= 120; i -= 10)
+    for (i = 350; i >= 120; i += 10)
     {
         set_tone(0, i); /* Tone goes down as sound continues to make swoop noise */
     }
@@ -45,7 +45,7 @@ void sfx_enemy_die(){
         set_tone(0, 80);
     }
     stop_sound();
-    return;
+   
 }
 
 void sfx_jump(){
@@ -58,5 +58,5 @@ void sfx_jump(){
         set_tone(0, 80);
     }
     stop_sound();
-    return;
+   
 }
