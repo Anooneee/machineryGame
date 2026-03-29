@@ -6,6 +6,9 @@
 #include "input.h"
 #include "bitmap.h"
 #include "mem.h"
+#include "music.h"
+#include "psg.h"
+#include "Sfx.h"
 
 #define START_X 16
 #define START_Y 296
@@ -89,13 +92,20 @@ int game() {
 	int i;
 	int ticks = 0;
 	int running = 1; /* 1 if the game is running, 0 if not */
+	int time_now,time_then,temp,n;
+	n = 0;
 
 	/* Program */
-
+	
 	p1 = create_player(START_X,START_Y,player_bitmap);
 	timer = create_timer();
 	room = change_map(room, room_number);
 	sword = 0;
+	start_music();
+	old_ssp = Super(0);
+	time_now = *timer;
+	time_then = time_now + melody[n][2];
+	n++;
 
 	init_render(base);
 	init_render(back);
@@ -103,6 +113,7 @@ int game() {
 	render_room(back, room);
 	render_timer((UINT8*)base, &timer);
 	render_timer((UINT8*)back, &timer);
+
 
 	/* main game loop: */
 	i = 0;
@@ -168,6 +179,15 @@ int game() {
 					clear_weapon(base, sword);
 					free_weapon(sword);
 					sword = 0;
+				}
+			}
+
+			if(time_then >= time_now){
+				temp = upd_music(n);
+				time_then = time_now + temp;
+				n++
+				if(n >= 30){
+					n = 0;
 				}
 			}
 
