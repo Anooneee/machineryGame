@@ -36,8 +36,13 @@ void render_room(UINT32* base, Room* r);
 
 void render_timer(UINT8* base, Timer* t);
 
-	/* print a message at the middle of the screen */
+	/* print a message at the given coordinates */
 
-void game_message(UINT8* base, char* message);
+void game_message(UINT8* base, char* message, int x, int y);
+
+	/* functions for rendering and clearing the main menu. Automatically highlights the currently selected button */
+
+void render_main_menu(UINT32* base, char chosen);
+void clear_main_menu(UINT32* base);
 
 #endif

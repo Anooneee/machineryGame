@@ -77,7 +77,7 @@ void render_floor(UINT32* base, Floor* f) {
 
 void render_left_wall(UINT8* base, Wall* w) {
 	int i;
-	for (i = 0; i < (w->size - 32); i += 32) {
+	for (i = 0; i < (w->size & ~(31)); i += 32) {
 		plot_8bit_bitmap(base, w->y + i, w->x, wall_L_bitmap, 32);
 	}
 	plot_8bit_bitmap(base, w->y + i, w->x, wall_L_bitmap, w->size & 31);
@@ -85,7 +85,7 @@ void render_left_wall(UINT8* base, Wall* w) {
 
 void render_right_wall(UINT8* base, Wall* w) {
 	int i;
-	for (i = 0; i < (w->size - 32); i += 32) {
+	for (i = 0; i < (w->size & ~(31)); i += 32) {
 		plot_8bit_bitmap(base, w->y + i, w->x, wall_R_bitmap, 32);
 	}
 	plot_8bit_bitmap(base, w->y + i, w->x, wall_R_bitmap, w->size & 31);	
@@ -139,6 +139,19 @@ void render_timer(UINT8* base, Timer* t) {
 	plot_string(base, t->y, t->x, timeString);
 }
 
-void game_message(UINT8* base, char* message) {
-	plot_string(base, 220, 300, message);
+void game_message(UINT8* base, char* message, int x, int y) {
+	plot_string(base, x, y, message);
+}
+
+void render_main_menu(UINT32* base, char chosen) {
+	plot_string((UINT8*)base, 100, 64, "The Dungeon");
+
+	plot_string((UINT8*)base, 130, 96, "Play Game");
+	plot_string((UINT8*)base, 160, 96, "Quit");
+
+	plot_8bit_bitmap((UINT8*)base, 130 + chosen * 30, 80, ball_bitmap, 8);
+}
+
+void clear_main_menu(UINT32* base) {
+	clear_region(base, 96, 64, 96, 288);
 }

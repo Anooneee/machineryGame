@@ -7,8 +7,8 @@
 #include "bitmap.h"
 #include "mem.h"
 
-#define START_X 96
-#define START_Y 40
+#define START_X 16
+#define START_Y 296
 
 UINT32* base;
 UINT32* back;
@@ -19,7 +19,9 @@ UINT32* original;
 long *timer = (long*) 0x462;
 long current_time = 0;
 
-char keyboard[128];
+static UINT8 screen[32256];
+
+char keyboard[128];		/* Stores the state of every key on the board. 0 = pressed, 1 = not pressed. */
 
 bool timer_ticked() {
 	long old_ssp = Super(0);
@@ -36,48 +38,43 @@ bool timer_ticked() {
 int main_menu() {
 	UINT8 input = 0;
 	char chosen = 0;
-	int mouse_coords[2] = {0,0}; /* index 0 = x, index 1 = y */
 
 	init_render(base);
 
+	render_main_menu(base, chosen);
+
 	while (1) {
-		if (has_input()) {
+
+		/* input portion */
+		while (has_input()) {
 			input = get_input();
 
 			if (is_mouse_input(input)) {
-				clear_mouse(base, mouse_coords);
-
-				chosen = handle_mouse(mouse_coords, input);
-
-				if (mouse_coords[0] < 0) {
-					mouse_coords[0] = 0;
-				} else if (mouse_coords[0] > 631) {
-					mouse_coords[0] = 631;
-				}
-
-				if (mouse_coords[1] < 0) {
-					mouse_coords[1] = 0;
-				} else if (mouse_coords[1] > 391) {
-					mouse_coords[1] = 391;
-				}					/* setting bounds for mouse */
+				clear_mouse_input();
 			}
-		}
+			else {
+				keyboard[input & ~(0x80)] = input & 0x80;
+			}
 
-		render_mouse((UINT8*)base, mouse_coords);
+			if (!keyboard[0x11]) chosen++;		/* If the user presses W, go to the option above */
+			else if (!keyboard[0x1F]) chosen--;	/* If the user presses S, go to the option below */
 
-		if (chosen) {
-			break;
+			if (chosen > 1) chosen = 0;
+			if (chosen < 0) chosen = 1;		/* bounds checking for the currently-selected option */
+
+			if (!keyboard[0x1C]) return chosen;	/* if the user presses ENTER, return the currently selected option */
+
+			clear_main_menu(base);
+			render_main_menu(base, chosen);
 		}
 	}
-
-	Setscreen(original, -1, -1);
 
 	return chosen;
 }
 
 int game() {
 	/* Variables: */
-	UINT8 input;
+	UINT8 input = 0x80;
 
 	Timer timer;
 	Player p1;
@@ -89,8 +86,9 @@ int game() {
 	int room_number = 1;
 	Room* room = 0;
 
-	int i, ticks = 0; /* For loop counters */
-	int loop = 1; /* 1 if the game is running, 0 if not */
+	int i;
+	int ticks = 0;
+	int running = 1; /* 1 if the game is running, 0 if not */
 
 	/* Program */
 
@@ -107,8 +105,8 @@ int game() {
 	render_timer((UINT8*)back, &timer);
 
 	/* main game loop: */
-	while (loop) {
-
+	i = 0;
+	while (running) {
 		/* Input portion: */
 
 		/* recieve input and sort it into the corresponding keyboard array */
@@ -122,6 +120,7 @@ int game() {
 				keyboard[input & ~(0x80)] = input & 0x80;	/* If a key is pressed, that spot in the keyboard array will be set to 0. Else, it will be a nonzero value */
 			}
 		}
+
 		/* Welcome to magic number zone. I will regrettably be using EXTENSIVE magic numbers to parse input here.
 		I don't really see a better way of doing this, so I'll just be commenting what each number means. */
 		if (!keyboard[0x1E]) {	/* 0x1E = a */
@@ -140,12 +139,13 @@ int game() {
 		}
 		if (!keyboard[0x01]) {	/* 0x01 = esc */
 			user_input_ESC();
-			loop = 0;
+			running = 0;
 		}
 		if (keyboard[0x1E] && keyboard[0x20]) {	/* Runs if a and d are both released. */
 			user_release_d_or_a(&p1);
 		}
 
+		/* Main game: */
 		if (timer_ticked()) {
 			oldX = p1.x;
 			oldY = p1.y;
@@ -154,7 +154,6 @@ int game() {
 			if (ticks >= 70) {
 				update_timer(&timer);
 				ticks = 0;
-				render_timer((UINT8*)back, &timer);
 			}
 
 			/* synchronous events: */
@@ -175,9 +174,9 @@ int game() {
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
 				if (room_number == 5) {
-					loop = 0;
-					game_message((UINT8*)base, "You win!");
-					game_message((UINT8*)back, "You win!");
+					running = 0;
+					game_message((UINT8*)base, "You win!", 220, 300);
+					game_message((UINT8*)back, "You win!", 220, 300);
 				}
 				else {
 					room_number++;
@@ -187,16 +186,15 @@ int game() {
 					init_render(back);
 					render_room(base, room);
 					render_room(back, room);
-					render_timer((UINT8*)back, &timer);
 
 					teleport_player(START_X, START_Y, &p1);
 				}
 			}
 
 			if (is_player_dead(room, &p1)) {
-				game_message((UINT8*)base, "You lose!!!");
-				game_message((UINT8*)back, "You lose!!!");
-				loop = 0;
+				game_message((UINT8*)base, "You lose!!!", 220, 300);
+				game_message((UINT8*)back, "You lose!!!", 220, 300);
+				running = 0;
 			}
 
 
@@ -206,11 +204,12 @@ int game() {
 			move_enemies_horiz(room);
 			decrement_cooldown(&p1);
 
+
 			/* Rendering portion: */
 
 			render_player((UINT16*)back, &p1);
 			render_enemies((UINT16*)back, room);
-
+			render_timer((UINT8*)back, &timer);
 
 			/* Swap framebuffers: */
 			temp = base;
@@ -218,7 +217,7 @@ int game() {
 			back = temp;
 
 			Vsync();
-			Setscreen(base, -1, -1);
+			Setscreen(back, back, -1);
 
 			/* Clear the screen around movable entites: */
 			clear_player(back, &p1, oldX, oldY);
@@ -226,8 +225,6 @@ int game() {
 
 		}
 	}
-
-	Setscreen(original, -1, -1);
 
 	return 0;
 }
@@ -240,22 +237,21 @@ int main() {
 
 	base = (UINT32*)Physbase();
 	original = base;
-	back = my_malloc(32000);
+	back = (UINT32*)(((long)my_malloc(32256) + 256) & ~255);	/* Aligning address along 256 bytes */
+
 
 	for (i = 0; i < 128; i++) {	/* initialize keyboard */
 		keyboard[i] = 0x80;
 	}
 
-
 	game_chosen = main_menu();
 
-	if (game_chosen == 2) {
+	if (game_chosen == 0) {
 		game();
 	}
 
-	Setscreen(original, -1, -1);
-
 	enable_interrupts();
 
+	Setscreen(original, original, -1);
 	return 0;
 }

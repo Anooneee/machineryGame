@@ -62,7 +62,7 @@ bool is_collision_between_player_and_wall(Player* p, Room* r) {
 	for (i = 0; i < r->wall_count; i++) {
 		w = &(r->walls[i]);
 
-		if ((next_x <= w->x + 8 && next_x + p->WIDTH >= w->x) && (p->y <= w->y + w->size && p->y+p->HEIGHT >= w->y)){
+		if ((next_x <= (w->x + 8) && (next_x + p->WIDTH) >= w->x) && (p->y <= (w->y + w->size) && (p->y+p->HEIGHT) >= w->y)){
 			return TRUE;
 		}
 	}
