@@ -1,5 +1,6 @@
 #include <osbind.h>
 #include "psg.h"
+#include "sfx.h"
 
 void sfx_attack(){
     int i;

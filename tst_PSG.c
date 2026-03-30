@@ -104,5 +104,5 @@ int main()
 	ch = Cnecin();
 	}
 
-
+	return 0;
 }

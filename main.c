@@ -81,6 +81,7 @@ int game() {
 
 	Timer timer;
 	Player p1;
+	long old_ssp;
 	int oldX;
 	int oldY;
 
@@ -92,8 +93,8 @@ int game() {
 	int i;
 	int ticks = 0;
 	int running = 1; /* 1 if the game is running, 0 if not */
-	int time_now,time_then,temp,n;
-	n = 0;
+	long time_then;
+	int current_note = 0;
 
 	/* Program */
 	
@@ -101,11 +102,8 @@ int game() {
 	timer = create_timer();
 	room = change_map(room, room_number);
 	sword = 0;
+
 	start_music();
-	old_ssp = Super(0);
-	time_now = *timer;
-	time_then = time_now + melody[n][2];
-	n++;
 
 	init_render(base);
 	init_render(back);
@@ -182,14 +180,8 @@ int game() {
 				}
 			}
 
-			if(time_then >= time_now){
-				temp = upd_music(n);
-				time_then = time_now + temp;
-				n++
-				if(n >= 30){
-					n = 0;
-				}
-			}
+			/* Music playing! */
+			upd_music(&current_note);
 
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {

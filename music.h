@@ -23,7 +23,7 @@ extern const int melody[29][3];
 
 void start_music();
 
-int upd_music(int i);
+void upd_music(int* current_note);
 
 
 #endif

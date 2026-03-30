@@ -3,7 +3,7 @@
 #include "psg.h"
 #include "music.h"
 
-
+int note_time = 0;
 
 const int notes[12][8] = {
     {{3421}, {1705}, {855}, {427}, {214}, {107}, {53}, {26}},   /*C*/
@@ -37,7 +37,18 @@ void start_music() {
     
 }
 
-int upd_music(int i){
-    set_tone(0, notes[melody[i][0]][melody[i][1]]);
-    return melody[i][2];
+void upd_music(int* current_note){
+	if (note_time == 0) {
+		*current_note = *current_note + 1;
+
+		if (*current_note > 29) {
+			*current_note = 0;
+		}
+
+		note_time = melody[*current_note][2];
+	}
+	else {
+		note_time--;
+	}
+	set_tone(0, notes[melody[*current_note][0]][melody[*current_note][1]]);
 }
