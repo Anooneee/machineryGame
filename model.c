@@ -153,12 +153,13 @@ Wall create_wall(UINT16 x, UINT16 y, int size){
 
 /*door functions*/
 
-Exit create_exit(UINT16 x, UINT16 y, int size, int type){
+Exit create_exit(UINT16 x, UINT16 y, int size, int type, int go_to_room){
     Exit e;
     e.x = x;
     e.y =y;
     e.size = size;
     e.type = type;
+		e.go_to_room = go_to_room;
     return e;
 }
 
@@ -271,7 +272,7 @@ Room* create_room_1(){
     /* Make exits */
     r->exit_count = 1;
     r->exits = my_malloc(r->exit_count * sizeof(Exit));
-    r->exits[0] = create_exit(568,350,64,HORIZONTAL);
+    r->exits[0] = create_exit(568,350,64,HORIZONTAL,5);
 
     /* Make enemies */
     r->enemy_count = 2;
