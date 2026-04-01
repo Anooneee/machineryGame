@@ -51,6 +51,7 @@ typedef struct room_door{
     UINT16 x, y;
     int size;           /* if type VERTICAL: grow from top most side. Example at position (5,10) and size 10, end point will be (5,20)*/
     int type;          /* if type HORIZONTAL: grow from left most side. Example at position (5,10) and size 10, end point will be (15,10)*/
+		int go_to_room;		/* room counter should change to this when entered */
 }Exit;
 
 typedef struct horizontal_environment{
@@ -106,7 +107,7 @@ void move_enemy(Enemy *e);
 
 Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT32 *bitmap);
 
-Exit create_exit(UINT16 x, UINT16 y, int size, int type);
+Exit create_exit(UINT16 x, UINT16 y, int size, int type, int go_to_room);
 
 Trap create_trap(UINT16 x, UINT16 y, UINT16 *bitmap);
 
