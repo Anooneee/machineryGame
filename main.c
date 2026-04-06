@@ -169,12 +169,15 @@ int game() {
 			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
 
 			if (sword) {
+				save_bg(back, sword);
 				render_weapon(back, sword);
 				kill_attacked_enemies(room, sword);
 
 				if (p1.attack_cooldown <= 1) {
 					clear_weapon(back, sword);
 					clear_weapon(base, sword);
+					render_bg(back, sword);
+					render_bg(base, sword);
 					free_weapon(sword);
 					sword = 0;
 				}

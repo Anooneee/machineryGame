@@ -41,6 +41,18 @@ void render_weapon(UINT32* base, Weapon* w) {
 	plot_32bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
 }
 
+void render_bg(UINT32* base, Weapon* w) {
+	plot_32bit_bitmap(base, w->y, w->x, bg_weapon, w->HEIGHT);
+}
+
+void save_bg(UINT32* base, Weapon* w){
+	int i;
+	for(i = 0; i < 8; i++){
+		bg_weapon[i] |= background[i];
+	}
+	save_32bit(base, w->y, w->x, bg_weapon, w->HEIGHT);
+}
+
 void render_enemies(UINT16* base, Room* r) {
 	int i;
 

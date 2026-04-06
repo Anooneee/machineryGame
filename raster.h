@@ -167,6 +167,7 @@ void plot_16bit_bitmap(UINT16 *base, int row, int col, const UINT16 *bitmap, UIN
 */
 void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UINT16 height);
 
+void save_32bit(UINT32 *base, int row, int col, UINT32 *bitmap, UINT16 height);
 
 /*----- Function: plot_character -----
 

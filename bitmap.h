@@ -13,6 +13,8 @@ extern const UINT16 trap_bitmap[];
 extern const UINT32 floor_bitmap[];
 extern const UINT32 weapon_bitmap_right[];
 extern const UINT32 weapon_bitmap_left[];
+extern const UINT32 background[];
+extern UINT32 bg_weapon[];
 extern const UINT32 test_bitmap_32[];
 extern const UINT16 test_bitmap_16[];
 

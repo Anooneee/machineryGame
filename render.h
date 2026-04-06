@@ -21,6 +21,8 @@ void clear_weapon(UINT32* base, Weapon* w);
 
 void render_player(UINT16* base, Player* p);
 void render_weapon(UINT32* base, Weapon* w);
+void save_bg(UINT32* base, Weapon* w);
+void render_bg(UINT32* base, Weapon* w);
 
 void render_enemies(UINT16* base, Room* r);
 void render_enemy(UINT16* base, Enemy* e);

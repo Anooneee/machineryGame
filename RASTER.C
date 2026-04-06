@@ -309,6 +309,28 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 	}
 }
 
+void save_32bit(UINT32 *base, int row, int col, UINT32 *bitmap, UINT16 height){
+	int i;
+
+	UINT32 x_shift = (col & 31);
+	if (row > 399) return;
+
+	height = (row + height > 399) ? 399 - row : height;
+	base += (row << 4) + (row << 2) + (col >> 5);
+
+	for(i = 0; i < height; i++){
+		if(x_shift == 0){
+			bitmap[i] &= *base;
+		}else {
+			if(col >= 0){
+				bitmap[i] &= (*base << x_shift);
+				bitmap[i] &= (*base >> (32 - x_shift));
+			}
+		}
+	}
+	return;
+}
+
 void plot_character(UINT8 *base, int row, int col, char ch){
 	/*variable declaration*/
 	int i;
