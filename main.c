@@ -176,8 +176,6 @@ int game() {
 				if (p1.attack_cooldown <= 1) {
 					clear_weapon(back, sword);
 					clear_weapon(base, sword);
-					render_bg(back, sword);
-					render_bg(base, sword);
 					free_weapon(sword);
 					sword = 0;
 				}

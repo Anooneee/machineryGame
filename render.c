@@ -31,6 +31,7 @@ void clear_enemies(UINT32* base, Room* room) {
 
 void clear_weapon(UINT32* base, Weapon* w) {
 	clear_region(base, w->y, w->x, w->HEIGHT, w->WIDTH);
+	render_bg(base, w);
 }
 
 void render_player(UINT16* base, Player* p) {
@@ -48,7 +49,7 @@ void render_bg(UINT32* base, Weapon* w) {
 void save_bg(UINT32* base, Weapon* w){
 	int i;
 	for(i = 0; i < 8; i++){
-		bg_weapon[i] |= background[i];
+		bg_weapon[i] = background[i];
 	}
 	save_32bit(base, w->y, w->x, bg_weapon, w->HEIGHT);
 }

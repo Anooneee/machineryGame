@@ -320,11 +320,11 @@ void save_32bit(UINT32 *base, int row, int col, UINT32 *bitmap, UINT16 height){
 
 	for(i = 0; i < height; i++){
 		if(x_shift == 0){
-			bitmap[i] &= *base;
+			bitmap[i] |= *base;
 		}else {
 			if(col >= 0){
-				bitmap[i] &= (*base << x_shift);
-				bitmap[i] &= (*base >> (32 - x_shift));
+				bitmap[i] |= (*base >> x_shift);
+				bitmap[i] |= (*base << (32 - x_shift));
 			}
 		}
 	}
