@@ -10,9 +10,6 @@
 #include "psg.h"
 #include "Sfx.h"
 
-#define START_X 16
-#define START_Y 296
-
 UINT32* base;
 UINT32* back;
 UINT32* temp;
@@ -98,9 +95,9 @@ int game() {
 
 	/* Program */
 	
-	p1 = create_player(START_X,START_Y,player_bitmap);
 	timer = create_timer();
 	room = change_map(room, room_number);
+	p1 = create_player(room->start_x,room->start_y,player_bitmap);
 	sword = 0;
 
 	start_music();
@@ -169,7 +166,10 @@ int game() {
 			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
 
 			if (sword) {
-				save_bg(back, sword);
+				if (sword->justCreated) {
+					save_bg(back, sword);
+					sword->justCreated = FALSE;
+				}
 				render_weapon(back, sword);
 				kill_attacked_enemies(room, sword);
 
@@ -200,7 +200,7 @@ int game() {
 					render_room(base, room);
 					render_room(back, room);
 
-					teleport_player(START_X, START_Y, &p1);
+					teleport_player(room->start_x, room->start_y, &p1);
 				}
 			}
 

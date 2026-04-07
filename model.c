@@ -53,16 +53,17 @@ void fall_player(Player *pc, int gravity_strength){
 /* Return a weapon object 16 pixels in front of the player and start cooldown period */
 Weapon* attack(Player *pc) {
     Weapon* w;
-	int weaponX = ((*pc).direction == LEFT) ? (*pc).x - 32 : (*pc).x + 16;
-	UINT32* bitmap = ((*pc).direction == LEFT) ? weapon_bitmap_left : weapon_bitmap_right;
-    if ((*pc).attack_cooldown <= 0) {
-        (*pc).attack_cooldown = 32;
-        w = create_weapon(weaponX, (*pc).y + 16, (*pc).direction, bitmap);
-        w->active = TRUE;
-        return w;
+    int weaponX = ((*pc).direction == LEFT) ? (*pc).x - 32 : (*pc).x + 16;
+    UINT32* bitmap = ((*pc).direction == LEFT) ? weapon_bitmap_left : weapon_bitmap_right;
+
+    if ((*pc).attack_cooldown > 0 || weaponX < 0) {
+        return 0;
     }
-    /* If the attack cooldown is still happening, return NULL. */
-    return 0;
+
+    (*pc).attack_cooldown = 32;
+    w = create_weapon(weaponX, (*pc).y + 16, (*pc).direction, bitmap);
+    w->active = TRUE;
+    return w;
 }
 
 
@@ -96,6 +97,7 @@ Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT32 *bitmap){
 	w->WIDTH = 32;
 	w->direction = direction;
 	w->bitmap = bitmap;
+	w->justCreated = 1;
 	return w;
 }
 
@@ -272,7 +274,7 @@ Room* create_room_1(){
     /* Make exits */
     r->exit_count = 1;
     r->exits = my_malloc(r->exit_count * sizeof(Exit));
-    r->exits[0] = create_exit(568,350,64,HORIZONTAL,5);
+    r->exits[0] = create_exit(568,350,64,HORIZONTAL,2);
 
     /* Make enemies */
     r->enemy_count = 2;
@@ -288,16 +290,115 @@ Room* create_room_1(){
     r->traps[2] = create_trap(367,316,trap_bitmap);
     r->traps[3] = create_trap(383,316,trap_bitmap);
 
+    r->start_x = 16;
+    r->start_y = 296;
 
     return r;
 }
 
 Room* create_room_2(){
-	return create_room_1();
+    Room* r = my_malloc(sizeof(Room));
+
+    /* Make walls */
+    r->wall_count = 7;
+    r->walls = my_malloc(r->wall_count * sizeof(Wall));
+    r->walls[0] = create_wall(0,0,400);
+    r->walls[1] = create_wall(632,0,400);
+    r->walls[2] = create_wall(96,0,166);
+    r->walls[3] = create_wall(96,214,183);
+    r->walls[4] = create_wall(416,102,112);
+    r->walls[5] = create_wall(352,162,4);
+    r->walls[6] = create_wall(168,102,4);
+
+    /* Make floor or roofs */
+    r->floor_count = 5;
+    r->floors = my_malloc(r->floor_count * sizeof(Floor));
+    r->floors[0] = create_floor(0,0,640);
+    r->floors[1] = create_floor(0,395,640);
+    r->floors[2] = create_floor(96,214,328);
+    r->floors[3] = create_floor(96,162,264);
+    r->floors[4] = create_floor(168,102,471);
+
+    /* Make exits */
+    r->exit_count = 1;
+    r->exits = my_malloc(r->exit_count * sizeof(Exit));
+    r->exits[0] = create_exit(632,4,98,VERTICAL,3);
+
+    /* Make enemies */
+    r->enemy_count = 2;
+    r->enemies = my_malloc(r->enemy_count * sizeof(Enemy));
+    r->enemies[0] = create_enemy(116,129,116,318,enemy_bitmap);
+    r->enemies[1] = create_enemy(168,69,168,500,enemy_bitmap);
+
+    /* Make traps */
+    r->trap_count = 5;
+    r->traps = my_malloc(r->trap_count * sizeof(Trap));
+    r->traps[0] = create_trap(9,379,trap_bitmap);
+    r->traps[1] = create_trap(25,379,trap_bitmap);
+    r->traps[2] = create_trap(41,379,trap_bitmap);
+    r->traps[3] = create_trap(57,379,trap_bitmap);
+    r->traps[4] = create_trap(73,379,trap_bitmap);
+
+    r->start_x = 24;
+    r->start_y = 42;
+
+    return r;
 }
 
 Room* create_room_3(){
-	return create_room_1();
+    Room* r = my_malloc(sizeof(Room));
+
+    /* Make walls */
+    r->wall_count = 11;
+    r->walls = my_malloc(r->wall_count * sizeof(Wall));
+    r->walls[0] = create_wall(0,0,400);
+    r->walls[1] = create_wall(632,0,400);
+    r->walls[2] = create_wall(88,160,4);
+    r->walls[3] = create_wall(160,160,4);
+    r->walls[4] = create_wall(248,160,4);
+    r->walls[5] = create_wall(320,160,4);
+    r->walls[6] = create_wall(408,160,4);
+    r->walls[7] = create_wall(480,160,68);
+    r->walls[8] = create_wall(599,160,4);
+    r->walls[9] = create_wall(528,224,4);
+    r->walls[10] = create_wall(480,288,4);
+
+    /* Make floor or roofs */
+    r->floor_count = 9;
+    r->floors = my_malloc(r->floor_count * sizeof(Floor));
+    r->floors[0] = create_floor(0,0,640);
+    r->floors[1] = create_floor(0,395,640);
+    r->floors[2] = create_floor(0,160,96);
+    r->floors[3] = create_floor(160,160,96);
+    r->floors[4] = create_floor(320,160,96);
+    r->floors[5] = create_floor(480,160,127);
+    r->floors[6] = create_floor(480,288,159);
+    r->floors[7] = create_floor(480,224,8);
+    r->floors[8] = create_floor(528,224,111);
+
+    /* Make exits */
+    r->exit_count = 1;
+    r->exits = my_malloc(r->exit_count * sizeof(Exit));
+    r->exits[0] = create_exit(632,228,60,VERTICAL,4);
+
+    /* Make enemies */
+    r->enemy_count = 1;
+    r->enemies = my_malloc(r->enemy_count * sizeof(Enemy));
+    r->enemies[0] = create_enemy(528,191,528,599,enemy_bitmap);
+
+    /* Make traps */
+    r->trap_count = 5;
+    r->traps = my_malloc(r->trap_count * sizeof(Trap));
+    r->traps[0] = create_trap(9,379,trap_bitmap);
+    r->traps[1] = create_trap(25,379,trap_bitmap);
+    r->traps[2] = create_trap(41,379,trap_bitmap);
+    r->traps[3] = create_trap(57,379,trap_bitmap);
+    r->traps[4] = create_trap(73,379,trap_bitmap);
+
+    r->start_x = 8;
+    r->start_y = 127;
+
+    return r;
 }
 
 Room* create_room_4(){
@@ -307,7 +408,6 @@ Room* create_room_4(){
 Room* create_room_5(){
 	return create_room_1();
 }
-
 
 
 /* Use print_object_status routines for each object in the room, up to 3 of each kind. */

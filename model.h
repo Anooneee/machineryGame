@@ -28,6 +28,7 @@ typedef struct {
     int direction;
     bool active;
     UINT32 *bitmap;
+    char justCreated;
 } Weapon;
 
 typedef struct {
@@ -75,6 +76,8 @@ typedef struct room_structure{
     int enemy_count;
     Trap *traps;
     int trap_count;
+    int start_x;
+    int start_y;
 }Room;
 
 typedef struct display_string{

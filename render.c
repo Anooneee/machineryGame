@@ -49,7 +49,7 @@ void render_bg(UINT32* base, Weapon* w) {
 void save_bg(UINT32* base, Weapon* w){
 	int i;
 	for(i = 0; i < 8; i++){
-		bg_weapon[i] = background[i];
+		bg_weapon[i] = 0x0000;
 	}
 	save_32bit(base, w->y, w->x, bg_weapon, w->HEIGHT);
 }

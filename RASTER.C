@@ -303,8 +303,8 @@ void plot_32bit_bitmap(UINT32 *base, int row, int col, const UINT32 *bitmap, UIN
 			}
 			if ((col >> 5) < 19) {
 			*(base + 1) |= (bitmap[i] << (32 - x_shift));
+			}
 		}
-	}
 		base += 20; 
 	}
 }
@@ -323,10 +323,10 @@ void save_32bit(UINT32 *base, int row, int col, UINT32 *bitmap, UINT16 height){
 			bitmap[i] |= *base;
 		}else {
 			if(col >= 0){
-				bitmap[i] |= (*base >> x_shift);
-				bitmap[i] |= (*base << (32 - x_shift));
+				bitmap[i] |= (*base << x_shift) | (*(base+1) >> (32 - x_shift));
 			}
 		}
+		base += 20;
 	}
 	return;
 }
