@@ -28,6 +28,8 @@ void enable_channel(int channel, int tone_on, int noise_on);
 void stop_sound();
 /*silences all PSG sound production*/
 
+void set_noise(int tuning);
 
+void set_envelope(int shape, unsigned int sustain);
 
 #endif

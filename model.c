@@ -3,6 +3,7 @@
 #include "model.h"
 #include "bitmap.h"
 #include "mem.h"
+#include "sfx.h"
 
 /*player related functions*/
 /* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
@@ -35,10 +36,11 @@ void decrement_cooldown(Player *p) {
 void jump_player(Player *pc){ 
     if((*pc).jump_time > 0){
 	(*pc).jump_time--;
-        (*pc).vertical_velocity = (*pc).jump_strength;
-
+    (*pc).vertical_velocity = (*pc).jump_strength;
 	(*pc).y -= (*pc).vertical_velocity;
+    sfx_jump();
     }
+    
 }
 
 /* NOT DONE. Call every movement frame when player is meant to fall. */
@@ -62,6 +64,7 @@ Weapon* attack(Player *pc) {
 
     (*pc).attack_cooldown = 32;
     w = create_weapon(weaponX, (*pc).y + 16, (*pc).direction, bitmap);
+    sfx_attack();
     w->active = TRUE;
     return w;
 }

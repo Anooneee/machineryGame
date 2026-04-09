@@ -32,9 +32,8 @@ int melody[29][3] = {
 void start_music() {
     /*set_tone(0, notes[E][4])*/
     set_tone(0, notes[melody[0][0]][melody[0][1]]);
-    set_volume(0, 0, 8);
     enable_channel(0, 1, 0);
-    
+    set_volume(0, 0, 8);
 }
 
 void upd_music(int* current_note){

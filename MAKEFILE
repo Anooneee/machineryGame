@@ -2,8 +2,8 @@ CC = cc68x
 
 all: game.tos tst_psg.tos
 
-game.tos: main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o
-	$(CC) main.o model.o events.o input.o render.o raster.o music.o psg.o mem.o -o game.tos
+game.tos: main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o
+	$(CC) main.o model.o events.o input.o render.o raster.o music.o psg.o mem.o sfx.o -o game.tos
 
 tst_psg.tos: tst_psg.o psg.o music.o sfx.o
 	$(CC) tst_psg.o psg.o music.o sfx.o -o tst_psg.tos
@@ -14,7 +14,7 @@ main.o: main.c model.h events.h render.h input.h bitmap.h
 bitmap.o: bitmap.c bitmap.h
 	$(CC) -c bitmap.c
 
-model.o: model.c model.h types.h bitmap.h mem.h
+model.o: model.c model.h types.h bitmap.h mem.h sfx.h
 	$(CC) -c model.c
 
 events.o: events.c events.h

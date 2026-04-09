@@ -1,5 +1,6 @@
 #include "events.h"
 #include "model.h"
+#include "Sfx.h"
 
 
 /*
@@ -113,6 +114,7 @@ void kill_attacked_enemies(Room* r, Weapon* w) {
 		e = &(r->enemies[i]);
 		if (is_collision_between_sword_and_enemy(w, e)) {
 			e->dead = TRUE;
+			sfx_enemy_die();
 		}
 	}
 }

@@ -3,61 +3,31 @@
 #include "sfx.h"
 
 void sfx_attack(){
-    int i;
-    int v;
-
     /* Setup a channel for sound and turn it on */
-    enable_channel(0, 3, 0);
-    set_volume(3, 0, 15); 
-
-    for (i = 350; i >= 120; i += 10)
-    {
-        set_tone(0, i); /* Tone goes down as sound continues to make swoop noise */
-    }
-
-    /* Make tone fade away as sound goes */
-    for (v = 15; v >= 0; v--)
-    {
-        set_volume(0, 0, v);
-    }
-
-    stop_sound();
+    set_noise(12);
+    enable_channel(2, 0, 1);
+    set_volume(2, 1, 15);
+    set_envelope(9, 20);
 }
 
-void sfx_beep(){ /* for menu clicks */
-    int i;
-
-    enable_channel(0,1,0);
-    set_volume(0,0,10);
-    for (i = 0; i < 50; i++) /* Do for 50 ticks (more than a half second)*/
-    {
-        set_tone(0, 80);
-    }
-    stop_sound();
+/* for menu clicks */
+void sfx_beep(){ 
+    set_tone(2, 250);
+    enable_channel(2,1,0);
+    set_volume(2,0,10);
+    set_envelope(9,6);
 }
 
 void sfx_enemy_die(){
-    int i;
-
-    enable_channel(0,1,0);
-    set_volume(0,0,10);
-    for (i = 0; i < 50; i++) /* Do for 50 ticks (more than a half second)*/
-    {
-        set_tone(0, 80);
-    }
-    stop_sound();
-   
+    set_noise(23);
+    enable_channel(1,1,0);
+    set_volume(1,1,8);
+    set_envelope(10, 30);
 }
 
 void sfx_jump(){
-    int i;
-
-    enable_channel(0,1,0);
-    set_volume(0,0,10);
-    for (i = 0; i < 50; i++) /* Do for 50 ticks (more than a half second)*/
-    {
-        set_tone(0, 80);
-    }
-    stop_sound();
-   
+    set_noise(17);
+    enable_channel(2,0,1);
+    set_volume(2,1,10);
+    set_envelope(4,15);
 }

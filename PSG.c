@@ -33,7 +33,8 @@ void set_tone(int channel, int tuning){
     }
 }
 
-/*channel 0=A, 1=B, 2=C*/
+/*channel 0=A, 1=B, 2=C
+mode 0 = tone, 1 = envelope*/
 void set_volume(int channel, int mode, int volume){
     if(channel >= 0 && channel <= 2){
         if(mode == 0){
@@ -72,4 +73,18 @@ void stop_sound(){
     set_volume(0, 0, 0);
     set_volume(1, 0, 0);
     set_volume(2, 0, 0);
+}
+
+/*tuning values 0-31*/
+void set_noise(int tuning){
+    write_psg(5, (tuning & 0x1F));
+}
+
+/*15 max value for shape*/
+void set_envelope(int shape, unsigned int sustain){
+    UINT8 course = (sustain & 0x0F);
+    UINT8 fine = (sustain & 0xF0);
+    write_psg(11, fine);
+    write_psg(12, course);
+    write_psg(13, (shape & 0x8));
 }
