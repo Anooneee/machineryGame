@@ -29,5 +29,5 @@ void sfx_jump(){
     set_noise(17);
     enable_channel(2,0,1);
     set_volume(2,1,10);
-    set_envelope(4,15);
+/*    set_envelope(4,15);*/
 }

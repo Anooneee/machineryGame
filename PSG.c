@@ -53,9 +53,9 @@ void enable_channel(int channel, int tone_on, int noise_on){
     UINT8 tone = (1 << channel);
     UINT8 noise = (1 << (channel + 3));
     if(tone_on) {
-        current_mixer &= ~tone;
+        current_mixer &= tone;
     }else {
-        current_mixer |= tone;
+        current_mixer |= ~tone;
     }
     if (noise_on) {
         current_mixer &= ~noise;
