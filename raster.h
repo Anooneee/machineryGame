@@ -3,6 +3,10 @@
 
 #include "types.h"
 
+UINT32 *get_video_base();
+
+
+
 /*----- Function: clear_screen -----
 v
  PURPOSE: Clears the entire screen.

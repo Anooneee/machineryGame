@@ -1,3 +1,4 @@
+#include <osbind.h>
 #include "raster.h"
 #include "types.h"
 #include "font.c"
@@ -6,8 +7,38 @@
 #define SCREEN_WIDTH 639
 #define SCREEN_HEIGHT 399
 
-/*for all functions assume the co-ordinates follow x first y second sturcture regardless of weather it is row or col first*/
+#define VIDEO_ADDRESS_HIGH ((volatile UINT8*)0xFF8201);
+#define VIDEO_ADDRESS_MID ((volatile UINT8*)0xFF8203);
+/* Since the low byte is always 0 we don't need to map it*/
 
+UINT32 *get_video_base(){
+	UINT8 high_address_byte;
+	UINT8 mid_address_byte;
+	UINT32 combined_address;
+	UINT32 *base_address;
+
+	long old_ssp = Super(0);		/* Enter supervisor mode to access volitile memory */
+
+    high_address_byte = *VIDEO_ADDRESS_HIGH;
+    mid_address_byte = *VIDEO_ADDRESS_MID;
+
+	/* Combine the high and low parts of the video base address. The low 2 bytes is zero so no need to mention it */
+	combined_address = ((UINT32)high_address_byte << 16) | ((UINT32)mid_address_byte << 8);
+
+	base_address = (UINT32 *)combined_address;
+	
+	Super(old_ssp);
+	return base_address;
+}
+
+
+UINT16 *set_video_base(){
+	
+}
+
+
+
+/*for all functions assume the co-ordinates follow x first y second sturcture regardless of weather it is row or col first*/
 
 void clear_screen(UINT32 *base){
 	int i;

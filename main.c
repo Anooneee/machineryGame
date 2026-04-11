@@ -3,6 +3,7 @@
 #include "model.h"
 #include "events.h"
 #include "render.h"
+#include "raster.h" /* For getting vid base*/
 #include "input.h"
 #include "bitmap.h"
 #include "mem.h"
@@ -248,7 +249,7 @@ int main() {
 
 	disable_interrupts();
 
-	base = (UINT32*)Physbase();
+	base = get_video_base();
 	original = base;
 	back = (UINT32*)(((long)my_malloc(32256) + 256) & ~255);	/* Aligning address along 256 bytes */
 
