@@ -5,7 +5,11 @@ typedef void (*Vector)();
 void trap28();
 Vector install_vector(int num, Vector vector);
 
+void install_vectors();
+
 void do_vbl();
+void do_kbd();
+
 
 
 #endif
