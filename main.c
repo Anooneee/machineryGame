@@ -50,8 +50,10 @@ int main_menu() {
 		if (chosen > 1) chosen = 0;
 		if (chosen < 0) chosen = 1;		/* bounds checking for the currently-selected option */
 
-		if (!keyboard[0x1C]) return chosen;	/* if the user presses ENTER, return the currently selected option */
-
+		if (!keyboard[0x1C]){
+			start_music();
+			return chosen;	/* if the user presses ENTER, return the currently selected option */
+		}
 		clear_main_menu(base);
 		render_main_menu(base, chosen);
 	}
@@ -87,7 +89,7 @@ int game() {
 	p1 = create_player(room->start_x,room->start_y,player_bitmap);
 	sword = 0;
 
-	start_music();
+	
 
 	init_render(base);
 	init_render(back);
@@ -156,7 +158,7 @@ int game() {
 			}
 
 			/* Music playing! */
-			upd_music(&current_note);
+			/* upd_music(&current_note); */
 
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
