@@ -12,4 +12,6 @@ foreach i { *.tos }
 	endif
 endfor
 
+gen -L2 ikbd_isr.s
+
 make

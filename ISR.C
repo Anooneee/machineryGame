@@ -1,8 +1,8 @@
+#include <osbind.h>
 #define TRAP_28 112
 
 int seconds;
 typedef void (*Vector)();
-
 
 Vector install_vector(int num, Vector vector) {
     Vector orig;
@@ -14,3 +14,14 @@ Vector install_vector(int num, Vector vector) {
     return orig;
 }
 
+void disable_midi() {
+	long old_ssp = Super(0);
+	*((volatile unsigned char*)0xFFFFFA09) &= ~(1 << 7);
+	Super(old_ssp);
+}
+
+void enable_midi() {
+	long old_ssp = Super(0);
+	*((volatile unsigned char*)0xFFFFFA09) |= (1 << 7);
+	Super(old_ssp);
+}

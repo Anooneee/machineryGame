@@ -10,6 +10,7 @@
 #include "music.h"
 #include "psg.h"
 #include "Sfx.h"
+#include "ISR.h"
 
 UINT32* base;
 UINT32* back;
@@ -21,8 +22,6 @@ long *timer = (long*) 0x462;
 long current_time = 0;
 
 static UINT8 screen[32256];
-
-char keyboard[128];		/* Stores the state of every key on the board. 0 = pressed, 1 = not pressed. */
 
 bool timer_ticked() {
 	long old_ssp = Super(0);
@@ -45,29 +44,16 @@ int main_menu() {
 	render_main_menu(base, chosen);
 
 	while (1) {
+		if (!keyboard[0x11]) chosen++;		/* If the user presses W, go to the option above */
+		else if (!keyboard[0x1F]) chosen--;	/* If the user presses S, go to the option below */
 
-		/* input portion */
-		while (has_input()) {
-			input = get_input();
+		if (chosen > 1) chosen = 0;
+		if (chosen < 0) chosen = 1;		/* bounds checking for the currently-selected option */
 
-			if (is_mouse_input(input)) {
-				clear_mouse_input();
-			}
-			else {
-				keyboard[input & ~(0x80)] = input & 0x80;
-			}
+		if (!keyboard[0x1C]) return chosen;	/* if the user presses ENTER, return the currently selected option */
 
-			if (!keyboard[0x11]) chosen++;		/* If the user presses W, go to the option above */
-			else if (!keyboard[0x1F]) chosen--;	/* If the user presses S, go to the option below */
-
-			if (chosen > 1) chosen = 0;
-			if (chosen < 0) chosen = 1;		/* bounds checking for the currently-selected option */
-
-			if (!keyboard[0x1C]) return chosen;	/* if the user presses ENTER, return the currently selected option */
-
-			clear_main_menu(base);
-			render_main_menu(base, chosen);
-		}
+		clear_main_menu(base);
+		render_main_menu(base, chosen);
 	}
 
 	return chosen;
@@ -114,20 +100,7 @@ int game() {
 	/* main game loop: */
 	i = 0;
 	while (running) {
-		/* Input portion: */
-
-		/* recieve input and sort it into the corresponding keyboard array */
-		while (has_input()) {
-			input = get_input();
-
-			if (is_mouse_input(input)) {				/* clear IKBD if a mouse movement was detected */
-				clear_mouse_input();
-			}
-			else {
-				keyboard[input & ~(0x80)] = input & 0x80;	/* If a key is pressed, that spot in the keyboard array will be set to 0. Else, it will be a nonzero value */
-			}
-		}
-
+		/* Input events portion: */
 		/* Welcome to magic number zone. I will regrettably be using EXTENSIVE magic numbers to parse input here.
 		I don't really see a better way of doing this, so I'll just be commenting what each number means. */
 		if (!keyboard[0x1E]) {	/* 0x1E = a */
@@ -246,8 +219,10 @@ int game() {
 int main() {
 	int i;
 	int game_chosen = 0;
+	Vector orig;
 
-	disable_interrupts();
+	disable_midi();
+	orig = install_vector(70, ikbd_isr);
 
 	base = get_video_base();
 	original = base;
@@ -255,7 +230,7 @@ int main() {
 
 
 	for (i = 0; i < 128; i++) {	/* initialize keyboard */
-		keyboard[i] = 0x80;
+		keyboard[i] = 1;
 	}
 
 	game_chosen = main_menu();
@@ -264,8 +239,10 @@ int main() {
 		game();
 	}
 
-	enable_interrupts();
-
 	Setscreen(original, original, -1);
+
+	install_vector(70, orig);
+	enable_midi();
+
 	return 0;
 }
