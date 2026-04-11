@@ -231,7 +231,7 @@ int game() {
 			back = temp;
 
 			Vsync();
-			Setscreen(back, back, -1);
+			set_video_base(back);
 
 			/* Clear the screen around movable entites: */
 			clear_player(back, &p1, oldX, oldY);
@@ -266,6 +266,6 @@ int main() {
 
 	enable_interrupts();
 
-	Setscreen(original, original, -1);
+	set_video_base(original);
 	return 0;
 }
