@@ -7,6 +7,9 @@ Vector install_vector(int num, Vector vector);
 
 void install_vectors();
 
+void disable_midi();
+void enable_midi();
+
 void do_vbl();
 void do_kbd();
 

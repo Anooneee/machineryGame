@@ -21,7 +21,17 @@ Vector install_vector(int num, Vector vector) {
     return orig;
 }
 
-void install_vectors(){
+void disable_midi() {
+	long old_ssp = Super(0);
+	*((volatile unsigned char*)0xFFFFFA09) &= ~(1 << 7);
+	Super(old_ssp);
+}
+
+void enable_midi() {
+	long old_ssp = Super(0);
+	*((volatile unsigned char*)0xFFFFFA09) |= (1 << 7);
+	Super(old_ssp);
+}void install_vectors(){
     Org_VBL = install_vector(TRAP_28, do_vbl);
     Org_IKBD = install_vector(TRAP_KB, do_kbd);
 }
