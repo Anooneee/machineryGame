@@ -12,6 +12,8 @@
 #include "Sfx.h"
 #include "ISR.h"
 
+extern void vbl_isr();
+
 UINT32* base;
 UINT32* back;
 UINT32* temp;
@@ -20,6 +22,8 @@ UINT32* original;
 
 long *timer = (long*) 0x462;
 long current_time = 0;
+int render_req;
+int note;
 
 static UINT8 screen[32256];
 
@@ -143,7 +147,6 @@ int game() {
 
 			if (sword) {
 				if (sword->justCreated) {
-					save_bg(back, sword);
 					sword->justCreated = FALSE;
 				}
 				render_weapon(back, sword);
@@ -156,9 +159,6 @@ int game() {
 					sword = 0;
 				}
 			}
-
-			/* Music playing! */
-			/* upd_music(&current_note); */
 
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
@@ -186,7 +186,7 @@ int game() {
 				running = 0;
 			}
 
-
+			/*update model*/
 			move_player_vert(&p1, room);
 			move_player_horiz(&p1, room);
 
@@ -195,6 +195,11 @@ int game() {
 
 
 			/* Rendering portion: */
+			if(render_req == 1){
+				render_frame(back);
+				set_video_base(back);
+				render_req = 0;			
+			}
 
 			render_player((UINT16*)back, &p1);
 			render_enemies((UINT16*)back, room);

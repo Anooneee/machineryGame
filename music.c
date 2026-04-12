@@ -3,7 +3,9 @@
 #include "psg.h"
 #include "music.h"
 
-int note_time = 0;
+extern int note_time;
+extern int note = 0;
+
 
 const int notes[12][8] = {
     {{3421}, {1705}, {855}, {427}, {214}, {107}, {53}, {26}},   /*C*/
@@ -37,7 +39,7 @@ void start_music() {
     set_volume(0, 0, 8);
 }
 
-void upd_music(int* current_note){
-	note_time = melody[*current_note][2];
-    set_tone(0, notes[melody[*current_note][0]][melody[*current_note][1]]);
+void upd_music(){
+	note_time = melody[note][2];
+    set_tone(0, notes[melody[note][0]][melody[note][1]]);
 }

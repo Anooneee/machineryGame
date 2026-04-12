@@ -9,7 +9,7 @@ game.tos: main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o 
 %.o: %.s
 	$(gen) -L2 $<
 
-main.o: main.c model.h events.h render.h input.h bitmap.h
+main.o: main.c main.h model.h events.h render.h input.h bitmap.h
 	$(CC) -c main.c
 
 bitmap.o: bitmap.c bitmap.h

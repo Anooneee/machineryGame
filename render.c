@@ -4,6 +4,7 @@
 #include "model.h"
 #include "render.h"
 
+
 void init_render(UINT32* base) {
 	clear_screen(base);
 }
@@ -39,6 +40,7 @@ void render_player(UINT16* base, Player* p) {
 }
 
 void render_weapon(UINT32* base, Weapon* w) {
+	save_bg(base, w);
 	plot_32bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
 }
 

@@ -96,7 +96,6 @@ bool is_collision_between_player_and_roof(Player *p, Room *r) {
 	return FALSE;
 }
 
-
 bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e){
     bool is_hit = FALSE;
     if ((w->x <= e->x + e->WIDTH && w->x + w->WIDTH >= e->x) &&   /* FIND IF w X IS WITHIN e X */
@@ -104,6 +103,18 @@ bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e){
         is_hit = TRUE;
     }
     return is_hit;
+}
+
+void update_sword(Weapon* sword, Room* room, Player p1){
+	if(sword->justCreated) {
+		sword->justCreated = FALSE;
+	}
+	kill_attacked_enemies(room, sword);
+
+	if (p1.attack_cooldown <= 1) {
+		free_weapon(sword);
+		sword = 0;
+	}
 }
 
 void kill_attacked_enemies(Room* r, Weapon* w) {
@@ -195,6 +206,7 @@ void move_enemies_horiz(Room *r) {
 		move_enemy(&(r->enemies[i]));
 	}
 }
+
 
 Room* change_map(Room* r, int room_number) {
 	if (r) {

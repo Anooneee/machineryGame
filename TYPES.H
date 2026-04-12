@@ -4,6 +4,7 @@
 typedef unsigned char UINT8;
 typedef unsigned int  UINT16;
 typedef unsigned long UINT32;
+typedef void (*Vector)();
 
 typedef int BOOL;
 
@@ -16,5 +17,7 @@ typedef enum {
     LEFT = -1,
     RIGHT = 1,
 };
+
+
 
 #endif
