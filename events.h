@@ -2,6 +2,7 @@
 #define EVENTS_H
 #include "TYPES.H"
 #include "model.h"
+#include "main.h"
 
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */
@@ -32,6 +33,9 @@ bool is_collision_between_player_and_exits(Player *p, Room *r);
 Room* change_map(Room* r, int room_number);
 void kill_attacked_enemies(Room* r, Weapon* w);
 bool is_player_dead(Room* r, Player* p);
+
+void next_room();
+void end_game();
 
 /* ---------------------- Synchronous (Timed) Events -----------------------------*/
 /* Call when time has passed*/

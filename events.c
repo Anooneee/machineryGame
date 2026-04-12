@@ -165,6 +165,25 @@ bool is_collision_between_player_and_exits(Player *p, Room *r) {
 	return FALSE;
 }
 
+void next_room(){
+	if(room_number == 5){
+		end_game();
+		win_lose = 1;
+	}
+	else{
+		room_number++;
+		g_active_room = change_map(g_active_room, room_number);
+		rdr_room_flag = 4;
+		teleport_player(g_active_room->start_x, g_active_room->start_y, g_active_player);
+	}	
+}
+
+void end_game(){
+	game_done = 1;
+}
+
+/*Synchronous events*/
+
 void every_second(Timer *t){ /* 70 ticks */
     update_timer(t);
 }

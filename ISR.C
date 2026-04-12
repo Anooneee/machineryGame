@@ -46,23 +46,32 @@ void do_vbl(){
     static int note_time;
     static int clock_tick = 0;
 	static int ticks = 0;
-    ticks++;
-    clock_tick++;
+    if(g_active_player != NULL && g_active_room != NULL){
+        ticks++;
+        clock_tick++;
 
-    /*time music*/
-    if (note_time =< 0) {
-		update_music();
-		note_time = melody[note][2];
-	}
-	else {
-		note_time--;
-	}
+        /*time music*/
+        if (note_time <= 0) {
+				upd_music();
+				note_time = melody[note][2];
+		}
+		else {
+			note_time--;
+		}
 
-    /*sync events*/ 
+        /*sync events*/
 
-            
-    /*update game model*/
+        if (ticks >= 70) {
+		    update_timer(&timer);
+		    ticks = 0;
+    	}
 
-	/*frame buffer stuff*/
-    render_req = 1;
+       
+
+        /*update game model from asynchronous event requests*/
+        update_model();
+
+	    /*frame buffer stuff*/
+        render_req = 1;
+    }
 }

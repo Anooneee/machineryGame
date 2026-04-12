@@ -1,33 +1,40 @@
 #include <osbind.h>
 #include <stdio.h>
 #include "main.h"
-#include "model.h"
-#include "events.h"
-#include "render.h"
-#include "input.h"
-#include "bitmap.h"
-#include "mem.h"
-#include "music.h"
-#include "psg.h"
-#include "Sfx.h"
+
+#define VBL_ISR 28
 
 UINT32* base;
 UINT32* back;
 UINT32* temp;
 UINT32* original;
 
+Timer game_timer;
+
 long *timer = (long*) 0x462;
 long current_time = 0;
 int note = 0;
 int render_req = 0;
 int rdr_room_flag = 0;
+int vbl_ticks = 0;
 int rdr_timer_flag = 0;
 int rdr_sword_flag = 0;
 int clear_sword_flag = 0;
+int game_done = 0;
+int win_lose = 0;
+int next_rm = 0;
+int room_number = 0;
+
+
+Player* g_active_player = NULL;
+Room* g_active_room = NULL;
+
 
 static UINT8 screen[32256];
 
 char keyboard[128];		/* Stores the state of every key on the board. 0 = pressed, 1 = not pressed. */
+
+extern void vbl_isr();
 
 bool timer_ticked() {
 	long old_ssp = Super(0);
@@ -90,7 +97,7 @@ int game() {
 
 	Weapon* sword;
 
-	int room_number = 1;
+	
 	Room* room = 0;
 
 	int i;
@@ -99,6 +106,7 @@ int game() {
 	long time_then;
 	int current_note = 0;
 	int note_time;
+	room_number = 1;
 
 	/* Program */
 	
@@ -106,6 +114,9 @@ int game() {
 	room = change_map(room, room_number);
 	p1 = create_player(room->start_x,room->start_y,player_bitmap);
 	sword = 0;
+
+	g_active_player = &p1;
+	g_active_room = room;
 
 	start_music();
 	note_time = melody[note][2];
@@ -161,97 +172,83 @@ int game() {
 		}
 
 		/* Main game: */
-		if (timer_ticked()) {
-			oldX = p1.x;
-			oldY = p1.y;
+		
+			
 
-			ticks++;
-			if (ticks >= 70) {
-				update_timer(&timer);
-				ticks = 0;
-			}
-
+			
 			/* synchronous events: */
-			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
+			
 
 			if (sword) {
+				if (sword->justCreated) {
+					save_bg(back, sword);
+					sword->justCreated = FALSE;
+				}
+				render_weapon(back, sword);
 				kill_attacked_enemies(room, sword);
 
-				if (p1.attack_cooldown <= 1) {		
-					clear_sword_flag = 2;
-								
+				if (p1.attack_cooldown <= 1) {
+					clear_weapon(back, sword);
+					clear_weapon(base, sword);
 					free_weapon(sword);
 					sword = 0;
 				}
 			}
 
-			/* Music playing! */
-
-
-			/*stuff that will go straight into the ISR*/
-			if (note_time <= 0) {
-				upd_music();
-				note_time = melody[note][2];
-			}
-			else {
-			note_time--;
-			}
 			
-
-			/* Conditional events: */
-			if (is_collision_between_player_and_exits(&p1, room)) {
-				if (room_number == 5) {
-					running = 0;
-					game_message((UINT8*)base, "You win!", 220, 300);
-					game_message((UINT8*)back, "You win!", 220, 300);
-				}
-				else {
-					room_number++;
-					room = change_map(room, room_number);
-					rdr_room_flag = 4;
-					teleport_player(room->start_x, room->start_y, &p1);
-				}
+	
+			if (is_collision_between_player_and_exits(g_active_player, g_active_room)){
+				next_rm = 1;
 			}
 
 			if (is_player_dead(room, &p1)) {
-				game_message((UINT8*)base, "You lose!!!", 220, 300);
-				game_message((UINT8*)back, "You lose!!!", 220, 300);
-				running = 0;
+				end_game();
 			}
-
-
-			move_player_vert(&p1, room);
-			move_player_horiz(&p1, room);
-
-			move_enemies_horiz(room);
-			decrement_cooldown(&p1);
-
+		}
+		
+			update_model();
 
 			/* Rendering portion: */
-
-			render_frame(back, &p1, room, &timer, sword);
-
-			/* Swap framebuffers: */
-			temp = base;
-			base = back;
-			back = temp;
-
-			Vsync();
-			Setscreen(back, back, -1);
-
-			/* Clear the screen around movable entites: */
-			clear_player(back, &p1, oldX, oldY);
-			clear_enemies(back, room);
-
-		}
-	}
+			if(render_req = 1){
+				oldX = p1.x;
+				oldY = p1.y;
+				render_frame(back, &p1, room, &timer, sword);
+				/* set_video_base(); */
+				temp = base;
+				base = back;
+				back = temp;
+				Vsync();
+				Setscreen(back, back, -1);
+				/* Clear the screen around movable entites: */
+				clear_player(back, &p1, oldX, oldY);
+				clear_enemies(back, room);
+				render_req = 0;
+			}
+	
 
 	return 0;
+}
+
+void update_model(){
+	if (game_done == 0){
+	move_player_vert(g_active_player, g_active_room);
+	move_player_horiz(g_active_player, g_active_room);
+	move_enemies_horiz(g_active_room);
+	decrement_cooldown(g_active_player);
+	update_player_grounded(g_active_player, is_collision_between_player_and_floor(g_active_player, g_active_room));
+	if(next_rm == 1){
+		next_room(room_number);
+		next_rm = 0;
+	}
+	}
 }
 
 int main() {
 	int i;
 	int game_chosen = 0;
+	Vector orig_VBL;
+
+	install_vectors();
 
 	disable_interrupts();
 
@@ -273,5 +270,6 @@ int main() {
 	enable_interrupts();
 
 	Setscreen(original, original, -1);
+	uninstall_vectors();
 	return 0;
 }

@@ -33,8 +33,16 @@ void render_frame(UINT32* base, Player* p, Room* r, Timer* t, Weapon* w){
 	if (clear_sword_flag > 0){
 			clear_weapon(base, w);
 			clear_sword_flag--;
+	}
+	
+	if (game_done == 1){
+		if(win_lose == 0){
+			game_message((UINT8*)base, "You lose!!!", 220, 300);
 		}
-
+		if(win_lose == 1){
+			game_message((UINT8*)base, "You win!", 220, 300);
+		}
+	}
 }
 
 void init_render(UINT32* base) {
