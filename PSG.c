@@ -20,10 +20,11 @@ void write_psg(int reg, UINT8 val){
 UINT8 read_psg(int reg){
     long old_ssp;
     char isr;
+    int value;
     isr = Super(1);
 
     if(!isr) old_ssp = Super(0);
-    int value;
+    
     *PSG_reg_select = reg;
     value = *PSG_reg_write;
     if(!isr) Super(old_ssp);
