@@ -62,16 +62,16 @@ void do_vbl(){
         /*sync events*/
 
         if (ticks >= 70) {
-		    update_timer(&timer);
+		    upd_timer = 1;
 		    ticks = 0;
     	}
 
-       
-
-        /*update game model from asynchronous event requests*/
         update_model();
 
-	    /*frame buffer stuff*/
-        render_req = 1;
+    /*update game model from asynchronous event requests*/
+
+
+	/*frame buffer stuff*/
+    render_req = 1;
     }
 }

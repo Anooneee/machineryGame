@@ -24,6 +24,7 @@ int game_done = 0;
 int win_lose = 0;
 int next_rm = 0;
 int room_number = 0;
+int upd_timer = 0;
 
 
 Player* g_active_player = NULL;
@@ -204,6 +205,10 @@ int game() {
 			if (is_player_dead(room, &p1)) {
 				end_game();
 			}
+			if (upd_timer == 1){
+				update_timer(&timer);
+		    	upd_timer = 0;
+			}
 		}
 		
 			update_model();
@@ -231,15 +236,15 @@ int game() {
 
 void update_model(){
 	if (game_done == 0){
-	move_player_vert(g_active_player, g_active_room);
-	move_player_horiz(g_active_player, g_active_room);
-	move_enemies_horiz(g_active_room);
-	decrement_cooldown(g_active_player);
-	update_player_grounded(g_active_player, is_collision_between_player_and_floor(g_active_player, g_active_room));
-	if(next_rm == 1){
-		next_room(room_number);
-		next_rm = 0;
-	}
+		move_player_vert(g_active_player, g_active_room);
+		move_player_horiz(g_active_player, g_active_room);
+		move_enemies_horiz(g_active_room);
+		decrement_cooldown(g_active_player);
+		update_player_grounded(g_active_player, is_collision_between_player_and_floor(g_active_player, g_active_room));
+		if(next_rm == 1){
+			next_room(room_number);
+			next_rm = 0;
+		}
 	}
 }
 

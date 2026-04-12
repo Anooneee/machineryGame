@@ -33,6 +33,7 @@ extern int game_done;
 extern int win_lose;
 extern int next_rm;
 extern int room_number;
+extern int upd_timer;
 
 extern Player* g_active_player;
 extern Room* g_active_room;
