@@ -47,19 +47,31 @@ void set_volume(int channel, int mode, int volume){
     }
 }
 
-/*channel 0=A, 1=B, 2=C enable = 1, disable = 0*/
+/*channel 0=A, 1=B, 2=C enable = 0, disable = 1*/
 void enable_channel(int channel, int tone_on, int noise_on){
+    UINT8 tone, noise;
     UINT8 current_mixer = read_psg(7);
-    UINT8 tone = (1 << channel);
-    UINT8 noise = (1 << (channel + 3));
-    if(tone_on) {
-        current_mixer &= tone;
-    }else {
-        current_mixer |= ~tone;
+   
+    if((tone_on > 1) || (tone_on < 0)) {
+        return;
     }
-    if (noise_on) {
-        current_mixer &= ~noise;
-    } else {
+    if((noise_on > 1) || (noise_on < 0)) {
+        return;
+    }
+
+    if (tone_on == 0){
+        tone = 0xFF & (tone_on << channel);
+        current_mixer &= tone;
+    }else{
+        tone = 0x00 & (tone_on << channel);
+        current_mixer |= tone;
+    }
+    
+    if (noise_on == 0){
+        noise = 0xFF & (noise_on << channel);
+        current_mixer &= tone;
+    }else{
+        noise = 0x00 & (noise_on << channel);
         current_mixer |= noise;
     }
     write_psg(7, current_mixer);
@@ -69,10 +81,6 @@ void stop_sound(){
     enable_channel(0,0,0);
     enable_channel(1,0,0);
     enable_channel(2,0,0);
-
-    set_volume(0, 0, 0);
-    set_volume(1, 0, 0);
-    set_volume(2, 0, 0);
 }
 
 /*tuning values 0-31*/

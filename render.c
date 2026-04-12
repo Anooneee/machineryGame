@@ -3,6 +3,39 @@
 #include "raster.h"
 #include "model.h"
 #include "render.h"
+#include "main.h"
+
+void render_frame(UINT32* base, Player* p, Room* r, Timer* t, Weapon* w){
+	render_player((UINT16*)base, p);
+	render_enemies((UINT16*)base, r);
+
+
+	if(rdr_room_flag > 0){
+		init_render(base);
+		render_room(base, r);
+		rdr_room_flag--;
+	}
+
+	if(rdr_timer_flag > 0){
+	render_timer((UINT8*)base, t);
+	rdr_timer_flag--;
+	}
+
+	if(w && (rdr_sword_flag > 0)){
+		if(w->justCreated){
+			save_bg(base, w);
+			w->justCreated = FALSE;
+		}
+		render_weapon(base, w);
+		rdr_sword_flag--;
+	}
+
+	if (clear_sword_flag > 0){
+			clear_weapon(base, w);
+			clear_sword_flag--;
+		}
+
+}
 
 void init_render(UINT32* base) {
 	clear_screen(base);

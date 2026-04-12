@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "types.h"
+#include "main.h"
 #include "model.h"
 #include "bitmap.h"
 #include "mem.h"
@@ -196,12 +197,7 @@ void update_timer(Timer *t){
     (*t).display_value.min = (*t).time_passed / 60;
     (*t).display_value.sec = (*t).time_passed % 60;
     */
-    update_display(t);
-}
-
-/* NOT DONE. Draw with font the display value */
-void update_display(Timer *t){
-    /* Draw with font the display value */
+    rdr_timer_flag = 2;
 }
 
 /* Create timer duh */

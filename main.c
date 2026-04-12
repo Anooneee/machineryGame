@@ -1,5 +1,6 @@
 #include <osbind.h>
 #include <stdio.h>
+#include "main.h"
 #include "model.h"
 #include "events.h"
 #include "render.h"
@@ -13,11 +14,16 @@
 UINT32* base;
 UINT32* back;
 UINT32* temp;
-
 UINT32* original;
 
 long *timer = (long*) 0x462;
 long current_time = 0;
+int note = 0;
+int render_req = 0;
+int rdr_room_flag = 0;
+int rdr_timer_flag = 0;
+int rdr_sword_flag = 0;
+int clear_sword_flag = 0;
 
 static UINT8 screen[32256];
 
@@ -92,6 +98,7 @@ int game() {
 	int running = 1; /* 1 if the game is running, 0 if not */
 	long time_then;
 	int current_note = 0;
+	int note_time;
 
 	/* Program */
 	
@@ -101,6 +108,8 @@ int game() {
 	sword = 0;
 
 	start_music();
+	note_time = melody[note][2];
+
 
 	init_render(base);
 	init_render(back);
@@ -166,23 +175,28 @@ int game() {
 			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
 
 			if (sword) {
-				if (sword->justCreated) {
-					save_bg(back, sword);
-					sword->justCreated = FALSE;
-				}
-				render_weapon(back, sword);
 				kill_attacked_enemies(room, sword);
 
-				if (p1.attack_cooldown <= 1) {
-					clear_weapon(back, sword);
-					clear_weapon(base, sword);
+				if (p1.attack_cooldown <= 1) {		
+					clear_sword_flag = 2;
+								
 					free_weapon(sword);
 					sword = 0;
 				}
 			}
 
 			/* Music playing! */
-			upd_music(&current_note);
+
+
+			/*stuff that will go straight into the ISR*/
+			if (note_time <= 0) {
+				upd_music();
+				note_time = melody[note][2];
+			}
+			else {
+			note_time--;
+			}
+			
 
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
@@ -194,12 +208,7 @@ int game() {
 				else {
 					room_number++;
 					room = change_map(room, room_number);
-
-					init_render(base);
-					init_render(back);
-					render_room(base, room);
-					render_room(back, room);
-
+					rdr_room_flag = 4;
 					teleport_player(room->start_x, room->start_y, &p1);
 				}
 			}
@@ -220,9 +229,7 @@ int game() {
 
 			/* Rendering portion: */
 
-			render_player((UINT16*)back, &p1);
-			render_enemies((UINT16*)back, room);
-			render_timer((UINT8*)back, &timer);
+			render_frame(back, &p1, room, &timer, sword);
 
 			/* Swap framebuffers: */
 			temp = base;

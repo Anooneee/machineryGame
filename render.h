@@ -4,6 +4,8 @@
 #include "types.h"
 #include "model.h"
 
+void render_frame(UINT32* base, Player* p, Room* r, Timer* t, Weapon* w);
+
 void init_render(UINT32* base);
 
 	/* functions to plot and erase bitmaps for the cursor (for the main menu) */
