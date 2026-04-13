@@ -3,7 +3,7 @@
 #include "psg.h"
 #include "music.h"
 
-int note = 0;
+extern int note = 0;
 
 const int notes[12][8] = {
     {{3421}, {1705}, {855}, {427}, {214}, {107}, {53}, {26}},   /*C*/

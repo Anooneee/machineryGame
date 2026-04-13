@@ -1,8 +1,9 @@
 #include <osbind.h>
 #include <stdio.h>
-#include "main.h"
+#include "game.h"
 
 #define VBL_ISR 28
+extern void vbl_isr();
 
 UINT32* base;
 UINT32* back;
@@ -24,7 +25,7 @@ int next_rm = 0;
 int room_number = 0;
 int upd_timer = 0;
 
-extern void vbl_isr();
+
 
 Player* g_active_player = NULL;
 Room* g_active_room = NULL;

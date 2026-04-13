@@ -2,12 +2,14 @@
 #define ISR_H
 
 #include "music.h"
-#include "main.h"
+#include "game.h"
 #include "types.h"
 #include "raster.h"
 
 
 void trap28();
+
+void vbl_isr();
 
 Vector install_vector(int num, Vector vector);
 

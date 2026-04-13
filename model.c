@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "types.h"
-#include "main.h"
+#include "game.h"
 #include "model.h"
 #include "bitmap.h"
 #include "mem.h"

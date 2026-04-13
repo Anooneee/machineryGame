@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef GAME_H
+#define GAME_H
 
 #include "model.h"
 #include "events.h"
@@ -38,7 +38,7 @@ extern int upd_timer;
 extern Player* g_active_player;
 extern Room* g_active_room;
 
-
+extern void vbl_isr();
 
 
 /* Function Prototypes */

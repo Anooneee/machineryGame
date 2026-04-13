@@ -2,7 +2,7 @@
 #define EVENTS_H
 #include "TYPES.H"
 #include "model.h"
-#include "main.h"
+#include "game.h"
 
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */

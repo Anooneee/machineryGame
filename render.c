@@ -3,7 +3,7 @@
 #include "raster.h"
 #include "model.h"
 #include "render.h"
-#include "main.h"
+#include "game.h"
 
 void render_frame(UINT32* base, Player* p, Room* r, Timer* t, Weapon* w){
 	render_player((UINT16*)base, p);

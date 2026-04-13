@@ -1,20 +1,24 @@
 CC = cc68x
+gen = gen
 
-all: game.tos tst_psg.tos
+all: game.tos
 
-game.tos: main.o main.h model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o isr.o
-	gen -L2 isr.o $(CC) main.o main.h model.o events.o input.o render.o raster.o music.o psg.o mem.o sfx.o isr.o -o game.tos
+game.tos: main.o game.h model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o isr.o
+	$(CC) main.o model.o events.o input.o render.o raster.o music.o psg.o mem.o sfx.o isr.o isr_asm.o -o game.tos
 
-main.o: main.c model.h events.h render.h input.h bitmap.h
+%.o: %.s
+	$(gen) -L2 $<
+
+main.o: main.c game.h model.h events.h render.h input.h bitmap.h
 	$(CC) -c main.c
 
 bitmap.o: bitmap.c bitmap.h
 	$(CC) -c bitmap.c
 
-model.o: model.c model.h types.h bitmap.h mem.h sfx.h
+model.o: model.c game.h model.h types.h bitmap.h mem.h sfx.h
 	$(CC) -c model.c
 
-events.o: events.c events.h
+events.o: events.c game.h events.h
 	$(CC) -c events.c
 
 input.o: input.c input.h types.h
@@ -29,15 +33,14 @@ render.o: render.c render.h types.h raster.h model.h bitmap.h
 mem.o: mem.c mem.h types.h
 	$(CC) -c mem.c
 
-music.o: music.c music.h types.h
+music.o: music.c game.h music.h types.h
 	$(CC) -c music.c
 
 psg.o: psg.c psg.h types.h
 	$(CC) -c psg.c
 
-
 sfx.o: sfx.c sfx.h psg.h
 	$(CC) -c sfx.c
 
-isr.o: isr.c isr.h isr_asm.s
-	gen -L2 isr_asm.s $(CC) isr.c -o isr.o
+isr.o: isr.c isr.h
+	$(CC) isr.c
