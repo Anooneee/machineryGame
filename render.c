@@ -3,18 +3,18 @@
 #include "raster.h"
 #include "model.h"
 #include "render.h"
-
+#include "input.h"	/* for the mouse coords */
 
 void init_render(UINT32* base) {
 	clear_screen(base);
 }
 
-void render_mouse(UINT8* base, int* mouse_coords) {
-	plot_8bit_bitmap(base, mouse_coords[1], mouse_coords[0], mouse_bitmap, 8);
+void render_mouse(UINT8* base, int* current_mouse_coords) {
+	plot_8bit_bitmap(base, current_mouse_coords[1], current_mouse_coords[0], mouse_bitmap, 8);
 }
 
-void clear_mouse(UINT32* base, int* mouse_coords) {
-	clear_region(base, mouse_coords[1], mouse_coords[0], 8, 8);
+void clear_mouse(UINT32* base, int* old_mouse_coords) {
+	clear_region(base, old_mouse_coords[1], old_mouse_coords[0], 8, 8);
 }
 
 void clear_player(UINT32* base, Player* p, int x, int y) {
@@ -40,7 +40,6 @@ void render_player(UINT16* base, Player* p) {
 }
 
 void render_weapon(UINT32* base, Weapon* w) {
-	save_bg(base, w);
 	plot_32bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);
 }
 
@@ -164,7 +163,9 @@ void render_main_menu(UINT32* base, char chosen) {
 	plot_string((UINT8*)base, 130, 96, "Play Game");
 	plot_string((UINT8*)base, 160, 96, "Quit");
 
-	plot_8bit_bitmap((UINT8*)base, 130 + chosen * 30, 80, ball_bitmap, 8);
+	if (chosen != 3) {
+		plot_8bit_bitmap((UINT8*)base, 130 + chosen * 30, 80, ball_bitmap, 8);
+	}
 }
 
 void clear_main_menu(UINT32* base) {

@@ -3,12 +3,22 @@
 
 #include "types.h"
 
+
+/*----- Function: get_video_base -----
+Return video base start address of the 68000 as a unsigned long
+*/
 UINT32 *get_video_base();
 
+/*----- Function: set_video_base -----
 
+changes the frame buffer start address
+
+implemented in 68000 assembly language using the movep instruction
+*/
+extern void set_video_base(UINT32* base);
 
 /*----- Function: clear_screen -----
-v
+
  PURPOSE: Clears the entire screen.
 
  INPUT: Address(UINT32*): to the start of the screen

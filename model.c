@@ -349,6 +349,8 @@ Room* create_room_2(){
 }
 
 Room* create_room_3(){
+    int i = 0;
+
     Room* r = my_malloc(sizeof(Room));
 
     /* Make walls */
@@ -390,28 +392,18 @@ Room* create_room_3(){
     r->enemies[0] = create_enemy(528,191,528,599,enemy_bitmap);
 
     /* Make traps */
-    r->trap_count = 5;
+    r->trap_count = 19;
     r->traps = my_malloc(r->trap_count * sizeof(Trap));
-    r->traps[0] = create_trap(9,379,trap_bitmap);
-    r->traps[1] = create_trap(25,379,trap_bitmap);
-    r->traps[2] = create_trap(41,379,trap_bitmap);
-    r->traps[3] = create_trap(57,379,trap_bitmap);
-    r->traps[4] = create_trap(73,379,trap_bitmap);
+    for (i = 0; i < r->trap_count; i++) {
+        r->traps[i] = create_trap(9 + 32*i,379,trap_bitmap);
+    }
+
 
     r->start_x = 8;
     r->start_y = 127;
 
     return r;
 }
-
-Room* create_room_4(){
-	return create_room_1();
-}
-
-Room* create_room_5(){
-	return create_room_1();
-}
-
 
 /* Use print_object_status routines for each object in the room, up to 3 of each kind. */
 void print_room_status(Room r){

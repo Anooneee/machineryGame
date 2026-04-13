@@ -2,12 +2,21 @@
 #include "model.h"
 #include "Sfx.h"
 
+/* events for the main menu: */
+
+char main_menu_get_chosen(int* mouse) {
+	if (mouse[0] >= 96) {
+		if (mouse[0] <= 168 && mouse[1] >= 130 && mouse[1] <= 138) return 0; /* Is the mouse hovering over "play game"? */
+		if (mouse[0] <= 128 && mouse[1] >= 160 && mouse[1] <= 168) return 1; /* Is the mouse hover over "Quit"? */
+	}
+	return 3;
+}
+
 
 /*
 Asynchronous (Input) Events
 */
 
-/* This is lame and kinda useless function we should get rid of. I only put it here to finish the inputs but it redunant*/
 Weapon* user_input_x(Player *p){
 	return attack(p);
 }
@@ -96,6 +105,7 @@ bool is_collision_between_player_and_roof(Player *p, Room *r) {
 	return FALSE;
 }
 
+
 bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e){
     bool is_hit = FALSE;
     if ((w->x <= e->x + e->WIDTH && w->x + w->WIDTH >= e->x) &&   /* FIND IF w X IS WITHIN e X */
@@ -103,18 +113,6 @@ bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e){
         is_hit = TRUE;
     }
     return is_hit;
-}
-
-void update_sword(Weapon* sword, Room* room, Player p1){
-	if(sword->justCreated) {
-		sword->justCreated = FALSE;
-	}
-	kill_attacked_enemies(room, sword);
-
-	if (p1.attack_cooldown <= 1) {
-		free_weapon(sword);
-		sword = 0;
-	}
 }
 
 void kill_attacked_enemies(Room* r, Weapon* w) {
@@ -207,7 +205,6 @@ void move_enemies_horiz(Room *r) {
 	}
 }
 
-
 Room* change_map(Room* r, int room_number) {
 	if (r) {
 		free_room(r);
@@ -219,10 +216,6 @@ Room* change_map(Room* r, int room_number) {
 			return create_room_2();
 		case 3:
 			return create_room_3();
-		case 4:
-			return create_room_4();
-		case 5:
-			return create_room_5();
 		default:
 			return 0;
 	}

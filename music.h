@@ -17,7 +17,7 @@ typedef enum {
     B
 } Note;
 
-extern const int notes[12][8];
+extern const int note[12][8];
 
 extern const int melody[29][3];
 

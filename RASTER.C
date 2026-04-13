@@ -7,9 +7,11 @@
 #define SCREEN_WIDTH 639
 #define SCREEN_HEIGHT 399
 
-#define VIDEO_ADDRESS_HIGH ((volatile UINT8*)0xFF8201);
-#define VIDEO_ADDRESS_MID ((volatile UINT8*)0xFF8203);
-/* Since the low byte is always 0 we don't need to map it*/
+/* Get 24-bit address for video base from memory map */
+#define VIDEO_ADDRESS_HIGH ((volatile UINT8*)0xFF8201) 
+#define VIDEO_ADDRESS_MID ((volatile UINT8*)0xFF8203)
+/* Since the low byte is always 0 we don't need to mention it*/
+
 
 UINT32 *get_video_base(){
 	UINT8 high_address_byte;
@@ -31,10 +33,18 @@ UINT32 *get_video_base(){
 	return base_address;
 }
 
+/* THIS IS DONE RIGHT IN ASSEMBLY
+void set_video_base(UINT32 *base)
+{
+    UINT8 high = (*base >> 16) & 0xFF;
+    UINT8 mid  = (*base >> 8)  & 0xFF;
 
-UINT16 *set_video_base(){
-	
-}
+    long old_ssp = Super(0);
+    *VIDEO_ADDRESS_HIGH = high;
+    *VIDEO_ADDRESS_MID = mid;
+
+    Super(old_ssp);
+}*/
 
 
 

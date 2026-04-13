@@ -12,4 +12,7 @@ foreach i { *.tos }
 	endif
 endfor
 
+gen -L2 set_vid.s
+gen -L2 ikbd_isr.s
+
 make

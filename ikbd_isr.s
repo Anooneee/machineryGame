@@ -30,11 +30,29 @@ mouse_x:	; Handles the x coordinate for the mouse.
 		moveq	#0,d1
 		move.b	d0,d1
 		ext.w	d1
-		add.w	d1,(a0)		; mouse_coords[0] += x movement
+		add.w	d1,(a0)		; mouse_coords[0] += y movement
 
-		move.b	#2,_mouse_state	; Indicate that the mouse y coordinate is coming next
+		move.b	#2,_mouse_state	; Indicate that y coord comes next
 
+					; BOUNDS CHECKING:
+		moveq	#0,d1
+		move.w	(a0),d1		; d1 = mouse_coords[0]
+		cmpi.w	#631,d1
+		bgt	x_upper_bounds	; If mouse_coords[0] < 639, continue
+		cmpi.w	#0,d1
+		blt	x_lower_bounds	; If mouse_coords[0] >= 0, continue
+
+					; DONE BOUNDS CHECKING, the IKBD has been handled
 		bra	handled_ikbd
+
+x_upper_bounds:
+		move.w	#631,(a0)	; mouse_coords[1] = 390
+		bra	handled_ikbd
+
+x_lower_bounds:
+		move.w	#0,(a0)		; mouse_coords[1] = 390
+		bra	handled_ikbd
+
 
 mouse_y:	; Handles the y coordinate for the mouse.
 
@@ -47,6 +65,23 @@ mouse_y:	; Handles the y coordinate for the mouse.
 
 		move.b	#0,_mouse_state	; Indicate that the mouse bytestring is over
 
+					; BOUNDS CHECKING:
+		moveq	#0,d1
+		move.w	2(a0),d1	; d1 = mouse_coords[1]
+		cmpi.w	#391,d1
+		bgt	y_upper_bounds	; If mouse_coords[1] < 639, continue
+		cmpi.w	#0,d1
+		blt	y_lower_bounds	; If mouse_coords[1] >= 0, continue
+
+					; DONE BOUNDS CHECKING, the IKBD has been handled
+		bra	handled_ikbd
+
+y_upper_bounds:
+		move.w	#391,2(a0)	; mouse_coords[1] = 390
+		bra	handled_ikbd
+
+y_lower_bounds:
+		move.w	#0,2(a0)	; mouse_coords[1] = 0
 		bra	handled_ikbd
 
 keyboard:

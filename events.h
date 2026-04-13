@@ -3,6 +3,10 @@
 #include "TYPES.H"
 #include "model.h"
 
+/* ---------------------- Main Menu events ----------------------------------------*/
+
+char main_menu_get_chosen(int* current_mouse_coords);
+
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */
 
@@ -26,7 +30,6 @@ bool is_collision_between_player_and_wall(Player* p, Room* r);
 bool is_collision_between_player_and_floor(Player *p, Room *r);
 bool is_collision_between_player_and_roof(Player *p, Room *r);
 bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e);
-void update_sword(Weapon* sword, Room* room, Player p1);
 bool is_collision_between_player_and_exits(Player *p, Room *r);
 /* Figure out how to kill enemy/player */
 
@@ -42,6 +45,7 @@ void every_second(Timer *t); /* Call every 70 ticks */
 void move_player_horiz(Player *p, Room* r);
 void move_player_vert(Player *p, Room* r);
 void move_enemies_horiz(Room* r);
+
 /*Every movement frame (.5 seconds):
 - Checks wall collision and Move player according to horizontal velocity
 - Check if there is a floor under the player. Set grounded value accordingly

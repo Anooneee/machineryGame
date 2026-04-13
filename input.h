@@ -8,7 +8,7 @@ Input.h/c only stores the global variables used for processing the keyboard and 
 Also, the declaration for ikbd_isr() is stored here... Say hi, ikbd_isr()!
 */
 
-extern volatile char mouse_state;	/* Used exclusively in the ikbd_isr, you can 
+extern volatile char mouse_state;	/* Used exclusively in the ikbd_isr. you can ignore this. */
 extern volatile char mouse_header;	/* Stores data on the mouse header. Can be used to process clicks */
 extern volatile int mouse_coords[];	/* x and y coords */
 extern volatile char keyboard[128];	/* keyboard[i] = 0 if keycode i is being pressed, and keyboard[i] = 1 if released. */

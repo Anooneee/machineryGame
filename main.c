@@ -1,5 +1,4 @@
 #include <osbind.h>
-#include <stdio.h>
 #include "model.h"
 #include "events.h"
 #include "render.h"
@@ -12,8 +11,6 @@
 #include "Sfx.h"
 #include "ISR.h"
 
-extern void vbl_isr();
-
 UINT32* base;
 UINT32* back;
 UINT32* temp;
@@ -22,8 +19,6 @@ UINT32* original;
 
 long *timer = (long*) 0x462;
 long current_time = 0;
-int render_req;
-int note;
 
 static UINT8 screen[32256];
 
@@ -43,23 +38,41 @@ int main_menu() {
 	UINT8 input = 0;
 	char chosen = 0;
 
-	init_render(base);
+	int current_mouse_coords[2] = {0,0};
+	int old_mouse_coords[2] = {0,0};
 
-	render_main_menu(base, chosen);
+	init_render(base);
+	init_render(back);
 
 	while (1) {
-		if (!keyboard[0x11]) chosen++;		/* If the user presses W, go to the option above */
-		else if (!keyboard[0x1F]) chosen--;	/* If the user presses S, go to the option below */
+		current_mouse_coords[0] = mouse_coords[0];	/* saving current mouse pos to prevent desync later on!!! */
+		current_mouse_coords[1] = mouse_coords[1];
 
-		if (chosen > 1) chosen = 0;
-		if (chosen < 0) chosen = 1;		/* bounds checking for the currently-selected option */
-
-		if (!keyboard[0x1C]){
-			start_music();
-			return chosen;	/* if the user presses ENTER, return the currently selected option */
+		if (mouse_header) {						/* if the mouse moved, do this */
+			if ((mouse_header & 0x03) && chosen != 3) break;	/* If clicked, break. header = 111110lr */
+			mouse_header = 0;
 		}
-		clear_main_menu(base);
-		render_main_menu(base, chosen);
+
+		chosen = main_menu_get_chosen(current_mouse_coords);
+
+		/* rendering */
+		render_main_menu(back, chosen);
+		render_mouse((UINT8*)back, current_mouse_coords);
+
+		/* Swap framebuffers: */
+		temp = base;
+		base = back;
+		back = temp;
+
+		Vsync();
+		set_video_base(back);
+
+		/* clear old framebuffer */
+		clear_main_menu(back);
+		clear_mouse(back, old_mouse_coords);
+
+		old_mouse_coords[0] = current_mouse_coords[0];
+		old_mouse_coords[1] = current_mouse_coords[1];
 	}
 
 	return chosen;
@@ -93,7 +106,7 @@ int game() {
 	p1 = create_player(room->start_x,room->start_y,player_bitmap);
 	sword = 0;
 
-	
+	start_music();
 
 	init_render(base);
 	init_render(back);
@@ -147,6 +160,7 @@ int game() {
 
 			if (sword) {
 				if (sword->justCreated) {
+					save_bg(back, sword);
 					sword->justCreated = FALSE;
 				}
 				render_weapon(back, sword);
@@ -160,9 +174,12 @@ int game() {
 				}
 			}
 
+			/* Music playing! */
+			upd_music(&current_note);
+
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
-				if (room_number == 5) {
+				if (room_number == 3) {
 					running = 0;
 					game_message((UINT8*)base, "You win!", 220, 300);
 					game_message((UINT8*)back, "You win!", 220, 300);
@@ -186,7 +203,7 @@ int game() {
 				running = 0;
 			}
 
-			/*update model*/
+
 			move_player_vert(&p1, room);
 			move_player_horiz(&p1, room);
 
@@ -195,11 +212,6 @@ int game() {
 
 
 			/* Rendering portion: */
-			if(render_req == 1){
-				render_frame(back);
-				set_video_base(back);
-				render_req = 0;			
-			}
 
 			render_player((UINT16*)back, &p1);
 			render_enemies((UINT16*)back, room);
@@ -211,7 +223,7 @@ int game() {
 			back = temp;
 
 			Vsync();
-			Setscreen(back, back, -1);
+			set_video_base(back);
 
 			/* Clear the screen around movable entites: */
 			clear_player(back, &p1, oldX, oldY);
@@ -246,7 +258,7 @@ int main() {
 		game();
 	}
 
-	Setscreen(original, original, -1);
+	set_video_base(original);
 
 	install_vector(70, orig);
 	enable_midi();

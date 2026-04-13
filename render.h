@@ -8,8 +8,8 @@ void init_render(UINT32* base);
 
 	/* functions to plot and erase bitmaps for the cursor (for the main menu) */
 
-void render_mouse(UINT8* base, int* mouse_coords);
-void clear_mouse(UINT32* base, int* mouse_coords);
+void render_mouse(UINT8* base, int* current_mouse_coords);
+void clear_mouse(UINT32* base, int* old_mouse_coords);
 
 	/* functions for erasing the bitmap for the player, enemies, and weapon */
 
