@@ -17,13 +17,13 @@ typedef enum {
     B
 } Note;
 
-extern const int note[12][8];
+extern const int notes[12][8];
 
 extern const int melody[29][3];
 
 void start_music();
 
-void upd_music(int* current_note);
+void upd_music();
 
 
 #endif

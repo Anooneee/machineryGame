@@ -14,5 +14,6 @@ endfor
 
 gen -L2 set_vid.s
 gen -L2 ikbd_isr.s
+gen -L2 isr_asm.s
 
 make

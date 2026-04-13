@@ -7,6 +7,8 @@ typedef unsigned long UINT32;
 
 typedef int BOOL;
 
+typedef void (*Vector)();
+
 typedef enum {
     FALSE = 0,
     TRUE = 1,

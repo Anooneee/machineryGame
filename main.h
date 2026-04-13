@@ -14,14 +14,20 @@
 #include "music.h"
 #include "psg.h"
 #include "Sfx.h"
-#include "ISR.h"
+#include "isr.h"
 
-extern int note;
 extern int render_req;
+extern int room_number;
+extern int upd_timer;
+extern int upd_model;
+extern int running;
+
 
 bool timer_ticked();
 
 int main_menu();
 int game();
+
+extern void vbl_isr();
 
 #endif

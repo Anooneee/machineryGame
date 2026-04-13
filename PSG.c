@@ -7,18 +7,25 @@ volatile char *PSG_reg_select = 0xFF8800;
 volatile char *PSG_reg_write = 0xFF8802;
 
 void write_psg(int reg, UINT8 val){
-    long old_ssp = Super(0);
+    long old_ssp;
+    char isr;
+    isr = Super(1);
+    if(!isr) old_ssp = Super(0);
     *PSG_reg_select = reg;
 	*PSG_reg_write = val;
-    Super(old_ssp);
+    if(!isr) Super(old_ssp);
 }
 
 UINT8 read_psg(int reg){
-    long old_ssp = Super(0);
+    long old_ssp;
+    char isr;
     int value;
+    isr = Super(1);
+    if(!isr) old_ssp = Super(0);
+    
     *PSG_reg_select = reg;
     value = *PSG_reg_write;
-    Super(old_ssp);
+    if(!isr) Super(old_ssp);
     return value;
 }
 

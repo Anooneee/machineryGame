@@ -1,4 +1,5 @@
 #include <osbind.h>
+#include "main.h"
 #include "model.h"
 #include "events.h"
 #include "render.h"
@@ -9,13 +10,22 @@
 #include "music.h"
 #include "psg.h"
 #include "Sfx.h"
-#include "ISR.h"
+#include "isr.h"
 
 UINT32* base;
 UINT32* back;
 UINT32* temp;
 
 UINT32* original;
+
+int upd_timer = 0;
+int upd_model = 0;
+int render_req = 0;
+int running = 0;
+
+Player p1;
+Room* room;
+
 
 long *timer = (long*) 0x462;
 long current_time = 0;
@@ -63,8 +73,8 @@ int main_menu() {
 		temp = base;
 		base = back;
 		back = temp;
-
-		Vsync();
+		render_req = 0;
+		while(!render_req);
 		set_video_base(back);
 
 		/* clear old framebuffer */
@@ -81,9 +91,9 @@ int main_menu() {
 int game() {
 	/* Variables: */
 	UINT8 input = 0x80;
+	
 
 	Timer timer;
-	Player p1;
 	long old_ssp;
 	int oldX;
 	int oldY;
@@ -95,9 +105,9 @@ int game() {
 
 	int i;
 	int ticks = 0;
-	int running = 1; /* 1 if the game is running, 0 if not */
+	
 	long time_then;
-	int current_note = 0;
+	running = 1; /* 1 if the game is running, 0 if not */
 
 	/* Program */
 	
@@ -105,8 +115,8 @@ int game() {
 	room = change_map(room, room_number);
 	p1 = create_player(room->start_x,room->start_y);
 	sword = 0;
-
-	start_music();
+	
+	/*start_music();*/
 
 	init_render(base);
 	init_render(back);
@@ -145,38 +155,21 @@ int game() {
 		}
 
 		/* Main game: */
-		if (timer_ticked()) {
-			oldX = p1.x;
-			oldY = p1.y;
-
-			ticks++;
-			if (ticks >= 70) {
-				update_timer(&timer);
-				ticks = 0;
-			}
-
 			/* synchronous events: */
-			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
-
-			if (sword) {
-				if (sword->justCreated) {
-					save_bg(back, sword);
-					sword->justCreated = FALSE;
-				}
-				render_weapon(back, sword);
-				kill_attacked_enemies(room, sword);
-
-				if (p1.attack_cooldown <= 1) {
-					clear_weapon(back, sword);
-					clear_weapon(base, sword);
-					free_weapon(sword);
-					sword = 0;
-				}
+			if (upd_timer == 1) {
+				update_timer(&timer);
+				upd_timer = 0;
 			}
 
-			/* Music playing! */
-			upd_music(&current_note);
-
+			if(upd_model == 1){
+				update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
+				move_player_vert(&p1, room);
+				move_player_horiz(&p1, room);
+				move_enemies_horiz(room);
+				decrement_cooldown(&p1);
+				upd_model = 0;
+			}
+			
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
 				if (room_number == 3) {
@@ -197,39 +190,50 @@ int game() {
 				}
 			}
 
+			if (sword) {
+				if (sword->justCreated) {
+					save_bg(back, sword);
+					sword->justCreated = FALSE;
+				}
+				render_weapon(back, sword);
+				kill_attacked_enemies(room, sword);
+
+				if (p1.attack_cooldown <= 1) {
+					clear_weapon(back, sword);
+					clear_weapon(base, sword);
+					free_weapon(sword);
+					sword = 0;
+				}
+			}
+			
 			if (is_player_dead(room, &p1)) {
 				game_message((UINT8*)base, "You lose!!!", 220, 300);
 				game_message((UINT8*)back, "You lose!!!", 220, 300);
 				running = 0;
 			}
 
-
-			move_player_vert(&p1, room);
-			move_player_horiz(&p1, room);
-
-			move_enemies_horiz(room);
-			decrement_cooldown(&p1);
-
-
 			/* Rendering portion: */
-
+			
+				
 			render_player((UINT16*)back, &p1);
 			render_enemies((UINT16*)back, room);
 			render_timer((UINT8*)back, &timer);
 
 			/* Swap framebuffers: */
+			
 			temp = base;
 			base = back;
 			back = temp;
 
-			Vsync();
+			render_req = 0;
+			while (!render_req);
 			set_video_base(back);
 
 			/* Clear the screen around movable entites: */
 			clear_player(back, &p1, oldX, oldY);
 			clear_enemies(back, room);
-
-		}
+			oldX = p1.x;
+			oldY = p1.y;
 	}
 
 	return 0;
@@ -239,9 +243,13 @@ int main() {
 	int i;
 	int game_chosen = 0;
 	Vector orig;
+	Vector orig_VBL;
+
 
 	disable_midi();
 	orig = install_vector(70, ikbd_isr);
+	orig_VBL = install_vector(28, vbl_isr);
+
 
 	base = get_video_base();
 	original = base;
@@ -261,6 +269,7 @@ int main() {
 	set_video_base(original);
 
 	install_vector(70, orig);
+	install_vector(28, orig_VBL);
 	enable_midi();
 
 	return 0;

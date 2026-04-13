@@ -3,13 +3,13 @@ gen = gen
 
 all: game.tos
 
-game.tos: main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o isr.o set_vid.o ikbd_isr.o
-	$(CC) main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o isr.o set_vid.o ikbd_isr.o -o game.tos
+game.tos: main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o isr.o set_vid.o ikbd_isr.o isr_asm.o
+	$(CC) main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o isr.o set_vid.o ikbd_isr.o isr_asm.o -o game.tos
 
 %.o: %.s
 	$(gen) -L2 $<
 
-main.o: main.c model.h events.h render.h input.h bitmap.h set_vid.s
+main.o: main.c model.h events.h render.h input.h bitmap.h isr.h set_vid.s
 	$(CC) -c main.c
 
 bitmap.o: bitmap.c bitmap.h
@@ -39,11 +39,8 @@ music.o: music.c music.h types.h
 psg.o: psg.c psg.h types.h
 	$(CC) -c psg.c
 
-tst_psg.o: tst_psg.c psg.h types.h
-	$(CC) -c tst_psg.c
-
 sfx.o: sfx.c sfx.h psg.h
 	$(CC) -c sfx.c
 
-isr.o: isr.c ISR.h
+isr.o: isr.c isr.h 
 	$(CC) -c isr.c
