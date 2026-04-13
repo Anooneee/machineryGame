@@ -7,9 +7,10 @@
 #define SCREEN_WIDTH 639
 #define SCREEN_HEIGHT 399
 
-#define VIDEO_ADDRESS_HIGH ((volatile UINT8*)0xFF8201)
+/* Get 24-bit address for video base from memory map */
+#define VIDEO_ADDRESS_HIGH ((volatile UINT8*)0xFF8201) 
 #define VIDEO_ADDRESS_MID ((volatile UINT8*)0xFF8203)
-/* Since the low byte is always 0 we don't need to map it*/
+/* Since the low byte is always 0 we don't need to mention it*/
 
 
 UINT32 *get_video_base(){

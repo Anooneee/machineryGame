@@ -3,7 +3,7 @@ CC = cc68x
 all: game.tos tst_psg.tos
 
 game.tos: main.o model.o events.o input.o render.o raster.o mem.o music.o psg.o sfx.o set_vid.o
-	gen -L2 set_vid.o $(CC) main.o model.o events.o input.o render.o raster.o music.o psg.o mem.o sfx.o -o game.tos
+	gen set_vid.o $(CC) main.o model.o events.o input.o render.o raster.o music.o psg.o mem.o sfx.o -o game.tos
 
 tst_psg.tos: tst_psg.o psg.o music.o sfx.o
 	$(CC) tst_psg.o psg.o music.o sfx.o -o tst_psg.tos
