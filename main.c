@@ -103,7 +103,7 @@ int game() {
 	
 	timer = create_timer();
 	room = change_map(room, room_number);
-	p1 = create_player(room->start_x,room->start_y,player_bitmap);
+	p1 = create_player(room->start_x,room->start_y);
 	sword = 0;
 
 	start_music();

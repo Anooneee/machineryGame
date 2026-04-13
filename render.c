@@ -36,8 +36,16 @@ void clear_weapon(UINT32* base, Weapon* w) {
 }
 
 void render_player(UINT16* base, Player* p) {
-	plot_16bit_bitmap(base, p->y, p->x, p->bitmap, p->HEIGHT);
+	if (!p->horizontal_velocity) p->image = 1;
+	else {
+		p->image++;
+		if (p->image > 2) p->image = 0;
+	}
+
+	if (p->direction == LEFT) plot_16bit_bitmap(base, p->y, p->x, player_L_bitmap[p->image], p->HEIGHT);
+	else plot_16bit_bitmap(base, p->y, p->x, player_R_bitmap[p->image], p->HEIGHT);
 }
+
 
 void render_weapon(UINT32* base, Weapon* w) {
 	plot_32bit_bitmap(base, w->y, w->x, w->bitmap, w->HEIGHT);

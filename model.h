@@ -19,7 +19,7 @@ typedef struct Player_character{     /* type definition for player object */
     BOOL grounded;
     int attack_cooldown;
     int HEIGHT, WIDTH;            /* 32, 16 */
-    UINT16 *bitmap;
+    char image;
 } Player;
 
 typedef struct {
@@ -94,7 +94,7 @@ typedef struct timer_display{
 } Timer;
 
 /* Create player with all default values at position x,y and pointer to bitmap */
-Player create_player(int x, int y, UINT16 *bitmap);
+Player create_player(int x, int y);
 
 void give_player_jump_time(Player *pc, int time);
 

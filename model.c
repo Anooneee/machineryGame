@@ -71,7 +71,7 @@ Weapon* attack(Player *pc) {
 
 
 /* Create player */
-Player create_player(int x, int y, UINT16 *bitmap){
+Player create_player(int x, int y){
     Player p;
     p.x = x;
     p.y = y;
@@ -85,7 +85,7 @@ Player create_player(int x, int y, UINT16 *bitmap){
     p.direction = RIGHT;
     p.HEIGHT = 32;
     p.WIDTH = 16;
-    p.bitmap = bitmap;
+    p.image = 1;
 	return p;
 }
 
