@@ -9,8 +9,6 @@ UINT32* back;
 UINT32* temp;
 UINT32* original;
 
-Timer game_timer;
-
 long *timer = (long*) 0x462;
 long current_time = 0;
 int note = 0;
@@ -26,6 +24,7 @@ int next_rm = 0;
 int room_number = 0;
 int upd_timer = 0;
 
+extern void vbl_isr();
 
 Player* g_active_player = NULL;
 Room* g_active_room = NULL;
