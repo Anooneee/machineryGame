@@ -15,7 +15,7 @@ changes the frame buffer start address
 
 implemented in 68000 assembly language using the movep instruction
 */
-extern void set_video_base(UINT32* base);
+void set_video_base(UINT32* base);
 
 /*----- Function: clear_screen -----
 

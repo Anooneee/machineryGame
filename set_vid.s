@@ -7,3 +7,5 @@ _set_vid_base:
             movep.w     d0,0(a1)        ; move high and low to new in one go
 
             rts             ; Return from subroutine
+
+
