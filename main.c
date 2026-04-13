@@ -1,4 +1,5 @@
 #include <osbind.h>
+#include "main.h"
 #include "model.h"
 #include "events.h"
 #include "render.h"
@@ -16,6 +17,14 @@ UINT32* back;
 UINT32* temp;
 
 UINT32* original;
+
+int upd_timer = 0;
+int upd_model = 0;\
+int render_req = 0;
+
+Player p1;
+Room* room;
+
 
 long *timer = (long*) 0x462;
 long current_time = 0;
@@ -64,7 +73,7 @@ int main_menu() {
 		base = back;
 		back = temp;
 
-		Vsync();
+		Vsync();/*remove*/
 		set_video_base(back);
 
 		/* clear old framebuffer */
@@ -81,9 +90,9 @@ int main_menu() {
 int game() {
 	/* Variables: */
 	UINT8 input = 0x80;
+	
 
 	Timer timer;
-	Player p1;
 	long old_ssp;
 	int oldX;
 	int oldY;
@@ -97,7 +106,6 @@ int game() {
 	int ticks = 0;
 	int running = 1; /* 1 if the game is running, 0 if not */
 	long time_then;
-	int current_note = 0;
 
 	/* Program */
 	
@@ -145,38 +153,34 @@ int game() {
 		}
 
 		/* Main game: */
-		if (timer_ticked()) {
-			oldX = p1.x;
-			oldY = p1.y;
-
+		if(timer_ticked()){
 			ticks++;
-			if (ticks >= 70) {
-				update_timer(&timer);
-				ticks = 0;
-			}
+			if (ticks >= 70) {		/*this is handled in the vbl*/
+	    		upd_timer = 1;
+	    		ticks = 0;
+    		}
 
+			
 			/* synchronous events: */
-			update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
-
-			if (sword) {
-				if (sword->justCreated) {
-					save_bg(back, sword);
-					sword->justCreated = FALSE;
-				}
-				render_weapon(back, sword);
-				kill_attacked_enemies(room, sword);
-
-				if (p1.attack_cooldown <= 1) {
-					clear_weapon(back, sword);
-					clear_weapon(base, sword);
-					free_weapon(sword);
-					sword = 0;
-				}
+			if (upd_timer == 1) {
+				update_timer(&timer);
+				upd_timer = 0;
+			}
+			upd_model = 1; /* this gets set by VBL*/
+			if(upd_model == 1){
+				oldX = p1.x;
+				oldY = p1.y;
+				update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
+				move_player_vert(&p1, room);
+				move_player_horiz(&p1, room);
+				move_enemies_horiz(room);
+				decrement_cooldown(&p1);
+				upd_model == 0;
 			}
 
-			/* Music playing! */
-			upd_music(&current_note);
-
+			upd_music(); /*called in vbl*/
+		}
+			
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
 				if (room_number == 3) {
@@ -197,39 +201,47 @@ int game() {
 				}
 			}
 
+			if (sword) {
+				if (sword->justCreated) {
+					save_bg(back, sword);
+					sword->justCreated = FALSE;
+				}
+				render_weapon(back, sword);
+				kill_attacked_enemies(room, sword);
+
+				if (p1.attack_cooldown <= 1) {
+					clear_weapon(back, sword);
+					clear_weapon(base, sword);
+					free_weapon(sword);
+					sword = 0;
+				}
+			}
+			
 			if (is_player_dead(room, &p1)) {
 				game_message((UINT8*)base, "You lose!!!", 220, 300);
 				game_message((UINT8*)back, "You lose!!!", 220, 300);
 				running = 0;
 			}
 
-
-			move_player_vert(&p1, room);
-			move_player_horiz(&p1, room);
-
-			move_enemies_horiz(room);
-			decrement_cooldown(&p1);
-
-
 			/* Rendering portion: */
-
-			render_player((UINT16*)back, &p1);
-			render_enemies((UINT16*)back, room);
-			render_timer((UINT8*)back, &timer);
+			render_req = 1;		/* this gets set by VBL*/
+			if(render_req == 1){
+				render_player((UINT16*)back, &p1);
+				render_enemies((UINT16*)back, room);
+				render_timer((UINT8*)back, &timer);
 
 			/* Swap framebuffers: */
-			temp = base;
-			base = back;
-			back = temp;
-
-			Vsync();
-			set_video_base(back);
+				temp = base;
+				base = back;
+				back = temp;
+				Vsync();		/*to be removed with VBL*/
+				set_video_base(back);
 
 			/* Clear the screen around movable entites: */
-			clear_player(back, &p1, oldX, oldY);
-			clear_enemies(back, room);
-
-		}
+				clear_player(back, &p1, oldX, oldY);
+				clear_enemies(back, room);
+				render_req = 0;
+			}
 	}
 
 	return 0;

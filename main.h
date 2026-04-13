@@ -16,8 +16,11 @@
 #include "Sfx.h"
 #include "ISR.h"
 
-extern int note;
 extern int render_req;
+extern int room_number;
+extern int upd_timer;
+extern int upd_model;
+
 
 bool timer_ticked();
 
