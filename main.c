@@ -10,7 +10,7 @@
 #include "music.h"
 #include "psg.h"
 #include "Sfx.h"
-#include "ISR.h"
+#include "isr.h"
 
 UINT32* base;
 UINT32* back;
@@ -19,8 +19,9 @@ UINT32* temp;
 UINT32* original;
 
 int upd_timer = 0;
-int upd_model = 0;\
+int upd_model = 0;
 int render_req = 0;
+int running = 0;
 
 Player p1;
 Room* room;
@@ -72,8 +73,8 @@ int main_menu() {
 		temp = base;
 		base = back;
 		back = temp;
-
-		Vsync();/*remove*/
+		render_req = 0;
+		while(!render_req);
 		set_video_base(back);
 
 		/* clear old framebuffer */
@@ -104,8 +105,9 @@ int game() {
 
 	int i;
 	int ticks = 0;
-	int running = 1; /* 1 if the game is running, 0 if not */
+	
 	long time_then;
+	running = 1; /* 1 if the game is running, 0 if not */
 
 	/* Program */
 	
@@ -113,8 +115,8 @@ int game() {
 	room = change_map(room, room_number);
 	p1 = create_player(room->start_x,room->start_y,player_bitmap);
 	sword = 0;
-
-	start_music();
+	
+	/*start_music();*/
 
 	init_render(base);
 	init_render(back);
@@ -153,33 +155,20 @@ int game() {
 		}
 
 		/* Main game: */
-		if(timer_ticked()){
-			ticks++;
-			if (ticks >= 70) {		/*this is handled in the vbl*/
-	    		upd_timer = 1;
-	    		ticks = 0;
-    		}
-
-			
 			/* synchronous events: */
 			if (upd_timer == 1) {
 				update_timer(&timer);
 				upd_timer = 0;
 			}
-			upd_model = 1; /* this gets set by VBL*/
+
 			if(upd_model == 1){
-				oldX = p1.x;
-				oldY = p1.y;
 				update_player_grounded(&p1, is_collision_between_player_and_floor(&p1, room));
 				move_player_vert(&p1, room);
 				move_player_horiz(&p1, room);
 				move_enemies_horiz(room);
 				decrement_cooldown(&p1);
-				upd_model == 0;
+				upd_model = 0;
 			}
-
-			upd_music(); /*called in vbl*/
-		}
 			
 			/* Conditional events: */
 			if (is_collision_between_player_and_exits(&p1, room)) {
@@ -224,22 +213,26 @@ int game() {
 			}
 
 			/* Rendering portion: */
-			render_req = 1;		/* this gets set by VBL*/
+			
 			if(render_req == 1){
+				
 				render_player((UINT16*)back, &p1);
 				render_enemies((UINT16*)back, room);
 				render_timer((UINT8*)back, &timer);
 
 			/* Swap framebuffers: */
+				
 				temp = base;
 				base = back;
 				back = temp;
-				Vsync();		/*to be removed with VBL*/
+				
 				set_video_base(back);
 
 			/* Clear the screen around movable entites: */
 				clear_player(back, &p1, oldX, oldY);
 				clear_enemies(back, room);
+				oldX = p1.x;
+				oldY = p1.y;
 				render_req = 0;
 			}
 	}
@@ -251,9 +244,13 @@ int main() {
 	int i;
 	int game_chosen = 0;
 	Vector orig;
+	Vector orig_VBL;
+
 
 	disable_midi();
 	orig = install_vector(70, ikbd_isr);
+	orig_VBL = install_vector(28, vbl_isr);
+
 
 	base = get_video_base();
 	original = base;
@@ -273,6 +270,7 @@ int main() {
 	set_video_base(original);
 
 	install_vector(70, orig);
+	install_vector(28, orig_VBL);
 	enable_midi();
 
 	return 0;

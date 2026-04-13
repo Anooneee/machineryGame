@@ -1,5 +1,6 @@
-    
-	xdef _vbl_isr
+		xref _do_vbl
+		xdef _vbl_isr
+		
 
 _vbl_isr:
 		movem.l d0-d2/a0-a2,-(sp)

@@ -15,7 +15,7 @@ Vector install_vector(int num, Vector vector) {
 }
 
 void disable_midi() {
-	long old_ssp = Super(0);
+    long old_ssp = Super(0);
 	*((volatile unsigned char*)0xFFFFFA09) &= ~(1 << 7);
 	Super(old_ssp);
 }
@@ -27,13 +27,21 @@ void enable_midi() {
 }
 
 void do_vbl(){
-    ticks++;
-
-    /*time music*/
     
-	upd_music();
-    if (ticks >= 70) {
-	    upd_timer = 1;
-	    ticks = 0;
-    }
+	
+		ticks++;
+		if (ticks >= 70) {		/*this is handled in the vbl*/
+	    	upd_timer = 1;
+	    	ticks = 0;
+   		}
+    	/*time music*/
+    
+		
+		upd_music();
+    	if (ticks >= 70) {
+	    	upd_timer = 1;
+	    	ticks = 0;
+    	}
+		upd_model = 1;
+		render_req = 1;
 }
