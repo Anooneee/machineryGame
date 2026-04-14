@@ -41,6 +41,12 @@ void start_music() {
     note_time = 15;
 }
 
+/* Called every time tick by vbl to:
+- countdown the note time for current note
+- go to next note
+- cycle through song on repeat
+- set tone on channel A
+- ensure volume is on (8)*/
 void upd_music(){
 	if (note_time == 0) {
 		current_note++;
