@@ -47,7 +47,6 @@ typedef struct {
     UINT16 x, y;
     int horizontal_velocity;            /* horiz . displacement per clock tick */
     bool dead;
-    /* Maybe delete */
     int HEIGHT, WIDTH;            /* 32, 16 */
     int direction;
     UINT16 bound_left, bound_right;
@@ -138,6 +137,17 @@ void teleport_player(int x, int y, Player *p);
 /* Lower attack cooldown */
 void decrement_cooldown(Player *p);
 
+/* Very simple "teleport" to end of jump.
+- Vertical velocity according to jump_strength property
+- No roof or end of screen checks*/
+void jump_player(Player *pc);
+
+/* Call every frame when player is meant to fall. */
+void fall_player(Player *pc, int gravity_strength);
+
+/* Return a weapon object 16 pixels in front of the player and start cooldown period */
+Weapon* attack(Player *pc);
+
 /* Move enemy within bounds. 
 - One step forward. 
 - Direction will be flipped if next step is outside bounds
@@ -178,17 +188,6 @@ Room* create_room_2();
 Room* create_room_3();
 Room* create_room_4();
 Room* create_room_5();
-
-/* Very simple "teleport" to end of jump.
-- Vertical velocity according to jump_strength property
-- No roof or end of screen checks*/
-void jump_player(Player *pc);
-
-/* Call every frame when player is meant to fall. */
-void fall_player(Player *pc, int gravity_strength);
-
-/* Return a weapon object 16 pixels in front of the player and start cooldown period */
-Weapon* attack(Player *pc);
 
 /* Call every second that passes. Calls update_display when done */
 void update_timer(Timer *t);
