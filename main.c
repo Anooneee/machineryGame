@@ -45,7 +45,7 @@ bool timer_ticked() {
 }
 
 int main_menu() {
-	UINT8 input = 0;
+	UINT8 input = 0; /* This is old code */
 	char chosen = 0;
 
 	int current_mouse_coords[2] = {0,0};
@@ -91,7 +91,6 @@ int main_menu() {
 int game() {
 	/* Variables: */
 	UINT8 input = 0x80;
-	
 
 	Timer timer;
 	long old_ssp;
@@ -103,10 +102,10 @@ int game() {
 	int room_number = 1;
 	Room* room = 0;
 
-	int i;
+	int i; /* To keep us company :3 */
 	int ticks = 0;
 	
-	long time_then;
+	long time_then; /* old remnants of previous code im scared to delete */
 	running = 1; /* 1 if the game is running, 0 if not */
 
 	/* Program */
@@ -240,12 +239,15 @@ int game() {
 }
 
 int main() {
+	/* i used for setting up keyboard by for loop */
 	int i;
+	/* Tag to run the game */
 	int game_chosen = 0;
+	/* To save old vectors for interupts */
 	Vector orig;
 	Vector orig_VBL;
 
-
+	/* Setup environment to run game with custom interupts */
 	disable_midi();
 	orig = install_vector(70, ikbd_isr);
 	orig_VBL = install_vector(28, vbl_isr);

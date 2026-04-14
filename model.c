@@ -6,21 +6,25 @@
 #include "sfx.h"
 
 /*player related functions*/
-/* "Teleport" to end of h_movement. Has no wall or end of screen checks. */
-/* direction should be the enum for LEFT and RIGHT for readibility but it can also work with just -1 and 1 */
+/* Sets horizontal_velocity according to speed and direction
+- Direction should be the enum for LEFT and RIGHT for readibility but it can also work with just -1 and 1 
+*/
 void give_player_horizontal_velocity(Player *pc, int direction){             
     (*pc).direction = direction;
     (*pc).horizontal_velocity = (*pc).speed * (*pc).direction;
 }
 
+/* Start jump time */
 void give_player_jump_time(Player *pc, int time){             
     (*pc).jump_time = time;
 }
 
+/* Set grounded value */
 void update_player_grounded(Player *p, bool val) {
 	p->grounded = val;
 }
 
+/* Move player to new x and y locations with no checks */
 void teleport_player(int x, int y, Player *p) {
 	p->x = x;
 	p->y = y;
@@ -70,7 +74,7 @@ Weapon* attack(Player *pc) {
 }
 
 
-/* Create player */
+/* Create player with defaults at postition (x,y)*/
 Player create_player(int x, int y){
     Player p;
     p.x = x;
@@ -91,6 +95,7 @@ Player create_player(int x, int y){
 
 
 /*Player attack related functions*/
+/* Return pointer to a new weapon structure */
 Weapon* create_weapon(UINT16 x, UINT16 y, int direction, UINT32 *bitmap){
 	Weapon* w = my_malloc(sizeof(Weapon));
 	w->x = x;
@@ -219,7 +224,7 @@ Timer create_timer(){
 }
 
 /*room functions*/
-
+/* Deconstructor for room/room objects */
 void free_room(Room* r) {
 	if (r->walls) {
 		my_free(r->walls);
@@ -245,11 +250,12 @@ void free_room(Room* r) {
 	my_free(r);
 	r = 0;
 }
-
+/* Deconstructor for weapon object */
 void free_weapon(Weapon* w) {
 	my_free(w);
 }
 
+/* Custom rooms */
 Room* create_room_1(){
     Room* r = my_malloc(sizeof(Room));
 

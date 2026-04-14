@@ -3,7 +3,11 @@
 #include "Sfx.h"
 
 /* events for the main menu: */
-
+/* Check:
+- Is the mouse hovering over "play game"? return 0
+- Is the mouse hover over "Quit"? return 1
+- Other case? return 3
+*/
 char main_menu_get_chosen(int* mouse) {
 	if (mouse[0] >= 96) {
 		if (mouse[0] <= 168 && mouse[1] >= 130 && mouse[1] <= 138) return 0; /* Is the mouse hovering over "play game"? */
@@ -16,11 +20,12 @@ char main_menu_get_chosen(int* mouse) {
 /*
 Asynchronous (Input) Events
 */
-
+/* Calls attack function and returns weapon */
 Weapon* user_input_x(Player *p){
 	return attack(p);
 }
 
+/* Jump! if on ground */
 void user_input_space(Player *p){
     if((*p).grounded == TRUE){
         give_player_jump_time(p, 60);
@@ -28,24 +33,28 @@ void user_input_space(Player *p){
     }
 }
 
+/* Calls function to set horizontal_velocity according to speed in RIGHT direction */
 void user_input_d(Player *p){
     give_player_horizontal_velocity(p,RIGHT);
 }
 
+/* Calls function to set horizontal_velocity according to speed in LEFT direction */
 void user_input_a(Player *p){
     give_player_horizontal_velocity(p,LEFT);
 }
 
+/* Set horizontal_velocity to 0 */
 void user_release_d_or_a(Player *p){
     (*p).horizontal_velocity = 0;
 }
-
+/* Quit the program */
 void user_input_ESC(){
     return; /* Quit the program */
 }
 
 /*conditional*/
 
+/* Return true if player and enemy hitboxes overlap */
 bool is_collision_between_player_and_enemy(Player* p, Enemy* e){
     bool is_hit = FALSE;
     if ((p->x <= e->x + e->WIDTH && p->x + p->WIDTH >= e->x) &&   /* FIND IF p X IS WITHIN e X */
@@ -55,6 +64,7 @@ bool is_collision_between_player_and_enemy(Player* p, Enemy* e){
     return is_hit;
 }
 
+/* Return true if player and trap hitboxes overlap */
 bool is_collision_between_player_and_trap(Player* p, Trap* t){
     bool is_hit = FALSE;
     if ((p->x <= t->x + t->WIDTH && p->x + p->WIDTH >= t->x) &&   /* FIND IF p X IS WITHIN t X */
@@ -64,6 +74,7 @@ bool is_collision_between_player_and_trap(Player* p, Trap* t){
     return is_hit;
 }
 
+/* Return true if player and wall hitboxes overlap */
 bool is_collision_between_player_and_wall(Player* p, Room* r) {
 	int i;
 	Wall* w;
@@ -79,6 +90,7 @@ bool is_collision_between_player_and_wall(Player* p, Room* r) {
 	return FALSE;
 }
 
+/* Return true if player and floor hitboxes overlap */
 bool is_collision_between_player_and_floor(Player *p, Room *r) {
 	int i;
 
@@ -92,6 +104,7 @@ bool is_collision_between_player_and_floor(Player *p, Room *r) {
 	return FALSE;
 }
 
+/* Return true if player and roof hitboxes overlap */
 bool is_collision_between_player_and_roof(Player *p, Room *r) {
 	int i;
 
@@ -105,7 +118,7 @@ bool is_collision_between_player_and_roof(Player *p, Room *r) {
 	return FALSE;
 }
 
-
+/* Return true if weapon and enemy hitboxes overlap */
 bool is_collision_between_sword_and_enemy(Weapon* w, Enemy* e){
     bool is_hit = FALSE;
     if ((w->x <= e->x + e->WIDTH && w->x + w->WIDTH >= e->x) &&   /* FIND IF w X IS WITHIN e X */

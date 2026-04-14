@@ -3,9 +3,11 @@
 #include "psg.h"
 #include "music.h"
 
+/* Variables */
 int current_note = 0;
 int note_time;
 
+/* Music note list  */
 const int notes[12][8] = {
     {{3421}, {1705}, {855}, {427}, {214}, {107}, {53}, {26}},   /*C*/
     {{3228}, {1614}, {807}, {404}, {202}, {101}, {50}, {25}},   /*C#*/
@@ -21,8 +23,8 @@ const int notes[12][8] = {
     {{1812}, {906}, {453}, {226}, {113}, {57}, {28}, {14}}      /*B*/
 };
 
-/*Format: Note, octave, time*/
-/*E1M1(At Dooms Gate)*/
+/*Format: Note, octave, time
+E1M1(At Dooms Gate)*/
 int melody[29][3] = {
     {E, 5, 15},{E, 5, 21},{E, 4, 21},{E, 5, 15},{E, 5, 21},{D, 4, 21},{E, 5, 15},{E, 5, 21},
     {C, 4, 21},{E, 5, 15},{E, 5, 21},{As, 3, 21},{E, 5, 15},{E, 5, 21},{B, 3, 21},{C, 4, 21},
@@ -30,6 +32,7 @@ int melody[29][3] = {
     {C, 4, 21},{E, 5, 15},{E, 5, 21},{As, 3, 21},{B, 3, 21}
 };
 
+/* Start music */
 void start_music() {
     /*set_tone(0, notes[E][4])*/
     set_tone(0, notes[melody[0][0]][melody[0][1]]);

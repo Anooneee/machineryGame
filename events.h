@@ -9,17 +9,21 @@ char main_menu_get_chosen(int* current_mouse_coords);
 
 /* ---------------------- Asynchronous (Input) Events -----------------------------*/
 /* Call when input is clicked */
-
+/* Calls attack function and returns weapon */
 Weapon* user_input_x(Player *p);
 
 /* Jump! if on ground */
 void user_input_space(Player *p);
 
+/* Calls function to set horizontal_velocity according to speed in RIGHT direction */
 void user_input_d(Player *p);
+/* Calls function to set horizontal_velocity according to speed in LEFT direction */
 void user_input_a(Player *p);
+/* Set horizontal_velocity to 0 */
 void user_release_d_or_a(Player *p);
 
-/* This is empty */
+/* This is empty 
+ Quit the program */
 void user_input_ESC();
 
 
