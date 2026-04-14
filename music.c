@@ -33,7 +33,7 @@ int melody[29][3] = {
 void start_music() {
     /*set_tone(0, notes[E][4])*/
     set_tone(0, notes[melody[0][0]][melody[0][1]]);
-    enable_channel(0, 1, 0);
+    enable_channel(0, 0, 1);
     set_volume(0, 0, 8);
     note_time = 15;
 }
@@ -51,4 +51,5 @@ void upd_music(){
 		note_time--;
 	}
 	set_tone(0, notes[melody[current_note][0]][melody[current_note][1]]);
+    set_volume(0, 0, 8);
 }
