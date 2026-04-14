@@ -67,7 +67,7 @@ typedef struct room_door{
     UINT16 x, y;
     int size;           /* if type VERTICAL: grow from top most side. Example at position (5,10) and size 10, end point will be (5,20)*/
     int type;          /* if type HORIZONTAL: grow from left most side. Example at position (5,10) and size 10, end point will be (15,10)*/
-		int go_to_room;		/* room counter should change to this when entered */
+	int go_to_room;		/* room counter should change to this when entered */
 }Exit;
 
 /* Simple floor or roof structure 
